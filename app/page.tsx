@@ -15,6 +15,7 @@ import {
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
+import { CATEGORY_LABELS } from "@/lib/constants";
 
 // メインページはサーバーコンポーネントです
 export default async function Home() {
@@ -89,7 +90,7 @@ export default async function Home() {
                     <TableRow key={t.id}>
                       <TableCell>{format(t.date, "MM/dd")}</TableCell>
                       <TableCell>{t.description}</TableCell>
-                      <TableCell>{t.category}</TableCell>
+                      <TableCell>{CATEGORY_LABELS[t.category]}</TableCell>
                       <TableCell
                         className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
                       >
