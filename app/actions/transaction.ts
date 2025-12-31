@@ -1,11 +1,14 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
-import { transactionSchema, type TransactionFormValues } from "@/lib/validators";
-import { revalidatePath } from "next/cache";
+import {
+  type TransactionFormValues,
+  transactionSchema,
+} from "@/lib/validators";
 
-export async function addTransaction(data: TransactionFormValues) {  
+export async function addTransaction(data: TransactionFormValues) {
   const parsed = transactionSchema.safeParse(data);
 
   if (!parsed.success) {
@@ -20,7 +23,7 @@ export async function addTransaction(data: TransactionFormValues) {
       date: parsed.data.date,
       isExpense: parsed.data.isExpense,
     });
-    
+
     revalidatePath("/");
     return { success: true };
   } catch (error) {
