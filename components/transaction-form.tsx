@@ -32,7 +32,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORY_OPTIONS } from "@/lib/constants";
+import {
+  EXPENSE_CATEGORY_OPTIONS,
+  INCOME_CATEGORY_OPTIONS,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
   type TransactionFormValues,
@@ -72,6 +75,11 @@ export function TransactionForm({
           isExpense: true,
         },
   });
+
+  const isExpense = form.watch("isExpense");
+  const currentCategoryOptions = isExpense
+    ? EXPENSE_CATEGORY_OPTIONS
+    : INCOME_CATEGORY_OPTIONS;
 
   const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -205,7 +213,13 @@ export function TransactionForm({
             <FormItem>
               <Tabs
                 defaultValue={field.value ? "expense" : "income"}
-                onValueChange={(v) => field.onChange(v === "expense")}
+                onValueChange={(v) => {
+                  const newIsExpense = v === "expense";
+                  field.onChange(newIsExpense);
+                  form.setValue("category", newIsExpense ? "food" : "salary", {
+                    shouldValidate: true,
+                  });
+                }}
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -311,7 +325,7 @@ export function TransactionForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {CATEGORY_OPTIONS.map((option) => (
+                  {currentCategoryOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -330,7 +344,12 @@ export function TransactionForm({
             <FormItem>
               <FormLabel>用途・メモ</FormLabel>
               <FormControl>
-                <Input placeholder="コンビニ、スーパーなど" {...field} />
+                <Input
+                  placeholder={
+                    isExpense ? "コンビニ、スーパーなど" : "給料、賞与など"
+                  }
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

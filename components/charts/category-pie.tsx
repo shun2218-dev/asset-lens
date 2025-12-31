@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { EXPENSE_CATEGORY_LABELS } from "@/lib/constants";
 
 interface CategoryPieProps {
   data: {
@@ -38,7 +38,7 @@ export function CategoryPie({ data }: CategoryPieProps) {
   // データを日本語ラベルに変換
   const translatedData = data.map((item) => ({
     ...item,
-    name: CATEGORY_LABELS[item.name] || item.name, // マップにない場合はそのまま表示
+    name: EXPENSE_CATEGORY_LABELS[item.name] || item.name, // マップにない場合はそのまま表示
   }));
 
   return (
