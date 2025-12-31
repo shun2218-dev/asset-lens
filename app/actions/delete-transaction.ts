@@ -4,8 +4,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
+import type { TransactionResult } from "@/types";
 
-export async function deleteTransaction(id: number) {
+export async function deleteTransaction(
+  id: number,
+): Promise<TransactionResult> {
   try {
     await db.delete(transactions).where(eq(transactions.id, id));
 

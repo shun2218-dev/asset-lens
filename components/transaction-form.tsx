@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { analyzeReceipt } from "@/app/actions/analyze-receipt";
 import { addTransaction } from "@/app/actions/transaction";
+import { updateTransaction } from "@/app/actions/update-transaction";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -37,17 +38,39 @@ import {
   type TransactionFormValues,
   transactionSchema,
 } from "@/lib/validators";
+import type { TransactionResult } from "@/types";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
-export function TransactionForm() {
+interface TransactionFormProps {
+  initialData?: {
+    amount: number;
+    description: string;
+    category: string;
+    date: Date;
+    isExpense: boolean;
+  };
+  id?: number; // 編集モードの場合はIDを渡す
+  onSuccess?: () => void; // 完了時の処理
+  onCancel?: () => void; // キャンセル時の処理
+}
+
+export function TransactionForm({
+  initialData,
+  id,
+  onSuccess,
+  onCancel,
+}: TransactionFormProps) {
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: {
-      amount: 0,
-      description: "",
-      category: "",
-      date: new Date(),
-      isExpense: true,
-    },
+    defaultValues: initialData
+      ? { ...initialData }
+      : {
+          amount: 0,
+          description: "",
+          category: "",
+          date: new Date(),
+          isExpense: true,
+        },
   });
 
   const [isScanning, setIsScanning] = useState(false);
@@ -77,7 +100,6 @@ export function TransactionForm() {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Server Actionを呼び出し
       const result = await analyzeReceipt(formData);
 
       toast.success("解析が完了しました", { id: "scan-toast" });
@@ -109,19 +131,32 @@ export function TransactionForm() {
 
   async function onSubmit(data: TransactionFormValues) {
     try {
-      const result = await addTransaction(data);
-      if (result.success) {
-        form.reset({
-          amount: 0,
-          description: "",
-          category: "",
-          date: new Date(),
-          isExpense: true,
-        });
-
-        toast.success("登録しました");
+      let result: TransactionResult;
+      if (id) {
+        // 編集
+        result = await updateTransaction(id, data);
+        if (result.success) {
+          toast.success("更新しました");
+          onSuccess?.();
+        } else {
+          toast.error("更新に失敗しました");
+        }
       } else {
-        toast.error("登録に失敗しました");
+        // 新規登録
+        const result = await addTransaction(data);
+        if (result.success) {
+          form.reset({
+            amount: 0,
+            description: "",
+            category: "",
+            date: new Date(),
+            isExpense: true,
+          });
+
+          toast.success("登録しました");
+        } else {
+          toast.error("登録に失敗しました");
+        }
       }
     } catch (error) {
       toast.error("予期せぬエラーが発生しました");
@@ -132,34 +167,66 @@ export function TransactionForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={isScanning}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {isScanning ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                解析中...
-              </>
-            ) : (
-              <>
-                <Camera className="mr-2 h-4 w-4" />
-                レシートを読み取る
-              </>
-            )}
-          </Button>
-        </div>
+        {!id && (
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={isScanning}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {isScanning ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  解析中...
+                </>
+              ) : (
+                <>
+                  <Camera className="mr-2 h-4 w-4" />
+                  レシートを読み取る
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        <FormField
+          control={form.control}
+          name="isExpense"
+          render={({ field }) => (
+            <FormItem>
+              <Tabs
+                defaultValue={field.value ? "expense" : "income"}
+                onValueChange={(v) => field.onChange(v === "expense")}
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger
+                    value="expense"
+                    className="data-[state=active]:bg-red-500 data-[state=active]:text-white"
+                  >
+                    支出
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="income"
+                    className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                  >
+                    収入
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -270,9 +337,21 @@ export function TransactionForm() {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          登録する
-        </Button>
+        <div className="flex gap-2">
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/2"
+              onClick={onCancel}
+            >
+              キャンセル
+            </Button>
+          )}
+          <Button type="submit" className={id ? "w-1/2" : "w-full"}>
+            {id ? "更新する" : "登録する"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

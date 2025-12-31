@@ -21,14 +21,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TransactionForm } from "./transaction-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 interface TransactionItemMenuProps {
-  id: number;
+  transaction: {
+    id: number;
+    amount: number;
+    description: string;
+    category: string;
+    date: Date;
+    isExpense: boolean;
+  };
 }
 
-export function TransactionItemMenu({ id }: TransactionItemMenuProps) {
+export function TransactionItemMenu({ transaction }: TransactionItemMenuProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   const handleDelete = () => {
     // confirm は削除
@@ -36,7 +52,7 @@ export function TransactionItemMenu({ id }: TransactionItemMenuProps) {
     const toastId = toast.loading("削除しています...");
 
     startTransition(async () => {
-      const result = await deleteTransaction(id);
+      const result = await deleteTransaction(transaction.id);
 
       if (result.success) {
         toast.success("削除しました", { id: toastId });
@@ -49,7 +65,7 @@ export function TransactionItemMenu({ id }: TransactionItemMenuProps) {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">メニューを開く</span>
@@ -57,9 +73,7 @@ export function TransactionItemMenu({ id }: TransactionItemMenuProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => toast.info("編集機能は次回実装します")}
-          >
+          <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
             <Edit className="mr-2 h-4 w-4" />
             編集
           </DropdownMenuItem>
@@ -98,6 +112,31 @@ export function TransactionItemMenu({ id }: TransactionItemMenuProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="sm:max-w-106.25">
+          <DialogHeader>
+            <DialogTitle>履歴の編集</DialogTitle>
+            <DialogDescription>
+              以下のフォームで内容を修正し、更新ボタンを押してください。
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* フォームを配置: initialData と id を渡す */}
+          <TransactionForm
+            id={transaction.id}
+            initialData={{
+              amount: transaction.amount, // 必要に応じて Math.abs(transaction.amount)
+              description: transaction.description,
+              category: transaction.category,
+              date: transaction.date,
+              isExpense: transaction.isExpense,
+            }}
+            onSuccess={() => setShowEditDialog(false)} // 成功したら閉じる
+            onCancel={() => setShowEditDialog(false)} // キャンセルしたら閉じる
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

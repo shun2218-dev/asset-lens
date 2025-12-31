@@ -7,12 +7,15 @@ import {
   type TransactionFormValues,
   transactionSchema,
 } from "@/lib/validators";
+import type { TransactionResult } from "@/types";
 
-export async function addTransaction(data: TransactionFormValues) {
+export async function addTransaction(
+  data: TransactionFormValues,
+): Promise<TransactionResult> {
   const parsed = transactionSchema.safeParse(data);
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.format() };
+    return { success: false, error: parsed.error.message };
   }
 
   try {
@@ -28,6 +31,6 @@ export async function addTransaction(data: TransactionFormValues) {
     return { success: true };
   } catch (error) {
     console.error("Failed to add transaction:", error);
-    return { success: false, error: "Database error" };
+    return { success: false, error: "データの追加に失敗しました" };
   }
 }

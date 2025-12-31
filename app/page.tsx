@@ -18,9 +18,8 @@ import { transactions } from "@/db/schema";
 import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
 import { CATEGORY_LABELS } from "@/lib/constants";
 
-// メインページはサーバーコンポーネントです
 export default async function Home() {
-  // 全データを取得（実運用ではlimitやwhereで期間を絞るのが良いが、個人利用・初期段階なら全件でOK）
+  // 全データを取得（実運用ではlimitやwhereで期間を絞る）
   const allTransactions = await db
     .select()
     .from(transactions)
@@ -98,7 +97,7 @@ export default async function Home() {
                         {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        <TransactionItemMenu id={t.id} />
+                        <TransactionItemMenu transaction={t} />
                       </TableCell>
                     </TableRow>
                   ))}
