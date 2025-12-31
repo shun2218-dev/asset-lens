@@ -1,9 +1,8 @@
-import { format } from "date-fns";
-import { desc } from "drizzle-orm";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
+import { PaginationControl } from "@/components/pagination-control";
 import { TransactionForm } from "@/components/transaction-form";
-import { TransactionItemMenu } from "@/components/transaction-item-menu";
+import { TransactionItem } from "@/components/transaction-item";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -13,29 +12,72 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/db";
-import { transactions } from "@/db/schema";
-import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
-import {
-  EXPENSE_CATEGORY_LABELS,
-  INCOME_CATEGORY_LABELS,
-} from "@/lib/constants";
+import { getSummary } from "./actions/get-summary";
+import { getTransactions } from "./actions/get-transactions";
 
-export default async function Home() {
+interface HomePageProps {
+  searchParams: { page?: string };
+}
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const { page } = await searchParams;
+  const currentPage = Number(page ?? 1);
+
+  const [transactionsData, summaryData] = await Promise.all([
+    getTransactions(currentPage), // リスト用 (10件)
+    getSummary(), // グラフ・集計用 (全件集計)
+  ]);
+
+  const { data: transactions, metadata } = transactionsData;
+  const { summary, categoryStats, monthlyStats } = summaryData;
+
   // 全データを取得（実運用ではlimitやwhereで期間を絞る）
-  const allTransactions = await db
-    .select()
-    .from(transactions)
-    .orderBy(desc(transactions.date));
+  // const allTransactions = await db
+  //   .select()
+  //   .from(transactions)
+  //   .orderBy(desc(transactions.date));
 
   // 集計データの作成
-  const monthlyStats = getMonthlyStats(allTransactions);
-  const categoryStats = getCurrentMonthCategoryStats(allTransactions);
+  // const monthlyStats = getMonthlyStats(transactions);
+  // const categoryStats = getCurrentMonthCategoryStats(transactions);
+
+  // グラフ用にデータを変換 (Adapter Pattern)
+  // MonthlyChart: { month, income, expense } -> { name, income, expense }
+  const barData = monthlyStats.map((stat) => ({
+    name: stat.month, // "2024-01" などを name に入れる
+    income: stat.income,
+    expense: stat.expense,
+  }));
+
+  // CategoryPie: { category, amount } -> { name, value }
+  const pieData = categoryStats.map((stat) => ({
+    name: stat.category,
+    value: stat.amount,
+  }));
 
   return (
     <main className="container mx-auto p-4 max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">AssetLens</h1>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 text-center p-4 bg-muted rounded-lg">
+        <div>
+          <p className="text-sm text-muted-foreground">収入</p>
+          <p className="font-bold text-blue-600">
+            +{summary.totalIncome.toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">支出</p>
+          <p className="font-bold text-red-600">
+            -{summary.totalExpense.toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">残高</p>
+          <p className="font-bold">¥{summary.balance.toLocaleString()}</p>
+        </div>
       </div>
 
       {/* ダッシュボードエリア */}
@@ -45,7 +87,7 @@ export default async function Home() {
             <CardTitle>月次収支推移</CardTitle>
           </CardHeader>
           <CardContent>
-            <MonthlyChart data={monthlyStats} />
+            <MonthlyChart data={barData} />
           </CardContent>
         </Card>
 
@@ -54,7 +96,7 @@ export default async function Home() {
             <CardTitle>今月の支出内訳</CardTitle>
           </CardHeader>
           <CardContent>
-            <CategoryPie data={categoryStats} />
+            <CategoryPie data={pieData} />
           </CardContent>
         </Card>
       </div>
@@ -89,26 +131,10 @@ export default async function Home() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {allTransactions.slice(0, 10).map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell>{format(t.date, "MM/dd")}</TableCell>
-                      <TableCell>{t.description}</TableCell>
-                      <TableCell>
-                        {t.isExpense
-                          ? EXPENSE_CATEGORY_LABELS[t.category]
-                          : INCOME_CATEGORY_LABELS[t.category]}
-                      </TableCell>
-                      <TableCell
-                        className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
-                      >
-                        {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <TransactionItemMenu transaction={t} />
-                      </TableCell>
-                    </TableRow>
+                  {transactions.slice(0, 10).map((t) => (
+                    <TransactionItem data={t} key={t.id} />
                   ))}
-                  {allTransactions.length === 0 && (
+                  {transactions.length === 0 && (
                     <TableRow>
                       <TableCell
                         colSpan={4}
@@ -120,6 +146,11 @@ export default async function Home() {
                   )}
                 </TableBody>
               </Table>
+
+              <PaginationControl
+                totalPages={metadata.totalPages}
+                currentPage={metadata.currentPage}
+              />
             </CardContent>
           </Card>
         </div>

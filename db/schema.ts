@@ -1,3 +1,4 @@
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
   boolean,
   integer,
@@ -16,3 +17,7 @@ export const transactions = pgTable("transactions", {
   category: text("category").notNull(), // 初期は単純なテキスト、将来的に別テーブル化も検討
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export type SelectTransaction = InferSelectModel<typeof transactions>;
+
+export type InsertTransaction = InferInsertModel<typeof transactions>;
