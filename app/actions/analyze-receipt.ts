@@ -31,7 +31,7 @@ export async function analyzeReceipt(
   const genAI = new GoogleGenerativeAI(apiKey);
 
   // 高速で安価な Flash モデルを使用
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // プロンプトの作成
   const categories = CATEGORY_OPTIONS.map((c) => c.value).join(", ");
@@ -57,7 +57,7 @@ export async function analyzeReceipt(
       },
     ]);
 
-    const response = await result.response;
+    const response = result.response;
     const text = response.text();
 
     // JSON部分を抽出 (Markdown記法 ```json ... ``` が含まれる場合があるため除去)
