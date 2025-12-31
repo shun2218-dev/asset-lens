@@ -1,65 +1,119 @@
-import Image from "next/image";
+import { format } from "date-fns";
+import { desc } from "drizzle-orm";
+import { CategoryPie } from "@/components/charts/category-pie";
+import { MonthlyChart } from "@/components/charts/monthly-chart";
+import { TransactionForm } from "@/components/transaction-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { db } from "@/db";
+import { transactions } from "@/db/schema";
+import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
+import { CATEGORY_LABELS } from "@/lib/constants";
 
-export default function Home() {
+// メインページはサーバーコンポーネントです
+export default async function Home() {
+  // 全データを取得（実運用ではlimitやwhereで期間を絞るのが良いが、個人利用・初期段階なら全件でOK）
+  const allTransactions = await db
+    .select()
+    .from(transactions)
+    .orderBy(desc(transactions.date));
+
+  // 集計データの作成
+  const monthlyStats = getMonthlyStats(allTransactions);
+  const categoryStats = getCurrentMonthCategoryStats(allTransactions);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="container mx-auto p-4 max-w-5xl space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">AssetLens</h1>
+      </div>
+
+      {/* ダッシュボードエリア */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>月次収支推移</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MonthlyChart data={monthlyStats} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>今月の支出内訳</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryPie data={categoryStats} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 左側: 入力フォーム (1カラム) */}
+        <div className="md:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>新規入力</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TransactionForm />
+            </CardContent>
+          </Card>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* 右側: 履歴リスト (2カラム) */}
+        <div className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>直近の履歴</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>日付</TableHead>
+                    <TableHead>内容</TableHead>
+                    <TableHead>カテゴリ</TableHead>
+                    <TableHead className="text-right">金額</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allTransactions.slice(0, 10).map((t) => (
+                    <TableRow key={t.id}>
+                      <TableCell>{format(t.date, "MM/dd")}</TableCell>
+                      <TableCell>{t.description}</TableCell>
+                      <TableCell>{CATEGORY_LABELS[t.category]}</TableCell>
+                      <TableCell
+                        className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
+                      >
+                        {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {allTransactions.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="text-center text-muted-foreground"
+                      >
+                        データがありません
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
