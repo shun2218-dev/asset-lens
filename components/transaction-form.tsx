@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { CalendarIcon, Camera, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { analyzeReceipt } from "@/app/actions/analyze-receipt";
 import { addTransaction } from "@/app/actions/transaction";
 import { Button } from "@/components/ui/button";
@@ -60,9 +61,9 @@ export function TransactionForm() {
     const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
     if (file.size > MAX_FILE_SIZE) {
-      alert(
-        "ファイルサイズが大きすぎます (上限4MB)。\n別の画像を選択するか、サイズを小さくしてください。",
-      );
+      toast.error("ファイルサイズが大きすぎます(上限4MB)", {
+        description: "別の画像を選択するか、サイズを小さくしてください。",
+      });
 
       // 入力をリセットして中断
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -71,11 +72,15 @@ export function TransactionForm() {
 
     try {
       setIsScanning(true);
+      toast.loading("レシートを解析中...", { id: "scan-toast" });
+
       const formData = new FormData();
       formData.append("file", file);
 
       // Server Actionを呼び出し
       const result = await analyzeReceipt(formData);
+
+      toast.success("解析が完了しました", { id: "scan-toast" });
 
       // 結果をフォームに反映
       if (result.amount)
@@ -94,7 +99,7 @@ export function TransactionForm() {
       // 必要ならトースト通知などをここで出す
     } catch (error) {
       console.error(error);
-      alert("読み取りに失敗しました"); // 簡易エラー表示
+      toast.error("読み取りに失敗しました", { id: "scan-toast" });
     } finally {
       setIsScanning(false);
       // 同じファイルを再度選べるようにリセット
@@ -103,17 +108,24 @@ export function TransactionForm() {
   };
 
   async function onSubmit(data: TransactionFormValues) {
-    const result = await addTransaction(data);
-    if (result.success) {
-      form.reset({
-        amount: 0,
-        description: "",
-        category: "",
-        date: new Date(),
-        isExpense: true,
-      });
-    } else {
-      console.error(result.error);
+    try {
+      const result = await addTransaction(data);
+      if (result.success) {
+        form.reset({
+          amount: 0,
+          description: "",
+          category: "",
+          date: new Date(),
+          isExpense: true,
+        });
+
+        toast.success("登録しました");
+      } else {
+        toast.error("登録に失敗しました");
+      }
+    } catch (error) {
+      toast.error("予期せぬエラーが発生しました");
+      console.error(error);
     }
   }
 

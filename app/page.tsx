@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
 import { TransactionForm } from "@/components/transaction-form";
+import { TransactionItemMenu } from "@/components/transaction-item-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -95,6 +96,9 @@ export default async function Home() {
                         className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
                       >
                         {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <TransactionItemMenu id={t.id} />
                       </TableCell>
                     </TableRow>
                   ))}
