@@ -99,7 +99,7 @@ export function TransactionForm() {
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -115,7 +115,20 @@ export function TransactionForm() {
               <FormItem>
                 <FormLabel>金額</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    {...field}
+                    onBlur={(e) => {
+                      const value = e.target.value;
+                      field.onBlur();
+                      if (field.value === undefined) {
+                        field.onChange(0);
+                      } else {
+                        field.onChange(Number(value));
+                      }
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
