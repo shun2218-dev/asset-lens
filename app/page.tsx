@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
 import { TransactionForm } from "@/components/transaction-form";
+import { TransactionItemMenu } from "@/components/transaction-item-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -17,9 +18,8 @@ import { transactions } from "@/db/schema";
 import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
 import { CATEGORY_LABELS } from "@/lib/constants";
 
-// メインページはサーバーコンポーネントです
 export default async function Home() {
-  // 全データを取得（実運用ではlimitやwhereで期間を絞るのが良いが、個人利用・初期段階なら全件でOK）
+  // 全データを取得（実運用ではlimitやwhereで期間を絞る）
   const allTransactions = await db
     .select()
     .from(transactions)
@@ -95,6 +95,9 @@ export default async function Home() {
                         className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
                       >
                         {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <TransactionItemMenu transaction={t} />
                       </TableCell>
                     </TableRow>
                   ))}
