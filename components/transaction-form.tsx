@@ -2,8 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Camera, Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { analyzeReceipt } from "@/app/actions/analyze-receipt";
 import { addTransaction } from "@/app/actions/transaction";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -47,6 +49,59 @@ export function TransactionForm() {
     },
   });
 
+  const [isScanning, setIsScanning] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Vercelの制限(4.5MB)を考慮し、余裕を持って4MBを上限とする
+    const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert(
+        "ファイルサイズが大きすぎます (上限4MB)。\n別の画像を選択するか、サイズを小さくしてください。",
+      );
+
+      // 入力をリセットして中断
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    try {
+      setIsScanning(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Server Actionを呼び出し
+      const result = await analyzeReceipt(formData);
+
+      // 結果をフォームに反映
+      if (result.amount)
+        form.setValue("amount", result.amount, { shouldValidate: true });
+      if (result.description)
+        form.setValue("description", result.description, {
+          shouldValidate: true,
+        });
+      if (result.category)
+        form.setValue("category", result.category, { shouldValidate: true });
+      if (result.date) {
+        // 文字列(YYYY-MM-DD)をDateオブジェクトに変換
+        form.setValue("date", new Date(result.date), { shouldValidate: true });
+      }
+
+      // 必要ならトースト通知などをここで出す
+    } catch (error) {
+      console.error(error);
+      alert("読み取りに失敗しました"); // 簡易エラー表示
+    } finally {
+      setIsScanning(false);
+      // 同じファイルを再度選べるようにリセット
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   async function onSubmit(data: TransactionFormValues) {
     const result = await addTransaction(data);
     if (result.success) {
@@ -65,6 +120,34 @@ export function TransactionForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isScanning}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isScanning ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                解析中...
+              </>
+            ) : (
+              <>
+                <Camera className="mr-2 h-4 w-4" />
+                レシートを読み取る
+              </>
+            )}
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -142,7 +225,7 @@ export function TransactionForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>カテゴリ</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="カテゴリを選択" />
