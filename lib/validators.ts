@@ -6,9 +6,9 @@ export const transactionSchema = z.object({
   category: z.string().min(1, "カテゴリを選択してください"),
   date: z.date({
     error: (issue) => {
-        if (issue.input === undefined) return "日付を選択してください";
-        return "無効な日付です"
-    } ,
+      if (issue.input === undefined) return "日付を選択してください";
+      return "無効な日付です";
+    },
   }),
   isExpense: z.boolean(),
 });

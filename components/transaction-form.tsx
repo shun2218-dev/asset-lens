@@ -1,13 +1,12 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-
+import { useForm } from "react-hook-form";
+import { addTransaction } from "@/app/actions/transaction";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -16,6 +15,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -23,14 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+import { CATEGORY_OPTIONS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { transactionSchema, type TransactionFormValues } from "@/lib/validators";
-import { addTransaction } from "@/app/actions/transaction";
+  type TransactionFormValues,
+  transactionSchema,
+} from "@/lib/validators";
 
 export function TransactionForm() {
   const form = useForm<TransactionFormValues>({
@@ -53,7 +56,7 @@ export function TransactionForm() {
         category: "",
         date: new Date(),
         isExpense: true,
-      });      
+      });
     } else {
       console.error(result.error);
     }
@@ -76,7 +79,7 @@ export function TransactionForm() {
                         variant={"outline"}
                         className={cn(
                           "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
@@ -104,7 +107,7 @@ export function TransactionForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="amount"
@@ -133,11 +136,11 @@ export function TransactionForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="food">食費</SelectItem>
-                  <SelectItem value="transport">交通費</SelectItem>
-                  <SelectItem value="daily">日用品</SelectItem>
-                  <SelectItem value="entertainment">交際費・娯楽</SelectItem>
-                  <SelectItem value="other">その他</SelectItem>
+                  {CATEGORY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -159,7 +162,9 @@ export function TransactionForm() {
           )}
         />
 
-        <Button type="submit" className="w-full">登録する</Button>
+        <Button type="submit" className="w-full">
+          登録する
+        </Button>
       </form>
     </Form>
   );
