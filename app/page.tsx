@@ -1,35 +1,38 @@
+import { format } from "date-fns";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
-import { PaginationControl } from "@/components/pagination-control";
+import { MonthSelector } from "@/components/monthly-selector";
+
 import { TransactionForm } from "@/components/transaction-form";
-import { TransactionItem } from "@/components/transaction-item";
+import { TransactionList } from "@/components/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { getSummary } from "./actions/get-summary";
 import { getTransactions } from "./actions/get-transactions";
 
 interface HomePageProps {
-  searchParams: { page?: string };
+  searchParams: { page?: string; month?: string };
 }
 
 export default async function Home({ searchParams }: HomePageProps) {
-  const { page } = await searchParams;
-  const currentPage = Number(page ?? 1);
+  const params = await searchParams;
+  // const currentPage = Number(params?.page ?? 1);
+  const initialPage = 1;
+  const now = new Date();
+  const defaultMonth = format(now, "yyyy-MM");
+  const currentMonth = params.month || defaultMonth;
 
   const [transactionsData, summaryData] = await Promise.all([
-    getTransactions(currentPage), // リスト用 (10件)
-    getSummary(), // グラフ・集計用 (全件集計)
+    getTransactions(initialPage, currentMonth), // リスト用 (10件)
+    getSummary(currentMonth), // グラフ・集計用 (全件集計)
   ]);
 
   const { data: transactions, metadata } = transactionsData;
-  const { summary, categoryStats, monthlyStats } = summaryData;
+  const {
+    summary,
+    categoryStats,
+    monthlyStats,
+    currentMonth: displayMonth,
+  } = summaryData;
 
   // 全データを取得（実運用ではlimitやwhereで期間を絞る）
   // const allTransactions = await db
@@ -59,6 +62,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     <main className="container mx-auto p-4 max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">AssetLens</h1>
+        <MonthSelector currentMonth={displayMonth} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 text-center p-4 bg-muted rounded-lg">
@@ -75,7 +79,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">残高</p>
+          <p className="text-sm text-muted-foreground">収支</p>
           <p className="font-bold">¥{summary.balance.toLocaleString()}</p>
         </div>
       </div>
@@ -121,35 +125,10 @@ export default async function Home({ searchParams }: HomePageProps) {
               <CardTitle>直近の履歴</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>日付</TableHead>
-                    <TableHead>内容</TableHead>
-                    <TableHead>カテゴリ</TableHead>
-                    <TableHead className="text-right">金額</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.slice(0, 10).map((t) => (
-                    <TransactionItem data={t} key={t.id} />
-                  ))}
-                  {transactions.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center text-muted-foreground"
-                      >
-                        データがありません
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-
-              <PaginationControl
-                totalPages={metadata.totalPages}
-                currentPage={metadata.currentPage}
+              <TransactionList
+                initialTransactions={transactions}
+                initialMetadata={metadata}
+                currentMonth={currentMonth}
               />
             </CardContent>
           </Card>
