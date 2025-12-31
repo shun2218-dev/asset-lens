@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CATEGORY_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
   type TransactionFormValues,
@@ -135,11 +136,11 @@ export function TransactionForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="food">食費</SelectItem>
-                  <SelectItem value="transport">交通費</SelectItem>
-                  <SelectItem value="daily">日用品</SelectItem>
-                  <SelectItem value="entertainment">交際費・娯楽</SelectItem>
-                  <SelectItem value="other">その他</SelectItem>
+                  {CATEGORY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
