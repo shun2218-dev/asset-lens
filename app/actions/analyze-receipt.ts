@@ -1,7 +1,7 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { CATEGORY_OPTIONS } from "@/lib/constants";
+import { EXPENSE_CATEGORY_OPTIONS } from "@/lib/constants";
 
 type AnalyzeResult = {
   amount?: number;
@@ -34,7 +34,7 @@ export async function analyzeReceipt(
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // プロンプトの作成
-  const categories = CATEGORY_OPTIONS.map((c) => c.value).join(", ");
+  const categories = EXPENSE_CATEGORY_OPTIONS.map((c) => c.value).join(", ");
   const prompt = `
     このレシート画像を解析し、以下の情報を抽出してJSON形式で返してください。
     

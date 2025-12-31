@@ -16,7 +16,10 @@ import {
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import {
+  EXPENSE_CATEGORY_LABELS,
+  INCOME_CATEGORY_LABELS,
+} from "@/lib/constants";
 
 export default async function Home() {
   // 全データを取得（実運用ではlimitやwhereで期間を絞る）
@@ -90,7 +93,11 @@ export default async function Home() {
                     <TableRow key={t.id}>
                       <TableCell>{format(t.date, "MM/dd")}</TableCell>
                       <TableCell>{t.description}</TableCell>
-                      <TableCell>{CATEGORY_LABELS[t.category]}</TableCell>
+                      <TableCell>
+                        {t.isExpense
+                          ? EXPENSE_CATEGORY_LABELS[t.category]
+                          : INCOME_CATEGORY_LABELS[t.category]}
+                      </TableCell>
                       <TableCell
                         className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
                       >
