@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { analyzeReceipt } from "@/app/actions/analyze-receipt";
-import { addTransaction } from "@/app/actions/transaction";
+import { createTransaction } from "@/app/actions/create-transaction";
 import { updateTransaction } from "@/app/actions/update-transaction";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -151,7 +151,7 @@ export function TransactionForm({
         }
       } else {
         // 新規登録
-        const result = await addTransaction(data);
+        const result = await createTransaction(data);
         if (result.success) {
           form.reset({
             amount: 0,
