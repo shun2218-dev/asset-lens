@@ -1,5 +1,6 @@
 "use server";
 
+import { format } from "date-fns";
 import { desc } from "drizzle-orm";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
@@ -13,15 +14,11 @@ export async function getSummary(month?: string) {
       .from(transactions)
       .orderBy(desc(transactions.date));
 
-    const now = new Date();
-    const targetMonth =
-      month ||
-      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const targetMonth = month || format(new Date(), "yyyy-MM");
 
     // サマリーカード & 円グラフ用: 「指定した月」のデータのみ抽出
     const monthlyTransactions = allTransactions.filter((t) => {
-      const tMonth = t.date.toISOString().slice(0, 7); // "YYYY-MM"
-      return tMonth === targetMonth;
+      return format(t.date, "yyyy-MM") === targetMonth;
     });
 
     // 収支の合計
@@ -54,7 +51,7 @@ export async function getSummary(month?: string) {
     const monthlyMap = new Map<string, { income: number; expense: number }>();
 
     allTransactions.forEach((t) => {
-      const monthKey = t.date.toISOString().slice(0, 7); // "YYYY-MM"
+      const monthKey = format(t.date, "yyyy-MM");
       const current = monthlyMap.get(monthKey) || { income: 0, expense: 0 };
 
       if (t.isExpense) current.expense += t.amount;
@@ -80,11 +77,8 @@ export async function getSummary(month?: string) {
   } catch (error) {
     console.error("Failed to fetch summary:", error);
     // エラー時の空データ
-    const now = new Date();
-    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
     return {
-      currentMonth,
+      currentMonth: format(new Date(), "yyyy-MM"),
       summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
       categoryStats: [],
       monthlyStats: [],

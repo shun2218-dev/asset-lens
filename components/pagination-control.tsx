@@ -1,7 +1,6 @@
 // components/pagination-control.tsx
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import {
   Pagination,
   PaginationContent,
@@ -21,16 +20,8 @@ export function PaginationControl({
   currentPage,
   onPageChange,
 }: PaginationControlProps) {
-  const searchParams = useSearchParams();
-
   // 1ページしかなければ表示しない
   if (totalPages <= 1) return null;
-
-  //   const createPageURL = (pageNumber: number) => {
-  //     const params = new URLSearchParams(searchParams.toString());
-  //     params.set("page", pageNumber.toString());
-  //     return `/?${params.toString()}`;
-  //   };
 
   const handlePageChange = (e: React.MouseEvent, page: number) => {
     e.preventDefault(); // リンク遷移を無効化
