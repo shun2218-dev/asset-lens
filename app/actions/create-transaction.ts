@@ -9,7 +9,7 @@ import {
 } from "@/lib/validators";
 import type { TransactionResult } from "@/types";
 
-export async function addTransaction(
+export async function createTransaction(
   data: TransactionFormValues,
 ): Promise<TransactionResult> {
   const parsed = transactionSchema.safeParse(data);

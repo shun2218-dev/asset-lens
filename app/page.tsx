@@ -1,41 +1,76 @@
 import { format } from "date-fns";
-import { desc } from "drizzle-orm";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
+import { MonthSelector } from "@/components/monthly-selector";
+
 import { TransactionForm } from "@/components/transaction-form";
-import { TransactionItemMenu } from "@/components/transaction-item-menu";
+import { TransactionList } from "@/components/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { db } from "@/db";
-import { transactions } from "@/db/schema";
-import { getCurrentMonthCategoryStats, getMonthlyStats } from "@/lib/analytics";
-import {
-  EXPENSE_CATEGORY_LABELS,
-  INCOME_CATEGORY_LABELS,
-} from "@/lib/constants";
+import { getSummary } from "./actions/get-summary";
+import { getTransactions } from "./actions/get-transactions";
 
-export default async function Home() {
-  // 全データを取得（実運用ではlimitやwhereで期間を絞る）
-  const allTransactions = await db
-    .select()
-    .from(transactions)
-    .orderBy(desc(transactions.date));
+interface HomePageProps {
+  searchParams: { month?: string };
+}
 
-  // 集計データの作成
-  const monthlyStats = getMonthlyStats(allTransactions);
-  const categoryStats = getCurrentMonthCategoryStats(allTransactions);
+export default async function Home({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const initialPage = 1;
+  const now = new Date();
+  const defaultMonth = format(now, "yyyy-MM");
+  const currentMonth = params.month || defaultMonth;
+
+  const [transactionsData, summaryData] = await Promise.all([
+    getTransactions(initialPage, currentMonth), // リスト用 (10件)
+    getSummary(currentMonth), // グラフ・集計用 (全件集計)
+  ]);
+
+  const { data: transactions, metadata } = transactionsData;
+  const {
+    summary,
+    categoryStats,
+    monthlyStats,
+    currentMonth: displayMonth,
+  } = summaryData;
+
+  // グラフ用にデータを変換 (Adapter Pattern)
+  // MonthlyChart: { month, income, expense } -> { name, income, expense }
+  const barData = monthlyStats.map((stat) => ({
+    name: stat.month, // "2024-01" などを name に入れる
+    income: stat.income,
+    expense: stat.expense,
+  }));
+
+  // CategoryPie: { category, amount } -> { name, value }
+  const pieData = categoryStats.map((stat) => ({
+    name: stat.category,
+    value: stat.amount,
+  }));
 
   return (
     <main className="container mx-auto p-4 max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">AssetLens</h1>
+        <MonthSelector currentMonth={displayMonth} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 text-center p-4 bg-muted rounded-lg">
+        <div>
+          <p className="text-sm text-muted-foreground">収入</p>
+          <p className="font-bold text-blue-600">
+            +{summary.totalIncome.toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">支出</p>
+          <p className="font-bold text-red-600">
+            -{summary.totalExpense.toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">収支</p>
+          <p className="font-bold">¥{summary.balance.toLocaleString()}</p>
+        </div>
       </div>
 
       {/* ダッシュボードエリア */}
@@ -45,7 +80,7 @@ export default async function Home() {
             <CardTitle>月次収支推移</CardTitle>
           </CardHeader>
           <CardContent>
-            <MonthlyChart data={monthlyStats} />
+            <MonthlyChart data={barData} />
           </CardContent>
         </Card>
 
@@ -54,7 +89,7 @@ export default async function Home() {
             <CardTitle>今月の支出内訳</CardTitle>
           </CardHeader>
           <CardContent>
-            <CategoryPie data={categoryStats} />
+            <CategoryPie data={pieData} />
           </CardContent>
         </Card>
       </div>
@@ -79,47 +114,11 @@ export default async function Home() {
               <CardTitle>直近の履歴</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>日付</TableHead>
-                    <TableHead>内容</TableHead>
-                    <TableHead>カテゴリ</TableHead>
-                    <TableHead className="text-right">金額</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allTransactions.slice(0, 10).map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell>{format(t.date, "MM/dd")}</TableCell>
-                      <TableCell>{t.description}</TableCell>
-                      <TableCell>
-                        {t.isExpense
-                          ? EXPENSE_CATEGORY_LABELS[t.category]
-                          : INCOME_CATEGORY_LABELS[t.category]}
-                      </TableCell>
-                      <TableCell
-                        className={`text-right ${t.isExpense ? "text-red-500" : "text-green-500"}`}
-                      >
-                        {t.isExpense ? "-" : "+"}¥{t.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <TransactionItemMenu transaction={t} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {allTransactions.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center text-muted-foreground"
-                      >
-                        データがありません
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+              <TransactionList
+                initialTransactions={transactions}
+                initialMetadata={metadata}
+                currentMonth={currentMonth}
+              />
             </CardContent>
           </Card>
         </div>

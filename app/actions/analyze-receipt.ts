@@ -1,6 +1,7 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { format, isValid, parse } from "date-fns";
 import { EXPENSE_CATEGORY_OPTIONS } from "@/lib/constants";
 
 type AnalyzeResult = {
@@ -31,7 +32,10 @@ export async function analyzeReceipt(
   const genAI = new GoogleGenerativeAI(apiKey);
 
   // 高速で安価な Flash モデルを使用
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: { responseMimeType: "application/json" },
+  });
 
   // プロンプトの作成
   const categories = EXPENSE_CATEGORY_OPTIONS.map((c) => c.value).join(", ");
@@ -64,11 +68,19 @@ export async function analyzeReceipt(
     const jsonString = text.replace(/```json|```/g, "").trim();
     const data = JSON.parse(jsonString);
 
+    let validDate: string | undefined;
+
+    if (typeof data.date === "string") {
+      const parsedDate = parse(data.date, "yyyy-MM-dd", new Date());
+
+      if (isValid(parsedDate)) {
+        validDate = format(parsedDate, "yyyy-MM-dd");
+      }
+    }
+
     return {
       amount: typeof data.amount === "number" ? data.amount : undefined,
-      date: data.date
-        ? new Date(data.date).toISOString().split("T")[0]
-        : undefined, // YYYY-MM-DDに正規化
+      date: validDate,
       description: data.description,
       category: data.category,
     };
