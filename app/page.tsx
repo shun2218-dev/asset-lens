@@ -10,12 +10,11 @@ import { getSummary } from "./actions/get-summary";
 import { getTransactions } from "./actions/get-transactions";
 
 interface HomePageProps {
-  searchParams: { page?: string; month?: string };
+  searchParams: { month?: string };
 }
 
 export default async function Home({ searchParams }: HomePageProps) {
   const params = await searchParams;
-  // const currentPage = Number(params?.page ?? 1);
   const initialPage = 1;
   const now = new Date();
   const defaultMonth = format(now, "yyyy-MM");
@@ -33,16 +32,6 @@ export default async function Home({ searchParams }: HomePageProps) {
     monthlyStats,
     currentMonth: displayMonth,
   } = summaryData;
-
-  // 全データを取得（実運用ではlimitやwhereで期間を絞る）
-  // const allTransactions = await db
-  //   .select()
-  //   .from(transactions)
-  //   .orderBy(desc(transactions.date));
-
-  // 集計データの作成
-  // const monthlyStats = getMonthlyStats(transactions);
-  // const categoryStats = getCurrentMonthCategoryStats(transactions);
 
   // グラフ用にデータを変換 (Adapter Pattern)
   // MonthlyChart: { month, income, expense } -> { name, income, expense }
