@@ -1,5 +1,6 @@
 "use server";
 
+import { addMonths, parse } from "date-fns";
 import { and, count, desc, gte, lt, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
@@ -14,16 +15,13 @@ export async function getTransactions(page: number = 1, month?: string) {
   try {
     let whereCondition: SQL | undefined;
 
-    // month引数がある場合、その月の1日〜翌月1日の範囲条件を作成
+    // month引数がある場合、その月の1日〜翌月1日の範囲条件を作成 ("2025-01" -> 2025-01-01 00:00:00)
     if (month) {
-      const [yearStr, monthStr] = month.split("-");
-      const year = parseInt(yearStr, 10);
-      const m = parseInt(monthStr, 10);
-
       // 開始日: 指定月の1日 00:00:00
-      const startDate = new Date(year, m - 1, 1);
-      // 終了日: 翌月の1日 00:00:00 (自動的に年を跨ぐ処理もJSが行います)
-      const endDate = new Date(year, m, 1);
+      const startDate = parse(month, "yyyy-MM", new Date());
+
+      // 終了日: 翌月の1日 00:00:00
+      const endDate = addMonths(startDate, 1);
 
       // date >= startDate AND date < endDate
       whereCondition = and(
