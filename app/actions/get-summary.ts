@@ -14,7 +14,6 @@ export async function getSummary(month?: string) {
       .from(transactions)
       .orderBy(desc(transactions.date));
 
-    const now = new Date();
     const targetMonth = month || format(new Date(), "yyyy-MM");
 
     // サマリーカード & 円グラフ用: 「指定した月」のデータのみ抽出
