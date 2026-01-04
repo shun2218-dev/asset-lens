@@ -2,7 +2,7 @@
 
 import { addMonths, format, isAfter, isSameMonth, parse } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 interface MonthSelectorProps {
@@ -11,6 +11,7 @@ interface MonthSelectorProps {
 
 export function MonthSelector({ currentMonth }: MonthSelectorProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   // 現在の年月（リアルタイム）を取得
   const today = new Date();
@@ -20,7 +21,7 @@ export function MonthSelector({ currentMonth }: MonthSelectorProps) {
     // 1ヶ月足す/引く
     const nextDate = addMonths(currentDate, offset);
     const nextMonthStr = format(nextDate, "yyyy-MM");
-    router.push(`/?month=${nextMonthStr}`);
+    router.push(`${pathname}?month=${nextMonthStr}`);
   };
 
   // "未来" かどうかの判定（現在の月より後は選択させない）
