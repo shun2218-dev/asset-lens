@@ -1,22 +1,27 @@
 "use server";
 
 import { addMonths, parse } from "date-fns";
-import { and, count, desc, gte, lt, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, gte, lt, type SQL } from "drizzle-orm";
+import { headers } from "next/headers";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { transaction } from "@/db/schema";
+import { auth } from "@/lib/auth/auth";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
 
-export async function getTransactions(page: number = 1, month?: string) {
+export async function getTransaction(page: number = 1, month?: string) {
   // ページ番号が1未満にならないように補正
   const safePage = Math.max(1, page);
   const offset = (safePage - 1) * PAGE_SIZE;
 
   try {
     let whereCondition: SQL | undefined;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
     // month引数がある場合、その月の1日〜翌月1日の範囲条件を作成 ("2025-01" -> 2025-01-01 00:00:00)
-    if (month) {
+    if (month && session) {
       // 開始日: 指定月の1日 00:00:00
       const startDate = parse(month, "yyyy-MM", new Date());
 
@@ -25,17 +30,18 @@ export async function getTransactions(page: number = 1, month?: string) {
 
       // date >= startDate AND date < endDate
       whereCondition = and(
-        gte(transactions.date, startDate),
-        lt(transactions.date, endDate),
+        eq(transaction.userId, session.user.id),
+        gte(transaction.date, startDate),
+        lt(transaction.date, endDate),
       );
     }
 
     // データ取得 (最新順、10件、指定位置から)
     const data = await db
       .select()
-      .from(transactions)
+      .from(transaction)
       .where(whereCondition)
-      .orderBy(desc(transactions.date))
+      .orderBy(desc(transaction.date))
       .limit(PAGE_SIZE)
       .offset(offset);
 
@@ -43,7 +49,7 @@ export async function getTransactions(page: number = 1, month?: string) {
     // count() は [{ count: 123 }] のような配列を返す
     const [totalCountResult] = await db
       .select({ count: count() })
-      .from(transactions)
+      .from(transaction)
       .where(whereCondition);
 
     const totalCount = totalCountResult?.count ?? 0;
@@ -62,7 +68,7 @@ export async function getTransactions(page: number = 1, month?: string) {
       },
     };
   } catch (error) {
-    console.error("Failed to fetch transactions:", error);
+    console.error("Failed to fetch transaction:", error);
     // エラー時は空データを返す
     return {
       data: [],

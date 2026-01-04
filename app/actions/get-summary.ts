@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { desc } from "drizzle-orm";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { transaction } from "@/db/schema";
 
 export async function getSummary(month?: string) {
   try {
@@ -11,8 +11,8 @@ export async function getSummary(month?: string) {
     // 必要なら where で「今年だけ」などに絞ることも可能
     const allTransactions = await db
       .select()
-      .from(transactions)
-      .orderBy(desc(transactions.date));
+      .from(transaction)
+      .orderBy(desc(transaction.date));
 
     const targetMonth = month || format(new Date(), "yyyy-MM");
 

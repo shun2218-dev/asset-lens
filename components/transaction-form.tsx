@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSession } from "@/lib/auth/auth-client";
 import {
   EXPENSE_CATEGORY_OPTIONS,
   INCOME_CATEGORY_OPTIONS,
@@ -46,13 +47,14 @@ import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 interface TransactionFormProps {
   initialData?: {
+    userId: string;
     amount: number;
     description: string;
     category: string;
     date: Date;
     isExpense: boolean;
   };
-  id?: number; // 編集モードの場合はIDを渡す
+  id?: string; // 編集モードの場合はIDを渡す
   onSuccess?: () => void; // 完了時の処理
   onCancel?: () => void; // キャンセル時の処理
 }
@@ -63,11 +65,14 @@ export function TransactionForm({
   onSuccess,
   onCancel,
 }: TransactionFormProps) {
+  const { data: session } = useSession();
+
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
     defaultValues: initialData
       ? { ...initialData }
       : {
+          userId: "dummy-user-id",
           amount: 0,
           description: "",
           category: "",
@@ -154,6 +159,7 @@ export function TransactionForm({
         const result = await createTransaction(data);
         if (result.success) {
           form.reset({
+            userId: "dummy-user-id",
             amount: 0,
             description: "",
             category: "",
@@ -171,6 +177,8 @@ export function TransactionForm({
       console.error(error);
     }
   }
+
+  if (!session) return null;
 
   return (
     <Form {...form}>
@@ -367,7 +375,18 @@ export function TransactionForm({
               キャンセル
             </Button>
           )}
-          <Button type="submit" className={id ? "w-1/2" : "w-full"}>
+          <Button
+            type="submit"
+            className={id ? "w-1/2" : "w-full"}
+            disabled={
+              form.formState.isSubmitting ||
+              isScanning ||
+              !form.formState.isValid
+            }
+          >
+            {(isScanning || form.formState.isSubmitting) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             {id ? "更新する" : "登録する"}
           </Button>
         </div>

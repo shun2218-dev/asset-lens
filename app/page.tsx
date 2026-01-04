@@ -1,128 +1,111 @@
-import { format } from "date-fns";
-import { CategoryPie } from "@/components/charts/category-pie";
-import { MonthlyChart } from "@/components/charts/monthly-chart";
-import { MonthSelector } from "@/components/monthly-selector";
+import { ArrowRight, BarChart3, Fingerprint, Zap } from "lucide-react";
+import { headers } from "next/headers";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth/auth";
+import { requireGuest } from "@/lib/auth/auth-guard";
 
-import { TransactionForm } from "@/components/transaction-form";
-import { TransactionList } from "@/components/transaction-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSummary } from "./actions/get-summary";
-import { getTransactions } from "./actions/get-transactions";
+export default async function LandingPage() {
+  // サーバーサイドでセッションを取得してボタンを出し分ける
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-interface HomePageProps {
-  searchParams: { month?: string };
-}
-
-export default async function Home({ searchParams }: HomePageProps) {
-  const params = await searchParams;
-  const initialPage = 1;
-  const now = new Date();
-  const defaultMonth = format(now, "yyyy-MM");
-  const currentMonth = params.month || defaultMonth;
-
-  const [transactionsData, summaryData] = await Promise.all([
-    getTransactions(initialPage, currentMonth), // リスト用 (10件)
-    getSummary(currentMonth), // グラフ・集計用 (全件集計)
-  ]);
-
-  const { data: transactions, metadata } = transactionsData;
-  const {
-    summary,
-    categoryStats,
-    monthlyStats,
-    currentMonth: displayMonth,
-  } = summaryData;
-
-  // グラフ用にデータを変換 (Adapter Pattern)
-  // MonthlyChart: { month, income, expense } -> { name, income, expense }
-  const barData = monthlyStats.map((stat) => ({
-    name: stat.month, // "2024-01" などを name に入れる
-    income: stat.income,
-    expense: stat.expense,
-  }));
-
-  // CategoryPie: { category, amount } -> { name, value }
-  const pieData = categoryStats.map((stat) => ({
-    name: stat.category,
-    value: stat.amount,
-  }));
+  await requireGuest();
 
   return (
-    <main className="container mx-auto p-4 max-w-5xl space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">AssetLens</h1>
-        <MonthSelector currentMonth={displayMonth} />
-      </div>
+    <main className="flex flex-col min-h-screen">
+      {/* --- メインビジュアル (Hero Section) --- */}
+      <section className="flex-1 flex flex-col items-center justify-center py-24 md:py-32 space-y-8 text-center px-4 bg-linear-to-b from-background to-muted/20">
+        <div className="space-y-4 max-w-3xl">
+          <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 shadow mb-4">
+            New
+            <span className="ml-2 font-normal text-primary-foreground/80">
+              Passkey認証に対応しました
+            </span>
+          </div>
 
-      <div className="grid grid-cols-3 gap-4 text-center p-4 bg-muted rounded-lg">
-        <div>
-          <p className="text-sm text-muted-foreground">収入</p>
-          <p className="font-bold text-blue-600">
-            +{summary.totalIncome.toLocaleString()}
+          <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70">
+            資産管理を、
+            <br className="md:hidden" />
+            もっとシンプルに。
+          </h1>
+
+          <p className="mx-auto max-w-175 text-muted-foreground text-lg md:text-xl leading-relaxed">
+            AssetLensは、あなたの収支を可視化し、未来への投資をサポートする
+            <br className="hidden md:inline" />
+            シンプルでセキュアな家計簿アプリケーションです。
           </p>
         </div>
-        <div>
-          <p className="text-sm text-muted-foreground">支出</p>
-          <p className="font-bold text-red-600">
-            -{summary.totalExpense.toLocaleString()}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">収支</p>
-          <p className="font-bold">¥{summary.balance.toLocaleString()}</p>
-        </div>
-      </div>
 
-      {/* ダッシュボードエリア */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>月次収支推移</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MonthlyChart data={barData} />
-          </CardContent>
-        </Card>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          {session ? (
+            <Button asChild size="lg" className="h-12 px-8 text-base">
+              <Link href="/dashboard">
+                ダッシュボードを開く
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="h-12 px-8 text-base">
+              <Link href="/login">
+                無料で始める
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>今月の支出内訳</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryPie data={pieData} />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 左側: 入力フォーム (1カラム) */}
-        <div className="md:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>新規入力</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TransactionForm />
-            </CardContent>
-          </Card>
+          <Button
+            variant="outline"
+            size="lg"
+            className="h-12 px-8 text-base"
+            asChild
+          >
+            <Link href="#features">機能を見る</Link>
+          </Button>
         </div>
+      </section>
 
-        {/* 右側: 履歴リスト (2カラム) */}
-        <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>直近の履歴</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TransactionList
-                initialTransactions={transactions}
-                initialMetadata={metadata}
-                currentMonth={currentMonth}
-              />
-            </CardContent>
-          </Card>
+      {/* --- 特徴 (Features) --- */}
+      <section id="features" className="container mx-auto px-4 py-24 md:py-32">
+        <div className="grid gap-12 md:grid-cols-3 max-w-6xl mx-auto">
+          {/* Feature 1 */}
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+            <div className="p-3 bg-primary/10 rounded-full">
+              <BarChart3 className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold">直感的なグラフ</h3>
+            <p className="text-muted-foreground">
+              複雑な設定は不要。入力したデータは自動的に美しいグラフに変換され、
+              ひと目で資産状況を把握できます。
+            </p>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+            <div className="p-3 bg-primary/10 rounded-full">
+              <Fingerprint className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold">パスキー認証</h3>
+            <p className="text-muted-foreground">
+              パスワードはもう不要です。指紋や顔認証を使って、
+              安全かつ瞬時にログインできます。
+            </p>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+            <div className="p-3 bg-primary/10 rounded-full">
+              <Zap className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold">シンプル設計</h3>
+            <p className="text-muted-foreground">
+              必要な機能だけを厳選。
+              毎日の記録が苦にならない、洗練されたUIを提供します。
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
