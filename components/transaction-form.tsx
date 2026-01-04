@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSession, useSession } from "@/lib/auth/auth-client";
+import { useSession } from "@/lib/auth/auth-client";
 import {
   EXPENSE_CATEGORY_OPTIONS,
   INCOME_CATEGORY_OPTIONS,
