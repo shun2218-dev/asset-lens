@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { transaction } from "@/db/schema";
+import { auth } from "@/lib/auth/auth";
 import {
   type TransactionFormValues,
   transactionSchema,
@@ -12,6 +14,14 @@ import type { TransactionResult } from "@/types";
 export async function createTransaction(
   data: TransactionFormValues,
 ): Promise<TransactionResult> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { success: false, error: "ログインしてください" };
+  }
+
   const parsed = transactionSchema.safeParse(data);
 
   if (!parsed.success) {
@@ -19,7 +29,8 @@ export async function createTransaction(
   }
 
   try {
-    await db.insert(transactions).values({
+    await db.insert(transaction).values({
+      userId: session.user.id,
       amount: parsed.data.amount,
       description: parsed.data.description,
       category: parsed.data.category,
@@ -27,7 +38,7 @@ export async function createTransaction(
       isExpense: parsed.data.isExpense,
     });
 
-    revalidatePath("/");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Failed to add transaction:", error);

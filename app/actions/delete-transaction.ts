@@ -3,17 +3,16 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { transaction } from "@/db/schema";
 import type { TransactionResult } from "@/types";
 
 export async function deleteTransaction(
-  id: number,
+  id: string,
 ): Promise<TransactionResult> {
   try {
-    await db.delete(transactions).where(eq(transactions.id, id));
+    await db.delete(transaction).where(eq(transaction.id, id));
 
-    // トップページを再検証して、リストを更新
-    revalidatePath("/");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Delete Error:", error);

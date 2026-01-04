@@ -1,7 +1,7 @@
 import { endOfMonth, format, isWithinInterval, startOfMonth } from "date-fns";
-import type { transactions } from "@/db/schema";
+import type { transaction } from "@/db/schema";
 
-type Transaction = typeof transactions.$inferSelect;
+type Transaction = typeof transaction.$inferSelect;
 
 // 月ごとの収支推移（棒グラフ用）
 export function getMonthlyStats(data: Transaction[]) {

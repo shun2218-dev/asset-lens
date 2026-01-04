@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { getTransactions } from "@/app/actions/get-transactions";
+import { getTransaction } from "@/app/actions/get-transaction";
 import { PaginationControl } from "@/components/pagination-control";
 import { TransactionItem } from "@/components/transaction-item";
 import {
@@ -16,7 +16,7 @@ import {
 import type { SelectTransaction } from "@/db/schema";
 
 interface TransactionListProps {
-  initialTransactions: SelectTransaction[];
+  initialData: SelectTransaction[];
   initialMetadata: {
     totalPages: number;
     totalCount: number;
@@ -26,27 +26,27 @@ interface TransactionListProps {
 }
 
 export function TransactionList({
-  initialTransactions,
+  initialData,
   initialMetadata,
   currentMonth,
 }: TransactionListProps) {
   // 状態管理
-  const [transactions, setTransactions] = useState(initialTransactions);
+  const [transactions, setTransactions] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [isPending, startTransition] = useTransition();
 
   // 月が変わったらデータを初期化（リセット）
   useEffect(() => {
-    setTransactions(initialTransactions);
+    setTransactions(initialData);
     setMetadata(initialMetadata);
-  }, [initialMetadata, initialTransactions]);
+  }, [initialMetadata, initialData]);
 
   // ページ変更時の処理
   const handlePageChange = (page: number) => {
     // トランジション（読み込み中状態の管理）を開始
     startTransition(async () => {
       // サーバーアクションを直接呼び出し
-      const { data, metadata: newMeta } = await getTransactions(
+      const { data, metadata: newMeta } = await getTransaction(
         page,
         currentMonth,
       );

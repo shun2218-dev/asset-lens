@@ -32,7 +32,8 @@ import {
 
 interface TransactionItemMenuProps {
   transaction: {
-    id: number;
+    id: string;
+    userId: string;
     amount: number;
     description: string;
     category: string;
@@ -126,6 +127,7 @@ export function TransactionItemMenu({ transaction }: TransactionItemMenuProps) {
           <TransactionForm
             id={transaction.id}
             initialData={{
+              userId: transaction.userId,
               amount: transaction.amount, // 必要に応じて Math.abs(transaction.amount)
               description: transaction.description,
               category: transaction.category,
