@@ -3,7 +3,7 @@ import { getSummary } from "@/app/actions/get-summary";
 import { getTransaction } from "@/app/actions/get-transaction";
 import { CategoryPie } from "@/components/charts/category-pie";
 import { MonthlyChart } from "@/components/charts/monthly-chart";
-import { MonthSelector } from "@/components/monthly-selector";
+import { MonthSelector } from "@/components/month-selector";
 import { TransactionForm } from "@/components/transaction-form";
 import { TransactionList } from "@/components/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
