@@ -1,0 +1,1 @@
+ALTER TABLE "transaction" ALTER COLUMN "id" SET DATA TYPE text;

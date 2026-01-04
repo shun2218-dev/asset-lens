@@ -4,19 +4,19 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { db } from "@/db";
-import { transactions } from "@/db/schema";
+import { transaction } from "@/db/schema";
 import type { transactionSchema } from "@/lib/validators";
 import type { TransactionResult } from "@/types";
 
 type TransactionValues = z.infer<typeof transactionSchema>;
 
 export async function updateTransaction(
-  id: number,
+  id: string,
   data: TransactionValues,
 ): Promise<TransactionResult> {
   try {
     await db
-      .update(transactions)
+      .update(transaction)
       .set({
         amount: data.amount,
         description: data.description,
@@ -24,9 +24,9 @@ export async function updateTransaction(
         date: data.date,
         isExpense: data.isExpense,
       })
-      .where(eq(transactions.id, id));
+      .where(eq(transaction.id, id));
 
-    revalidatePath("/");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Update Error:", error);
