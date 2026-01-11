@@ -4,7 +4,8 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { SECURITY_CONFIG } from "../constants";
+import { SECURITY_CONFIG } from "@/lib/constants";
+import { sendOtpEmail } from "@/lib/email";
 
 export const auth = betterAuth({
   baseURL:
@@ -21,8 +22,8 @@ export const auth = betterAuth({
   plugins: [
     passkey(),
     emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        console.log(`[OTP] To: ${email}, Code: ${otp}, Type: ${type}`);
+      async sendVerificationOTP({ email, otp, type: _type }) {
+        await sendOtpEmail(email, otp);
       },
       otpLength: SECURITY_CONFIG.otp.length,
       expiresIn: SECURITY_CONFIG.otp.expiresIn,
