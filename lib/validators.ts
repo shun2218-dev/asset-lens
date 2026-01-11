@@ -27,7 +27,7 @@ export const signInSchema = z.object({
 
 export type SignInFormValues = z.infer<typeof signInSchema>;
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(8, "パスワードは8文字以上で入力してください")
   .max(32, "パスワードは32文字以下で入力してください")
