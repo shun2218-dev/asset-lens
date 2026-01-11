@@ -38,3 +38,10 @@ export const INCOME_CATEGORY_OPTIONS = Object.entries(
   value,
   label,
 }));
+
+export const SECURITY_CONFIG = {
+  otp: {
+    length: 6,
+    expiresIn: 300,
+  },
+};

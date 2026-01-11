@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { requireAuth } from "@/lib/auth/auth-guard";
+import { PasswordSettings } from "@/components/auth/password-settings";
 
 export default async function SettingsPage() {
   const session = await requireAuth();
@@ -50,8 +51,11 @@ export default async function SettingsPage() {
           </Card>
 
           {/* セキュリティ (Passkey) */}
-          <section id="security">
+          <section id="security" className="scroll-mt-20 space-y-6">
+            <h3 className="text-lg font-medium mb-4">セキュリティ</h3>
+
             <PasskeySettings />
+            <PasswordSettings />
           </section>
 
           {/* その他の設定セクション（例） */}
