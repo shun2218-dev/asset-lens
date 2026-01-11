@@ -1,11 +1,16 @@
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { emailOTP } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
+import { SECURITY_CONFIG } from "../constants";
 
 export const auth = betterAuth({
-  baseURL: process.env.NODE_ENV === "development" ?  "http://localhost:3000" : process.env.BETTER_AUTH_URL,
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : process.env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
@@ -13,5 +18,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [passkey()],
+  plugins: [
+    passkey(),
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        console.log(`[OTP] To: ${email}, Code: ${otp}, Type: ${type}`);
+      },
+      otpLength: SECURITY_CONFIG.otp.length,
+      expiresIn: SECURITY_CONFIG.otp.expiresIn,
+    }),
+  ],
 });

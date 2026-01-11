@@ -1,14 +1,19 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Lock } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { authClient } from "@/lib/auth/auth-client";
-import { Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
-
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,13 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { authClient } from "@/lib/auth/auth-client";
 import { passwordSchema } from "@/lib/validators";
 
 // バリデーションスキーマ
@@ -65,18 +64,23 @@ export function PasswordSettings() {
       if (error) {
         // Better Authからのエラーメッセージを表示
         toast.error("パスワードの変更に失敗しました", {
-            description: error.message === "Invalid password" ? "現在のパスワードが間違っています" : error.message
+          description:
+            error.message === "Invalid password"
+              ? "現在のパスワードが間違っています"
+              : error.message,
         });
         return;
       }
 
       toast.success("パスワードを変更しました", {
-        description: "セキュリティのため、他のデバイスからはログアウトされました。",
+        description:
+          "セキュリティのため、他のデバイスからはログアウトされました。",
       });
-      
+
       form.reset();
-    } catch (e) {
+    } catch (error) {
       toast.error("予期せぬエラーが発生しました");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -103,11 +107,7 @@ export function PasswordSettings() {
                 <FormItem>
                   <FormLabel>現在のパスワード</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
