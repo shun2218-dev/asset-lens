@@ -36,6 +36,13 @@
       "when": 1767492974009,
       "tag": "0004_free_zodiak",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768151667489,
+      "tag": "0005_famous_gideon",
+      "breakpoints": true
     }
   ]
 }

@@ -59,3 +59,19 @@ export const signUpSchema = z
   });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+export const subscriptionSchema = z.object({
+  name: z.string().min(1, "サービス名を入力してください"),
+  amount: z
+    .number({ error: "金額は数字で入力してください" })
+    .positive("金額は1以上で入力してください"),
+  billingCycle: z.enum(["monthly", "yearly"], {
+    error: "支払いサイクルを選択してください",
+  }),
+  nextPaymentDate: z.date({
+    error: "次回の支払日を選択してください",
+  }),
+  category: z.string().min(1, "カテゴリを選択してください"),
+});
+
+export type SubscriptionFormValues = z.infer<typeof subscriptionSchema>;

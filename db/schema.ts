@@ -127,11 +127,47 @@ export const passkey = pgTable(
   ],
 );
 
+export const subscription = pgTable(
+  "subscription",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(), // サービス名 (例: Netflix)
+    amount: integer("amount").notNull(),
+    currency: text("currency").default("JPY").notNull(),
+    billingCycle: text("billing_cycle").notNull(), // 'monthly' | 'yearly'
+    nextPaymentDate: timestamp("next_payment_date").notNull(), // 次回の支払日
+    category: text("category").notNull(), // 'subscription' や 'entertainment' など
+    status: text("status").default("active").notNull(), // 'active' | 'paused'
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index("subscription_userId_idx").on(table.userId)],
+);
+
+export type InsertSubscription = InferInsertModel<typeof subscription>;
+export type SelectSubscription = InferSelectModel<typeof subscription>;
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   passkeys: many(passkey),
   transactions: many(transaction),
+  subscriptions: many(subscription),
+}));
+
+export const subscriptionRelations = relations(subscription, ({ one }) => ({
+  user: one(user, {
+    fields: [subscription.userId],
+    references: [user.id],
+  }),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
