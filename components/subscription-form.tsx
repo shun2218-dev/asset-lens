@@ -97,7 +97,15 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
                     type="number"
                     placeholder="1000"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onBlur={(e) => {
+                      const value = e.target.value;
+                      field.onBlur();
+                      if (field.value === undefined) {
+                        field.onChange(0);
+                      } else {
+                        field.onChange(Number(value));
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -116,7 +124,7 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>
                   </FormControl>
@@ -163,7 +171,7 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
                       selected={field.value}
                       onSelect={field.onChange}
                       disabled={(date) => date < new Date("1900-01-01")}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -183,7 +191,7 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>
                   </FormControl>

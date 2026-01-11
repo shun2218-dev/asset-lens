@@ -1,6 +1,10 @@
-import { ChevronRight, FileText, Shield, UserCircle } from "lucide-react";
-import Link from "next/link";
+import { format } from "date-fns";
+import { CreditCard, FileText, Shield, UserCircle } from "lucide-react";
+import { getSubscription } from "@/app/actions/get-subscription";
 import { PasskeySettings } from "@/components/auth/passkey-settings";
+import { PasswordSettings } from "@/components/auth/password-settings";
+import { SubscriptionForm } from "@/components/subscription-form";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,98 +14,171 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAuth } from "@/lib/auth/auth-guard";
-import { PasswordSettings } from "@/components/auth/password-settings";
 
 export default async function SettingsPage() {
   const session = await requireAuth();
 
+  // サブスクリプション一覧を取得
+  const subscriptions = await getSubscription();
+
   return (
-    <main className="container max-w-6xl px-4 py-10 space-y-8 mx-auto min-h-screen">
+    <main className="container max-w-5xl px-4 py-10 space-y-8 mx-auto min-h-screen">
       <div>
         <h1 className="text-3xl font-bold">設定</h1>
         <p className="text-muted-foreground">
-          アカウント設定とアプリケーションの管理
+          アカウント設定とサブスクリプション管理
         </p>
       </div>
 
       <Separator />
 
-      <div className="grid gap-8 md:grid-cols-[1fr_250px] lg:grid-cols-[1fr_300px]">
-        {/* メインコンテンツエリア */}
-        <div className="space-y-6">
-          {/* プロフィール簡易表示（編集機能は別途作る想定） */}
+      <Tabs defaultValue="account" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 lg:w-100">
+          <TabsTrigger value="account">アカウント</TabsTrigger>
+          <TabsTrigger value="subscription">サブスクリプション</TabsTrigger>
+        </TabsList>
+
+        {/* --- タブ1: アカウント設定 (既存機能を移動) --- */}
+        <TabsContent value="account" className="space-y-6">
+          {/* プロフィール */}
           <Card>
             <CardHeader>
-              <CardTitle>プロフィール</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <UserCircle className="h-5 w-5" />
+                プロフィール
+              </CardTitle>
               <CardDescription>基本情報の確認</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid grid-cols-3 text-sm">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                 <span className="font-medium text-muted-foreground">名前</span>
-                <span className="col-span-2">{session.user.name}</span>
+                <span className="md:col-span-2 font-medium">
+                  {session.user.name}
+                </span>
               </div>
-              <div className="grid grid-cols-3 text-sm">
+              <Separator />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                 <span className="font-medium text-muted-foreground">
                   メール
                 </span>
-                <span className="col-span-2">{session.user.email}</span>
+                <span className="md:col-span-2 font-medium">
+                  {session.user.email}
+                </span>
               </div>
             </CardContent>
           </Card>
 
-          {/* セキュリティ (Passkey) */}
-          <section id="security" className="scroll-mt-20 space-y-6">
-            <h3 className="text-lg font-medium mb-4">セキュリティ</h3>
-
+          {/* セキュリティ */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-medium">セキュリティ</h3>
+            </div>
             <PasskeySettings />
             <PasswordSettings />
           </section>
 
-          {/* その他の設定セクション（例） */}
+          {/* データ管理 */}
           <Card>
             <CardHeader>
-              <CardTitle>データ管理</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                データ管理
+              </CardTitle>
               <CardDescription>エクスポートやリセット</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <Button variant="outline" className="justify-start" disabled>
+            <CardContent>
+              <Button variant="outline" disabled>
                 <FileText className="mr-2 h-4 w-4" />
                 データをCSVでエクスポート (準備中)
               </Button>
             </CardContent>
           </Card>
-        </div>
+        </TabsContent>
 
-        {/* サイドバーナビゲーション (ページ内リンクまたは別ページへのリンク) */}
-        <aside className="hidden md:block">
-          <nav className="flex flex-col gap-2 sticky top-24">
-            <h3 className="font-semibold mb-2 px-2">メニュー</h3>
+        {/* --- タブ2: サブスクリプション管理 (新規追加) --- */}
+        <TabsContent value="subscription" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-7">
+            {/* 左側: 登録フォーム (3カラム分) */}
+            <div className="lg:col-span-3">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    新規登録
+                  </CardTitle>
+                  <CardDescription>
+                    定期支払いのサービスを登録します
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SubscriptionForm />
+                </CardContent>
+              </Card>
+            </div>
 
-            <Link href="/profile">
-              <Button variant="ghost" className="w-full justify-start">
-                <UserCircle className="mr-2 h-4 w-4" />
-                プロフィール詳細
-              </Button>
-            </Link>
-
-            <Link href="/settings#security">
-              <Button variant="ghost" className="w-full justify-start">
-                <Shield className="mr-2 h-4 w-4" />
-                セキュリティ
-              </Button>
-            </Link>
-
-            <Link href="/transactions">
-              <Button variant="ghost" className="w-full justify-start">
-                <FileText className="mr-2 h-4 w-4" />
-                取引管理へ
-                <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
-              </Button>
-            </Link>
-          </nav>
-        </aside>
-      </div>
+            {/* 右側: 一覧リスト (4カラム分) */}
+            <div className="lg:col-span-4">
+              <Card className="h-full border-dashed lg:border-solid">
+                <CardHeader>
+                  <CardTitle>登録済みリスト</CardTitle>
+                  <CardDescription>
+                    登録中のサブスクリプション一覧
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {subscriptions.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
+                      <CreditCard className="h-10 w-10 mb-2 opacity-20" />
+                      <p>登録されているサブスクリプションはありません</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {subscriptions.map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="flex items-center justify-between p-4 border rounded-lg bg-card shadow-sm"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">{sub.name}</span>
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] px-1.5 h-5"
+                              >
+                                {sub.billingCycle === "monthly"
+                                  ? "月額"
+                                  : "年額"}
+                              </Badge>
+                            </div>
+                            <div className="text-xs text-muted-foreground flex gap-2">
+                              <span>
+                                次回:{" "}
+                                {format(sub.nextPaymentDate, "yyyy/MM/dd")}
+                              </span>
+                              <span className="text-muted-foreground/50">
+                                |
+                              </span>
+                              <span>{sub.category}</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-lg">
+                              ¥{sub.amount.toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }
