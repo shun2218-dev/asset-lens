@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { type SignInFormValues, signInSchema } from "@/lib/validators";
+import Link from "next/link";
 
 export function SignInForm() {
   const { signInWithEmail, isLoading, error } = useAuth();
@@ -64,6 +66,14 @@ export function SignInForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>パスワード</FormLabel>
+              <FormDescription>
+                <Link
+                  href="/forget-password"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  パスワードを忘れた場合
+                </Link>
+              </FormDescription>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
