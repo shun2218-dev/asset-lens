@@ -1,17 +1,33 @@
 "use server";
 
 import { format } from "date-fns";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { db } from "@/db";
 import { transaction } from "@/db/schema";
+import { auth } from "@/lib/auth/auth";
 
 export async function getSummary(month?: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      currentMonth: format(new Date(), "yyyy-MM"),
+      summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+      categoryStats: [],
+      monthlyStats: [],
+    };
+  }
+
   try {
     // グラフ用なので全件取得（limitなし）
     // 必要なら where で「今年だけ」などに絞ることも可能
     const allTransactions = await db
       .select()
       .from(transaction)
+      .where(eq(transaction.userId, session.user.id))
       .orderBy(desc(transaction.date));
 
     const targetMonth = month || format(new Date(), "yyyy-MM");
