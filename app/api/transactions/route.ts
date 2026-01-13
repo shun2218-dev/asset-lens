@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
@@ -69,6 +69,54 @@ export async function POST(req: Request) {
       .returning();
 
     return NextResponse.json(newTransaction[0]);
+  } catch (error) {
+    console.error("API Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+// DELETE: 取引の削除
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // URLからIDを取得
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Transaction ID is required" },
+        { status: 400 },
+      );
+    }
+
+    // DBから削除 (自分のデータであること、かつIDが一致すること)
+    // ※ AND条件にすることで、他人のデータを消せないようにしています
+    const deleted = await db
+      .delete(transaction)
+      .where(
+        and(eq(transaction.id, id), eq(transaction.userId, session.user.id)),
+      )
+      .returning();
+
+    if (deleted.length === 0) {
+      return NextResponse.json(
+        { error: "Transaction not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(
