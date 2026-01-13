@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth/auth";
 // GET: 取引一覧の取得
 export async function GET(_req: Request) {
   try {
-    // 1. セッションチェック (iOSからのリクエストもCookieで認証されます)
+    // 1. セッションチェック (iOSからのリクエストもCookieで認証)
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -23,7 +23,7 @@ export async function GET(_req: Request) {
       .from(transaction)
       .where(eq(transaction.userId, session.user.id))
       .orderBy(desc(transaction.date))
-      .limit(50); // 一旦50件取得とします
+      .limit(50); // 一旦50件取得
 
     return NextResponse.json(data);
   } catch (error) {
@@ -64,11 +64,64 @@ export async function POST(req: Request) {
         description,
         isExpense,
         category,
-        date: new Date(date), // 文字列をDate型に変換
+        date: new Date(date),
       })
       .returning();
 
     return NextResponse.json(newTransaction[0]);
+  } catch (error) {
+    console.error("API Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+// PUT: 取引の更新
+export async function PUT(req: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { id, amount, description, isExpense, category, date } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Transaction ID is required" },
+        { status: 400 },
+      );
+    }
+
+    // 更新実行 (自分のデータかつIDが一致するもの)
+    const updated = await db
+      .update(transaction)
+      .set({
+        amount,
+        description,
+        isExpense,
+        category,
+        date: new Date(date), // 日付の変換
+      })
+      .where(
+        and(eq(transaction.id, id), eq(transaction.userId, session.user.id)),
+      )
+      .returning();
+
+    if (updated.length === 0) {
+      return NextResponse.json(
+        { error: "Transaction not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(updated[0]);
   } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(
@@ -101,7 +154,7 @@ export async function DELETE(req: Request) {
     }
 
     // DBから削除 (自分のデータであること、かつIDが一致すること)
-    // ※ AND条件にすることで、他人のデータを消せないようにしています
+    // ※ AND条件にすることで、他人のデータを消さない
     const deleted = await db
       .delete(transaction)
       .where(
