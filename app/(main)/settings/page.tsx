@@ -3,9 +3,11 @@ import { CreditCard, FileText, Shield, UserCircle } from "lucide-react";
 import { getSubscription } from "@/app/actions/get-subscription";
 import { PasskeySettings } from "@/components/auth/passkey-settings";
 import { PasswordSettings } from "@/components/auth/password-settings";
+import { ExportButton } from "@/components/settings/export-button";
+import { ImportButton } from "@/components/settings/import-button";
 import { SubscriptionForm } from "@/components/subscription-form";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -87,13 +89,13 @@ export default async function SettingsPage() {
                 <FileText className="h-5 w-5" />
                 データ管理
               </CardTitle>
-              <CardDescription>エクスポートやリセット</CardDescription>
+              <CardDescription>データの入出力</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled>
-                <FileText className="mr-2 h-4 w-4" />
-                データをCSVでエクスポート (準備中)
-              </Button>
+              <CardContent className="flex flex-wrap gap-4">
+                <ExportButton />
+                <ImportButton />
+              </CardContent>
             </CardContent>
           </Card>
         </TabsContent>

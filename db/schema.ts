@@ -7,14 +7,24 @@ import {
   pgTable,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
+
+export const category = pgTable("category", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(), // 表示名 (例: "食費")
+  slug: text("slug").notNull(), // 内部識別用キー (例: "food") ※アイコン判定などに使用
+  type: text("type").default("expense").notNull(), // "expense" | "income"
+  userId: text("userId").references(() => user.id, { onDelete: "cascade" }), // nullの場合は「システム共通カテゴリ」
+  sortOrder: integer("sort_order").default(0), // 表示順
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const transaction = pgTable(
   "transaction",
   {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
+    id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
@@ -23,7 +33,9 @@ export const transaction = pgTable(
     date: timestamp("date").defaultNow().notNull(),
     isExpense: boolean("is_expense").default(true).notNull(), // true=支出, false=収入
     category: text("category").notNull(), // 初期は単純なテキスト、将来的に別テーブル化も検討
+    categoryId: uuid("category_id").references(() => category.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [index("transactions_userId_idx").on(table.userId)],
 );
@@ -154,6 +166,17 @@ export const subscription = pgTable(
 
 export type InsertSubscription = InferInsertModel<typeof subscription>;
 export type SelectSubscription = InferSelectModel<typeof subscription>;
+
+export const categoryRelations = relations(category, ({ many }) => ({
+  transactions: many(transaction),
+}));
+
+export const transactionRelations = relations(transaction, ({ one }) => ({
+  categoryData: one(category, {
+    fields: [transaction.categoryId],
+    references: [category.id],
+  }),
+}));
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
