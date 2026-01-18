@@ -1,18 +1,20 @@
 import { format } from "date-fns";
-import { getSummary } from "@/app/actions/get-summary";
-import { getTransaction } from "@/app/actions/get-transaction";
-import { CategoryPie } from "@/components/charts/category-pie";
-import { MonthlyChart } from "@/components/charts/monthly-chart";
-import { MonthSelector } from "@/components/month-selector";
-import { TransactionForm } from "@/components/transaction-form";
-import { TransactionList } from "@/components/transaction-list";
+import { getSummary } from "@/app/actions/analysis/get-summary";
+import { getTransaction } from "@/app/actions/transaction/get";
+import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
+import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
+import { MonthSelector } from "@/components/features/dashboard/month-selector";
+import { TransactionForm } from "@/components/features/transaction/transaction-form";
+import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DashboardPageProps {
   searchParams: { month?: string };
 }
 
-export default async function Dashboard({ searchParams }: DashboardPageProps) {
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
   const params = await searchParams;
   const initialPage = 1;
   const now = new Date();

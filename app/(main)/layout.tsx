@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { requireAuth } from "@/lib/auth/auth-guard";
+import { requireAuth } from "@/lib/auth/guard";
 
 type RequireAuthLayoutProps = {
   children: ReactNode;

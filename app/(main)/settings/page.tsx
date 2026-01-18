@@ -1,11 +1,11 @@
 import { format } from "date-fns";
 import { CreditCard, FileText, Shield, UserCircle } from "lucide-react";
-import { getSubscription } from "@/app/actions/get-subscription";
-import { PasskeySettings } from "@/components/auth/passkey-settings";
-import { PasswordSettings } from "@/components/auth/password-settings";
-import { ExportButton } from "@/components/settings/export-button";
-import { ImportButton } from "@/components/settings/import-button";
-import { SubscriptionForm } from "@/components/subscription-form";
+import { getSubscription } from "@/app/actions/subscription/get";
+import { PasskeySettings } from "@/components/features/auth/passkey-settings";
+import { PasswordSettings } from "@/components/features/auth/password-settings";
+import { ExportButton } from "@/components/features/settings/export-button";
+import { ImportButton } from "@/components/features/settings/import-button";
+import { SubscriptionForm } from "@/components/features/subscription/subscription-form";
 import { Badge } from "@/components/ui/badge";
 // import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { requireAuth } from "@/lib/auth/auth-guard";
+import { requireAuth } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
   const session = await requireAuth();

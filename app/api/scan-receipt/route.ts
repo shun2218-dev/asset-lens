@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { analyzeImage } from "@/lib/analyze-service";
-import { auth } from "@/lib/auth/auth";
+import { analyzeImage } from "@/lib/analysis/reciept-parser";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
