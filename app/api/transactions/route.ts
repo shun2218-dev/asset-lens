@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { transaction } from "@/db/schema";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/lib/auth";
 
 // GET: 取引一覧の取得
 export async function GET(_req: Request) {

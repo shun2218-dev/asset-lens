@@ -7,7 +7,7 @@ import {
   signOut,
   signUp,
   useSession,
-} from "@/lib/auth/auth-client";
+} from "@/lib/auth/client";
 
 type SignInWithEmailDto = {
   email: string;
