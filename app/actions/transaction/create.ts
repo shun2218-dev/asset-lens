@@ -1,9 +1,10 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
+import { category, transaction } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import {
   type TransactionFormValues,
@@ -29,11 +30,23 @@ export async function createTransaction(
   }
 
   try {
+    // カテゴリ情報を取得
+    const [categoryData] = await db
+      .select()
+      .from(category)
+      .where(eq(category.id, parsed.data.category))
+      .limit(1);
+
+    if (!categoryData) {
+      return { success: false, error: "カテゴリが見つかりません" };
+    }
+
     await db.insert(transaction).values({
       userId: session.user.id,
       amount: parsed.data.amount,
       description: parsed.data.description,
-      category: parsed.data.category,
+      category: categoryData.slug, // Legacy column: use slug
+      categoryId: parsed.data.category, // New column: use UUID
       date: parsed.data.date,
       isExpense: parsed.data.isExpense,
     });

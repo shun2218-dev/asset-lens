@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { getCategories } from "@/app/actions/category/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 
@@ -15,7 +16,10 @@ export default async function TransactionPage({
   const defaultMonth = format(now, "yyyy-MM");
   const currentMonth = params.month || defaultMonth;
   // データ取得
-  const transactionsData = await getTransaction(initialPage, currentMonth);
+  const [transactionsData, categories] = await Promise.all([
+    getTransaction(initialPage, currentMonth), // リスト用 (10件)
+    getCategories(), // カテゴリ一覧
+  ]);
 
   const { data: transactions, metadata } = transactionsData;
   return (
@@ -31,6 +35,7 @@ export default async function TransactionPage({
         initialData={transactions}
         initialMetadata={metadata}
         currentMonth={currentMonth}
+        categories={categories}
       />
     </main>
   );

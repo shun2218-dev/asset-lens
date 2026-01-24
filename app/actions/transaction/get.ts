@@ -4,7 +4,7 @@ import { addMonths, parse } from "date-fns";
 import { and, count, desc, eq, gte, lt, type SQL } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
+import { category, transaction } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
@@ -37,13 +37,22 @@ export async function getTransaction(page: number = 1, month?: string) {
     }
 
     // データ取得 (最新順、10件、指定位置から)
-    const data = await db
-      .select()
+    const rows = await db
+      .select({
+        t: transaction,
+        c: category,
+      })
       .from(transaction)
+      .leftJoin(category, eq(transaction.categoryId, category.id))
       .where(whereCondition)
       .orderBy(desc(transaction.date))
       .limit(PAGE_SIZE)
       .offset(offset);
+
+    const data = rows.map(({ t, c }) => ({
+      ...t,
+      category: c?.slug ?? t.category, // Relation priority, fallback to legacy
+    }));
 
     // 総件数の取得
     // count() は [{ count: 123 }] のような配列を返す

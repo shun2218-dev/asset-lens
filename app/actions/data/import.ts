@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import Papa from "papaparse";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
+import { category, transaction } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { EXPENSE_CATEGORY_LABELS } from "@/lib/constants";
 
@@ -49,17 +49,27 @@ export async function importData(formData: FormData) {
 
   try {
     // 2. 既存データの取得 (重複チェック用)
-    // 全件取得してメモリ上でチェックする
-    const existingTransactions = await db
-      .select()
-      .from(transaction)
-      .where(eq(transaction.userId, session.user.id));
+    const [existingTransactions, allCategories] = await Promise.all([
+      db
+        .select()
+        .from(transaction)
+        .where(eq(transaction.userId, session.user.id)),
+      db.select().from(category),
+    ]);
 
-    // 重複判定用の署名セットを作成 (日付_金額_内容_カテゴリ)
+    // カテゴリのマッピング用 (Label -> Slug -> ID, or Label -> ID direct if name matches?)
+    // CONSTANTS mapping defines: "食費" -> "food". "food" is the slug.
+    // We need to find the category where slug === "food".
+    
+    const categorySlugToIdMap = new Map<string, string>();
+    allCategories.forEach((c) => {
+      categorySlugToIdMap.set(c.slug, c.id);
+    });
+
     const existingSignatures = new Set(
       existingTransactions.map(
         (t) =>
-          `${format(t.date, "yyyy-MM-dd")}_${t.amount}_${t.description}_${t.category}`,
+          `${format(t.date, "yyyy-MM-dd")}_${t.amount}_${t.description}_${t.category}`, // strict signature might need checking
       ),
     );
 
@@ -73,13 +83,29 @@ export async function importData(formData: FormData) {
 
       if (!dateStr || !amountStr) continue;
 
-      // カテゴリIDの特定 (一致しなければ "other")
-      const categoryId = CATEGORY_LABEL_TO_ID[categoryLabel] || "other";
+      // 1. Label ("食費") -> Slug ("food")
+      const slug = CATEGORY_LABEL_TO_ID[categoryLabel] || "other";
+      
+      // 2. Slug ("food") -> ID (UUID)
+      // もしDBにそのslugがない場合は "other" のIDを探す、それもなければ...
+      let categoryId = categorySlugToIdMap.get(slug);
+
+      // fallback to 'other' category if not found
+      if (!categoryId && slug !== "other") {
+        categoryId = categorySlugToIdMap.get("other");
+      }
+
+      // If still no categoryId (e.g. even 'other' is missing), we might have a problem.
+      // For now, assume 'other' exists or we skip/error. 
+      // strict schema says categoryId is nullable? No, schema says reference.
+      // But transaction.categoryId is nullable reference. 
+      // legacy category is not null.
+
       const isExpense = typeLabel === "支出";
       const amount = parseInt(amountStr.replace(/,/g, ""), 10); // カンマ除去
 
-      // 重複チェック
-      const signature = `${dateStr}_${amount}_${description}_${categoryId}`;
+      // 重複チェック (legacy signature check uses slug in 'category' field)
+      const signature = `${dateStr}_${amount}_${description}_${slug}`;
       if (existingSignatures.has(signature)) {
         skippedCount++;
         continue;
@@ -90,7 +116,8 @@ export async function importData(formData: FormData) {
         date: new Date(dateStr),
         description: description || "使途不明",
         amount: amount,
-        category: categoryId,
+        category: slug, // Legacy column
+        categoryId: categoryId || null, // New column
         isExpense: isExpense,
       });
     }

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { scanReceipt } from "@/app/actions/analysis/scan-receipt";
 import { createTransaction } from "@/app/actions/transaction/create";
 import { updateTransaction } from "@/app/actions/transaction/update";
+import { CategorySelect } from "@/components/features/category/category-select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui//tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,19 +27,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { SelectCategory } from "@/db/schema";
 import { useSession } from "@/lib/auth/client";
-import {
-  EXPENSE_CATEGORY_OPTIONS,
-  INCOME_CATEGORY_OPTIONS,
-} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
   type TransactionFormValues,
@@ -64,6 +54,7 @@ interface TransactionFormProps {
 export function TransactionForm({
   initialData,
   id,
+  categories,
   onSuccess,
   onCancel,
 }: TransactionFormProps) {
@@ -84,9 +75,6 @@ export function TransactionForm({
   });
 
   const isExpense = form.watch("isExpense");
-  const currentCategoryOptions = isExpense
-    ? EXPENSE_CATEGORY_OPTIONS
-    : INCOME_CATEGORY_OPTIONS;
 
   const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,10 +134,24 @@ export function TransactionForm({
 
   async function onSubmit(data: TransactionFormValues) {
     try {
+      // 日付をUTCの0時0分0秒に補正して送信する
+      // これにより、サーバー側(UTC)での日付ズレを防ぐ
+      // 例: JST 1/25 00:00 -> UTC 1/24 15:00 -> DB 1/24 (×)
+      // 補正後: UTC 1/25 00:00 -> DB 1/25 (○)
+      const normalizedDate = new Date(
+        Date.UTC(
+          data.date.getFullYear(),
+          data.date.getMonth(),
+          data.date.getDate(),
+        ),
+      );
+
+      const payload = { ...data, date: normalizedDate };
+
       let result: TransactionResult;
       if (id) {
         // 編集
-        result = await updateTransaction(id, data);
+        result = await updateTransaction(id, payload);
         if (result.success) {
           toast.success("更新しました");
           onSuccess?.();
@@ -158,7 +160,7 @@ export function TransactionForm({
         }
       } else {
         // 新規登録
-        const result = await createTransaction(data);
+        const result = await createTransaction(payload);
         if (result.success) {
           form.reset({
             userId: "dummy-user-id",
@@ -328,20 +330,12 @@ export function TransactionForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>カテゴリ</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="カテゴリを選択" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {currentCategoryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CategorySelect
+                value={field.value}
+                onChange={field.onChange}
+                categories={categories}
+                currentType={isExpense ? "expense" : "income"}
+              />
               <FormMessage />
             </FormItem>
           )}
