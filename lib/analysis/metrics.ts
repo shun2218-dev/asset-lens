@@ -29,8 +29,10 @@ export function calculateCategoryBreakdown(data: Transaction[]) {
   data
     .filter((t) => t.isExpense)
     .forEach((t) => {
-      const current = stats.get(t.category) || 0;
-      stats.set(t.category, current + t.amount);
+      // categoryIdがあればそれを使う、なければcategory (slug/legacy) を使う
+      const key = t.categoryId || t.category;
+      const current = stats.get(key) || 0;
+      stats.set(key, current + t.amount);
     });
 
   return Array.from(stats.entries())

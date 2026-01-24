@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SelectTransaction } from "@/db/schema";
+import type { SelectCategory, SelectTransaction } from "@/db/schema";
 
 interface TransactionListProps {
   initialData: SelectTransaction[];
@@ -23,12 +23,14 @@ interface TransactionListProps {
     currentPage: number;
   };
   currentMonth: string;
+  categories: SelectCategory[];
 }
 
 export function TransactionList({
   initialData,
   initialMetadata,
   currentMonth,
+  categories,
 }: TransactionListProps) {
   // 状態管理
   const [transactions, setTransactions] = useState(initialData);
@@ -75,7 +77,7 @@ export function TransactionList({
         </TableHeader>
         <TableBody>
           {transactions.map((t) => (
-            <TransactionItem data={t} key={t.id} />
+            <TransactionItem data={t} key={t.id} categories={categories} />
           ))}
           {transactions.length === 0 && (
             <TableRow>

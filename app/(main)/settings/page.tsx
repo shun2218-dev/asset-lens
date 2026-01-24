@@ -20,10 +20,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAuth } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
-  const session = await requireAuth();
-
-  // サブスクリプション一覧を取得
-  const subscriptions = await getSubscription();
+  const [session, subscriptions] = await Promise.all([
+    requireAuth(),
+    getSubscription(), // サブスクリプション一覧を取得
+  ]);
 
   return (
     <main className="container max-w-5xl px-4 py-10 space-y-8 mx-auto min-h-screen">

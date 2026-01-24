@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { getSummary } from "@/app/actions/analysis/get-summary";
+import { getCategories } from "@/app/actions/category/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
@@ -21,9 +22,10 @@ export default async function DashboardPage({
   const defaultMonth = format(now, "yyyy-MM");
   const currentMonth = params.month || defaultMonth;
 
-  const [transactionsData, summaryData] = await Promise.all([
+  const [transactionsData, summaryData, categories] = await Promise.all([
     getTransaction(initialPage, currentMonth), // リスト用 (10件)
     getSummary(currentMonth), // グラフ・集計用 (全件集計)
+    getCategories(), // カテゴリ一覧
   ]);
 
   const { data: transactions, metadata } = transactionsData;
@@ -43,9 +45,29 @@ export default async function DashboardPage({
   }));
 
   // CategoryPie: { category, amount } -> { name, value }
-  const pieData = categoryStats.map((stat) => ({
-    name: stat.category,
-    value: stat.amount,
+  // CategoryPie: { category, amount } -> { name, value }
+  const rawPieData = categoryStats.map((stat) => {
+    const categoryName =
+      categories.find((c) => c.id === stat.category || c.slug === stat.category)
+        ?.name ??
+      stat.category ??
+      "不明";
+    return {
+      name: categoryName,
+      value: stat.amount,
+    };
+  });
+
+  // 名前で集約して重複を排除
+  const pieDataMap = new Map<string, number>();
+  rawPieData.forEach((item) => {
+    const current = pieDataMap.get(item.name) || 0;
+    pieDataMap.set(item.name, current + item.value);
+  });
+
+  const pieData = Array.from(pieDataMap.entries()).map(([name, value]) => ({
+    name,
+    value,
   }));
 
   return (
@@ -103,7 +125,7 @@ export default async function DashboardPage({
               <CardTitle>新規入力</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm />
+              <TransactionForm categories={categories} />
             </CardContent>
           </Card>
         </div>
@@ -119,6 +141,7 @@ export default async function DashboardPage({
                 initialData={transactions}
                 initialMetadata={metadata}
                 currentMonth={currentMonth}
+                categories={categories}
               />
             </CardContent>
           </Card>

@@ -1,25 +1,27 @@
 import { format } from "date-fns";
 import { TableCell, TableRow } from "@/components/ui/table";
-import type { SelectTransaction } from "@/db/schema";
-import {
-  EXPENSE_CATEGORY_LABELS,
-  INCOME_CATEGORY_LABELS,
-} from "@/lib/constants";
+import type { SelectCategory, SelectTransaction } from "@/db/schema";
 import { TransactionItemMenu } from "./transaction-item-menu";
 
 interface TransactionItemProps {
   data: SelectTransaction;
+  categories: SelectCategory[];
 }
 
-export function TransactionItem({ data }: TransactionItemProps) {
+export function TransactionItem({ data, categories }: TransactionItemProps) {
   return (
     <TableRow key={data.id}>
       <TableCell>{format(data.date, "MM/dd")}</TableCell>
       <TableCell>{data.description}</TableCell>
       <TableCell>
-        {data.isExpense
-          ? EXPENSE_CATEGORY_LABELS[data.category]
-          : INCOME_CATEGORY_LABELS[data.category]}
+        {
+          categories.find(
+            (c) =>
+              c.id === data.categoryId ||
+              c.slug === data.category ||
+              c.id === data.category,
+          )?.name
+        }
       </TableCell>
       <TableCell
         className={`text-right ${data.isExpense ? "text-red-500" : "text-green-500"}`}
@@ -27,7 +29,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
         {data.isExpense ? "-" : "+"}¥{data.amount.toLocaleString()}
       </TableCell>
       <TableCell>
-        <TransactionItemMenu transaction={data} />
+        <TransactionItemMenu transaction={data} categories={categories} />
       </TableCell>
     </TableRow>
   );

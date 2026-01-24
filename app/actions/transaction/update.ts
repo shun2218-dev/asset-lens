@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
+import { category, transaction } from "@/db/schema";
 import type { transactionSchema } from "@/lib/validators";
 import type { TransactionResult } from "@/types";
 
@@ -15,12 +15,24 @@ export async function updateTransaction(
   data: TransactionValues,
 ): Promise<TransactionResult> {
   try {
+    // カテゴリ情報を取得
+    const [categoryData] = await db
+      .select()
+      .from(category)
+      .where(eq(category.id, data.category))
+      .limit(1);
+
+    if (!categoryData) {
+      return { success: false, error: "カテゴリが見つかりません" };
+    }
+
     await db
       .update(transaction)
       .set({
         amount: data.amount,
         description: data.description,
-        category: data.category,
+        category: categoryData.slug, // Legacy column: use slug
+        categoryId: data.category, // New column: use UUID
         date: data.date,
         isExpense: data.isExpense,
       })
