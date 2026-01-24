@@ -2,6 +2,7 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  date,
   index,
   integer,
   pgTable,
@@ -17,9 +18,11 @@ export const category = pgTable("category", {
   type: text("type").default("expense").notNull(), // "expense" | "income"
   userId: text("userId").references(() => user.id, { onDelete: "cascade" }), // nullの場合は「システム共通カテゴリ」
   sortOrder: integer("sort_order").default(0), // 表示順
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
 });
+
+export type SelectCategory = typeof category.$inferSelect;
 
 export const transaction = pgTable(
   "transaction",
@@ -30,12 +33,15 @@ export const transaction = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     amount: integer("amount").notNull(), // セント単位や円単位など、整数管理推奨
     description: text("description").notNull(),
-    date: timestamp("date").defaultNow().notNull(),
+    date: date("date", { mode: "date" }).defaultNow().notNull(),
     isExpense: boolean("is_expense").default(true).notNull(), // true=支出, false=収入
     category: text("category").notNull(), // 初期は単純なテキスト、将来的に別テーブル化も検討
     categoryId: uuid("category_id").references(() => category.id),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
   },
   (table) => [index("transactions_userId_idx").on(table.userId)],
 );
@@ -50,8 +56,8 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+  createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -61,10 +67,10 @@ export const session = pgTable(
   "session",
   {
     id: text("id").primaryKey(),
-    expiresAt: timestamp("expires_at").notNull(),
+    expiresAt: timestamp("expires_at", { precision: 0, withTimezone: true }).notNull(),
     token: text("token").notNull().unique(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
     ipAddress: text("ip_address"),
@@ -88,12 +94,12 @@ export const account = pgTable(
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
-    accessTokenExpiresAt: timestamp("access_token_expires_at"),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { precision: 0, withTimezone: true }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { precision: 0, withTimezone: true }),
     scope: text("scope"),
     password: text("password"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
@@ -106,9 +112,9 @@ export const verification = pgTable(
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    expiresAt: timestamp("expires_at", { precision: 0, withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
@@ -130,7 +136,7 @@ export const passkey = pgTable(
     deviceType: text("device_type").notNull(),
     backedUp: boolean("backed_up").notNull(),
     transports: text("transports"),
-    createdAt: timestamp("created_at"),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }),
     aaguid: text("aaguid"),
   },
   (table) => [
@@ -152,11 +158,11 @@ export const subscription = pgTable(
     amount: integer("amount").notNull(),
     currency: text("currency").default("JPY").notNull(),
     billingCycle: text("billing_cycle").notNull(), // 'monthly' | 'yearly'
-    nextPaymentDate: timestamp("next_payment_date").notNull(), // 次回の支払日
+    nextPaymentDate: timestamp("next_payment_date", { precision: 0, withTimezone: true }).notNull(), // 次回の支払日
     category: text("category").notNull(), // 'subscription' や 'entertainment' など
     status: text("status").default("active").notNull(), // 'active' | 'paused'
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
