@@ -18,10 +18,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import type { authClient } from "@/lib/auth/client";
+import { authClient, client } from "@/lib/auth/client";
 
 interface LoggedInViewProps {
-  session: typeof authClient.$Infer.Session;
+  session: typeof client.$Infer.Session;
 }
 
 export function LoggedInView({ session }: LoggedInViewProps) {
