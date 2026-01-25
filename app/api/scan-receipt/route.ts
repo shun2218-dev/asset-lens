@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { analyzeImage } from "@/lib/analyze-service";
-import { auth } from "@/lib/auth/auth";
+import { parseReceipt } from "@/lib/analysis/reciept-parser";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     // 3. 共通処理を呼び出す (iOSからの画像は通常jpegかpng)
-    const result = await analyzeImage(image, "image/jpeg");
+    const result = await parseReceipt(image, "image/jpeg");
 
     return NextResponse.json(result);
   } catch (error) {

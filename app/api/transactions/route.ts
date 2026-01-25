@@ -2,8 +2,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
-import { auth } from "@/lib/auth/auth";
+import { category, transaction } from "@/db/schema";
+import { auth } from "@/lib/auth";
 
 // GET: 取引一覧の取得
 export async function GET(_req: Request) {
@@ -18,12 +18,21 @@ export async function GET(_req: Request) {
     }
 
     // 2. DBからデータ取得 (ログインユーザーのデータのみ)
-    const data = await db
-      .select()
+    const rows = await db
+      .select({
+        t: transaction,
+        c: category,
+      })
       .from(transaction)
+      .leftJoin(category, eq(transaction.categoryId, category.id))
       .where(eq(transaction.userId, session.user.id))
       .orderBy(desc(transaction.date))
       .limit(50); // 一旦50件取得
+
+    const data = rows.map(({ t, c }) => ({
+      ...t,
+      category: c?.slug ?? t.category, // Relation priority
+    }));
 
     return NextResponse.json(data);
   } catch (error) {
@@ -48,11 +57,22 @@ export async function POST(req: Request) {
 
     // ボディからJSONを受け取る
     const body = await req.json();
-    const { amount, description, isExpense, category, date } = body;
+    const { amount, description, isExpense, category: categoryId, date } = body;
 
     // バリデーション (簡易)
-    if (typeof amount !== "number" || !description || !category) {
+    if (typeof amount !== "number" || !description || !categoryId) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    }
+
+    // カテゴリ情報を取得
+    const [categoryData] = await db
+      .select()
+      .from(category)
+      .where(eq(category.id, categoryId))
+      .limit(1);
+
+    if (!categoryData) {
+      return NextResponse.json({ error: "Category not found" }, { status: 400 });
     }
 
     // DBに保存
@@ -63,7 +83,8 @@ export async function POST(req: Request) {
         amount,
         description,
         isExpense,
-        category,
+        category: categoryData.slug, // Legacy
+        categoryId,
         date: new Date(date),
       })
       .returning();
@@ -90,13 +111,31 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, amount, description, isExpense, category, date } = body;
+    const {
+      id,
+      amount,
+      description,
+      isExpense,
+      category: categoryId,
+      date,
+    } = body;
 
     if (!id) {
       return NextResponse.json(
         { error: "Transaction ID is required" },
         { status: 400 },
       );
+    }
+
+    // カテゴリ情報を取得
+    const [categoryData] = await db
+      .select()
+      .from(category)
+      .where(eq(category.id, categoryId))
+      .limit(1);
+
+    if (!categoryData) {
+      return NextResponse.json({ error: "Category not found" }, { status: 400 });
     }
 
     // 更新実行 (自分のデータかつIDが一致するもの)
@@ -106,7 +145,8 @@ export async function PUT(req: Request) {
         amount,
         description,
         isExpense,
-        category,
+        category: categoryData.slug, // Legacy
+        categoryId,
         date: new Date(date), // 日付の変換
       })
       .where(

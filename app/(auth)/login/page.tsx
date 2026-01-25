@@ -1,6 +1,6 @@
-import { PasskeyAuth } from "@/components/auth/passkey-auth";
+import { PasskeyAuth } from "@/components/features/auth/passkey-auth";
 
-import { requireGuest } from "@/lib/auth/auth-guard";
+import { requireGuest } from "@/lib/auth/guard";
 
 export default async function LoginPage() {
   await requireGuest();

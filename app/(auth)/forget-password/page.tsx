@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ForgetPasswordForm } from "@/components/auth/forget-password-form";
+import { ForgetPasswordForm } from "@/components/features/auth/forget-password-form";
 
 export const metadata: Metadata = {
   title: "パスワードのリセット | AssetLens",

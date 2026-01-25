@@ -2,8 +2,8 @@ import { ArrowRight, BarChart3, Fingerprint, Zap } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/lib/auth/auth";
-import { requireGuest } from "@/lib/auth/auth-guard";
+import { auth } from "@/lib/auth";
+import { requireGuest } from "@/lib/auth/guard";
 
 export default async function LandingPage() {
   // サーバーサイドでセッションを取得してボタンを出し分ける
