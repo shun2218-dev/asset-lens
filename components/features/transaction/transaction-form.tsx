@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Camera, Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { scanReceipt } from "@/app/actions/analysis/scan-receipt";
@@ -182,7 +182,18 @@ export function TransactionForm({
     }
   }
 
-  if (!session) return null;
+  /*
+   * ハイドレーションミスマッチを防ぐため、マウントされるまではnullを返す
+   * サーバー側ではsessionが取得できずnullになる可能性があるが、
+   * クライアント側ですぐにsessionが取得できた場合に不整合が起きるため
+   */
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !session) return null;
 
   return (
     <Form {...form}>
