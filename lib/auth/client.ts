@@ -4,7 +4,7 @@ import { createAuthClient } from "better-auth/react";
 
 import { authClient as mockClient } from "./client.mock";
 
-const client = createAuthClient({
+export const client = createAuthClient({
   plugins: [
     passkeyClient(),
     emailOTPClient()
