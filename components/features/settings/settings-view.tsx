@@ -6,7 +6,7 @@ import {
   CreditCard,
   FileText,
   Shield,
-  UserCircle,
+
 } from "lucide-react";
 import type { Session } from "better-auth";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
@@ -29,7 +29,7 @@ import type { subscription } from "@/db/schema";
 
 type SelectSubscription = typeof subscription.$inferSelect;
 
-import { ProfileForm } from "@/components/features/settings/profile-form";
+
 
 // ... existing imports ...
 
@@ -63,28 +63,7 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
         </TabsList>
 
         <TabsContent value="account" className="space-y-6">
-          {/* プロフィール */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserCircle className="h-5 w-5" />
-                プロフィール
-              </CardTitle>
-              <CardDescription>基本情報の確認と変更</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-               <ProfileForm initialData={session.user} />
-               <Separator />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                <span className="font-medium text-muted-foreground">
-                  メール
-                </span>
-                <span className="md:col-span-2 font-medium">
-                  {session.user.email}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+
           
           {/* ... security ... */}
 
