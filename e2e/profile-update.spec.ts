@@ -19,9 +19,9 @@ test.describe("Profile Update", () => {
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/dashboard/);
 
-    // 3. Navigate to Settings
-    await page.getByRole("link", { name: "設定" }).click();
-    await expect(page).toHaveURL(/\/settings/);
+    // 3. Navigate to Profile
+    await page.goto("/profile");
+    await expect(page).toHaveURL(/\/profile/);
 
     // 4. Update Name
     const newName = "Updated E2E User";
