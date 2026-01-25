@@ -7,7 +7,9 @@ describe("cn", () => {
   });
 
   it("should handle conditional classes", () => {
-    expect(cn("bg-red-500", true && "text-white", false && "hidden")).toBe("bg-red-500 text-white");
+    expect(cn("bg-red-500", true && "text-white", false && "hidden")).toBe(
+      "bg-red-500 text-white",
+    );
   });
 
   it("should merge tailwind classes properly", () => {
@@ -15,9 +17,9 @@ describe("cn", () => {
     expect(cn("p-2", "p-4")).toBe("p-4");
     expect(cn("px-2 py-2", "p-4")).toBe("p-4");
   });
-  
+
   it("should handle arrays and objects if supported by clsx", () => {
     expect(cn(["a", "b"])).toBe("a b");
-    expect(cn({ "c": true, "d": false })).toBe("c");
+    expect(cn({ c: true, d: false })).toBe("c");
   });
 });

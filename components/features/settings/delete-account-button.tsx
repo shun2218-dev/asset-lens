@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { deleteUser } from "@/app/actions/user/delete";
-import { signOut } from "@/lib/auth/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth/client";
 
 export function DeleteAccountButton() {
   const [isDeleting, setIsDeleting] = useState(false);

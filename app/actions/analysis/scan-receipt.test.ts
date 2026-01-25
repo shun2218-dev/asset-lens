@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { scanReceipt } from "./scan-receipt";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as parser from "@/lib/analysis/reciept-parser";
+import { scanReceipt } from "./scan-receipt";
 
 // Mock parseReceipt
 vi.mock("@/lib/analysis/reciept-parser", () => ({
@@ -25,31 +25,36 @@ describe("scanReceipt", () => {
     // Create a mock File
     const fileContent = "fake-image-content";
     const mockFile = {
-        arrayBuffer: vi.fn().mockResolvedValue(Buffer.from(fileContent)),
-        type: "image/jpeg",
-        size: fileContent.length,
+      arrayBuffer: vi.fn().mockResolvedValue(Buffer.from(fileContent)),
+      type: "image/jpeg",
+      size: fileContent.length,
     };
-    
+
     const mockFormData = {
-        get: (key: string) => (key === "file" ? mockFile : null),
+      get: (key: string) => (key === "file" ? mockFile : null),
     };
 
     const result = await scanReceipt(mockFormData as any);
 
     expect(result).toEqual(mockParsedReceipt);
     expect(parser.parseReceipt).toHaveBeenCalled();
-    
-    // Check if base64 conversion happened (indirectly via what parseReceipt receives if we could snoop, 
+
+    // Check if base64 conversion happened (indirectly via what parseReceipt receives if we could snoop,
     // but here we trust the mock call arguments)
     const expectedBase64 = Buffer.from(fileContent).toString("base64");
-    expect(parser.parseReceipt).toHaveBeenCalledWith(expectedBase64, "image/jpeg");
+    expect(parser.parseReceipt).toHaveBeenCalledWith(
+      expectedBase64,
+      "image/jpeg",
+    );
   });
 
   it("should throw error if file is missing", async () => {
     const mockFormData = {
-        get: () => null,
+      get: () => null,
     };
 
-    await expect(scanReceipt(mockFormData as any)).rejects.toThrow("ファイルが見つかりません");
+    await expect(scanReceipt(mockFormData as any)).rejects.toThrow(
+      "ファイルが見つかりません",
+    );
   });
 });

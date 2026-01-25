@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { getCategories } from "@/app/actions/category/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { TransactionPageView } from "@/components/features/transaction/transaction-page-view";
+
 interface TransactionsPage {
   searchParams: { month?: string };
 }

@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { authClient, client } from "@/lib/auth/client";
+import { authClient, type client } from "@/lib/auth/client";
 
 interface LoggedInViewProps {
   session: typeof client.$Infer.Session;

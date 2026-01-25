@@ -1,14 +1,8 @@
 "use client";
 
-import { format } from "date-fns";
-import {
-  AlertTriangle,
-  CreditCard,
-  FileText,
-  Shield,
-
-} from "lucide-react";
 import type { Session } from "better-auth";
+import { format } from "date-fns";
+import { AlertTriangle, CreditCard, FileText, Shield } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
@@ -29,17 +23,15 @@ import type { subscription } from "@/db/schema";
 
 type SelectSubscription = typeof subscription.$inferSelect;
 
-
-
 // ... existing imports ...
 
 interface SettingsViewProps {
   session: {
     user: {
-        name: string;
-        email: string;
-        image?: string | null;
-    }
+      name: string;
+      email: string;
+      image?: string | null;
+    };
   };
   subscriptions: SelectSubscription[];
 }
@@ -63,8 +55,6 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
         </TabsList>
 
         <TabsContent value="account" className="space-y-6">
-
-          
           {/* ... security ... */}
 
           {/* セキュリティ */}

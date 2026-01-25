@@ -22,27 +22,30 @@ export const authClient = {
         : undefined;
 
     // デフォルトはログイン状態（undefinedの場合はデフォルトを使用）
-    const sessionData = mockSession !== undefined ? mockSession : {
-      user: {
-        id: "mock-user-id",
-        email: "mock@example.com",
-        name: "Mock User",
-        image: null,
-        emailVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      session: {
-        id: "mock-session-id",
-        userId: "mock-user-id",
-        expiresAt: new Date(Date.now() + 86400000),
-        token: "mock-token",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        ipAddress: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
-      },
-    };
+    const sessionData =
+      mockSession !== undefined
+        ? mockSession
+        : {
+            user: {
+              id: "mock-user-id",
+              email: "mock@example.com",
+              name: "Mock User",
+              image: null,
+              emailVerified: true,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+            session: {
+              id: "mock-session-id",
+              userId: "mock-user-id",
+              expiresAt: new Date(Date.now() + 86400000),
+              token: "mock-token",
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              ipAddress: "127.0.0.1",
+              userAgent: "Mozilla/5.0",
+            },
+          };
 
     return {
       data: sessionData,

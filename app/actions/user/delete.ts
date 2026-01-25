@@ -19,11 +19,10 @@ export async function deleteUser() {
     // Delete the user from the database directly
     // Cascading delete will handle related data (sessions, accounts, transactions, etc.)
     await db.delete(schema.user).where(eq(schema.user.id, session.user.id));
-
   } catch (error) {
     console.error("Failed to delete user:", error);
     throw new Error("Failed to delete account");
   }
 
-    return { success: true };
+  return { success: true };
 }

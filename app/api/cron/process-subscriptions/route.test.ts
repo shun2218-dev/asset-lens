@@ -1,26 +1,26 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { GET } from "./route";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { GET } from "./route";
 
 // Mock NextResponse
 // Next.js source code might be complex to mock fully, but for unit tests we can mock the constructor or return value.
 // GET returns `new NextResponse(...)` or `NextResponse.json(...)`.
 // We can mock `next/server`
 vi.mock("next/server", () => {
-    // Basic mock for NextResponse
-    const NextResponse = class {
-        constructor(body: any, init: any) {
-            (this as any).body = body;
-            (this as any).status = init?.status || 200;
-        }
-        static json(body: any, init: any) {
-            return {
-                json: async () => body,
-                status: init?.status || 200,
-            };
-        }
-    };
-    return { NextResponse };
+  // Basic mock for NextResponse
+  const NextResponse = class {
+    constructor(body: any, init: any) {
+      (this as any).body = body;
+      (this as any).status = init?.status || 200;
+    }
+    static json(body: any, init: any) {
+      return {
+        json: async () => body,
+        status: init?.status || 200,
+      };
+    }
+  };
+  return { NextResponse };
 });
 
 // Mock db
@@ -63,7 +63,7 @@ describe("Cron: process-subscriptions", () => {
     (db.select as any).mockReturnValue({ from: fromMock });
 
     const response = await GET(req as any);
-    
+
     // Check response
     // NextResponse.json returns object with json() method in our mock
     expect((response as any).status).toBe(200);
@@ -96,15 +96,17 @@ describe("Cron: process-subscriptions", () => {
     // Mock db.transaction
     // The implementation uses db.transaction(async (tx) => { ... })
     // We should execute the callback immediately with a mock tx object
-    
+
     // Mock Transaction Object
     const txMock = {
-        insert: vi.fn().mockReturnValue({ values: vi.fn() }),
-        update: vi.fn().mockReturnValue({ set: vi.fn().mockReturnValue({ where: vi.fn() }) }),
+      insert: vi.fn().mockReturnValue({ values: vi.fn() }),
+      update: vi
+        .fn()
+        .mockReturnValue({ set: vi.fn().mockReturnValue({ where: vi.fn() }) }),
     };
 
     (db.transaction as any).mockImplementation(async (callback: any) => {
-        return callback(txMock);
+      return callback(txMock);
     });
 
     const response = await GET(req as any);
@@ -115,7 +117,7 @@ describe("Cron: process-subscriptions", () => {
 
     // Verify insert (created transaction)
     expect(txMock.insert).toHaveBeenCalled();
-    
+
     // Verify update (next payment date)
     expect(txMock.update).toHaveBeenCalled();
   });

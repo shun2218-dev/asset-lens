@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { getSummary } from "./get-summary";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { getSummary } from "./get-summary";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({
@@ -78,7 +78,7 @@ describe("getSummary", () => {
     const result = await getSummary("2024-01");
 
     expect(result.currentMonth).toBe("2024-01");
-    
+
     // Check filter: Only Jan transactions (id: 1, 2)
     // Income: 5000, Expense: 1000, Balance: 4000
     expect(result.summary.totalIncome).toBe(5000);
@@ -93,10 +93,16 @@ describe("getSummary", () => {
     // Jan: Income 5000, Expense 1000
     // Feb: Income 0, Expense 2000
     expect(result.monthlyStats).toHaveLength(2);
-    expect(result.monthlyStats).toEqual(expect.arrayContaining([
-        expect.objectContaining({ month: "2024-01", income: 5000, expense: 1000 }),
+    expect(result.monthlyStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          month: "2024-01",
+          income: 5000,
+          expense: 1000,
+        }),
         expect.objectContaining({ month: "2024-02", income: 0, expense: 2000 }),
-    ]));
+      ]),
+    );
   });
 
   it("should return empty structure if unauthorized", async () => {
@@ -112,7 +118,7 @@ describe("getSummary", () => {
 
   it("should handle error gracefully", async () => {
     (db.select as any).mockImplementation(() => {
-        throw new Error("DB Error");
+      throw new Error("DB Error");
     });
 
     const result = await getSummary("2024-01");

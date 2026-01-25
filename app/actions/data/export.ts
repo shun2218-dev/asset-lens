@@ -37,7 +37,7 @@ export async function exportData() {
       // カンマを含む文字列対策でダブルクォートで囲む
       const description = `"${t.description.replace(/"/g, '""')}"`;
       const amount = t.amount;
-      
+
       // カテゴリ識別子の決定
       // 1. category table slug
       // 2. legacy category column

@@ -13,10 +13,10 @@ export default meta;
 type Story = StoryObj<typeof SettingsView>;
 
 const mockSession = {
-    user: {
-        name: "Test User",
-        email: "test@example.com",
-    },
+  user: {
+    name: "Test User",
+    email: "test@example.com",
+  },
 };
 
 const mockSubscriptions = [

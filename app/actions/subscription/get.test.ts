@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { getSubscription } from "./get";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { getSubscription } from "./get";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({

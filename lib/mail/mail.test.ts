@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { sendOtpEmail } from "./index";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resend } from "./client";
+import { sendOtpEmail } from "./index";
 
 // Mock resend client
 vi.mock("./client", () => ({
@@ -23,17 +23,19 @@ describe("Mail: sendOtpEmail", () => {
     await sendOtpEmail(email, otp);
 
     expect(resend.emails.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-            to: email,
-            subject: expect.stringContaining("認証コード"),
-            html: expect.stringContaining(otp),
-        })
+      expect.objectContaining({
+        to: email,
+        subject: expect.stringContaining("認証コード"),
+        html: expect.stringContaining(otp),
+      }),
     );
   });
 
   it("should throw error if sending fails", async () => {
     (resend.emails.send as any).mockRejectedValue(new Error("Send Error"));
 
-    await expect(sendOtpEmail("test@example.com", "123")).rejects.toThrow("メール送信に失敗しました");
+    await expect(sendOtpEmail("test@example.com", "123")).rejects.toThrow(
+      "メール送信に失敗しました",
+    );
   });
 });

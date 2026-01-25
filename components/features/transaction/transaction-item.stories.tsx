@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TransactionItem } from "./transaction-item";
-
 import { Table, TableBody } from "@/components/ui/table";
+import { TransactionItem } from "./transaction-item";
 
 const meta: Meta<typeof TransactionItem> = {
   title: "Features/Transaction/TransactionItem",
@@ -25,8 +24,26 @@ export default meta;
 type Story = StoryObj<typeof TransactionItem>;
 
 const mockCategories = [
-  { id: "cat-1", slug: "food", name: "食費", type: "expense", userId: "user-1", createdAt: new Date(), updatedAt: new Date(), sortOrder: 1 },
-  { id: "cat-2", slug: "salmon", name: "給与", type: "income", userId: "user-1", createdAt: new Date(), updatedAt: new Date(), sortOrder: 2 },
+  {
+    id: "cat-1",
+    slug: "food",
+    name: "食費",
+    type: "expense",
+    userId: "user-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 1,
+  },
+  {
+    id: "cat-2",
+    slug: "salmon",
+    name: "給与",
+    type: "income",
+    userId: "user-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 2,
+  },
 ];
 
 export const Expense: Story = {

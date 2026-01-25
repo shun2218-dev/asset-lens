@@ -34,7 +34,7 @@ describe("calculateCategoryBreakdown", () => {
       expect.arrayContaining([
         { category: "cat-1", amount: 1500 },
         { category: "cat-2", amount: 2000 },
-      ])
+      ]),
     );
   });
 
@@ -85,7 +85,7 @@ describe("calculateCategoryBreakdown", () => {
       expect.arrayContaining([
         { category: "legacy-cat", amount: 1000 },
         { category: "cat-new", amount: 2000 },
-      ])
+      ]),
     );
   });
 
