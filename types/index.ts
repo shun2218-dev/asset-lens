@@ -3,6 +3,11 @@ export type TransactionResult = {
   error?: string;
 };
 
+export type ActionResult = {
+  success: boolean;
+  error?: string;
+};
+
 export type SummaryStats = {
   totalIncome: number;
   totalExpense: number;
