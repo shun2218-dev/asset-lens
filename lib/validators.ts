@@ -75,3 +75,10 @@ export const subscriptionSchema = z.object({
 });
 
 export type SubscriptionFormValues = z.infer<typeof subscriptionSchema>;
+
+export const profileSchema = z.object({
+  name: z.string().min(1, "名前を入力してください"),
+  image: z.any().optional(), // File object handling in client, refined via server action or separate check
+});
+
+export type ProfileFormValues = z.infer<typeof profileSchema>;

@@ -29,11 +29,16 @@ import type { subscription } from "@/db/schema";
 
 type SelectSubscription = typeof subscription.$inferSelect;
 
+import { ProfileForm } from "@/components/features/settings/profile-form";
+
+// ... existing imports ...
+
 interface SettingsViewProps {
   session: {
     user: {
         name: string;
         email: string;
+        image?: string | null;
     }
   };
   subscriptions: SelectSubscription[];
@@ -57,7 +62,6 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
           <TabsTrigger value="subscription">サブスクリプション</TabsTrigger>
         </TabsList>
 
-        {/* --- タブ1: アカウント設定 (既存機能を移動) --- */}
         <TabsContent value="account" className="space-y-6">
           {/* プロフィール */}
           <Card>
@@ -66,16 +70,11 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
                 <UserCircle className="h-5 w-5" />
                 プロフィール
               </CardTitle>
-              <CardDescription>基本情報の確認</CardDescription>
+              <CardDescription>基本情報の確認と変更</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                <span className="font-medium text-muted-foreground">名前</span>
-                <span className="md:col-span-2 font-medium">
-                  {session.user.name}
-                </span>
-              </div>
-              <Separator />
+               <ProfileForm initialData={session.user} />
+               <Separator />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                 <span className="font-medium text-muted-foreground">
                   メール
@@ -86,6 +85,8 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
               </div>
             </CardContent>
           </Card>
+          
+          {/* ... security ... */}
 
           {/* セキュリティ */}
           <section className="space-y-6">
