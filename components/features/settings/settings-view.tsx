@@ -1,10 +1,17 @@
 "use client";
 
 import { format } from "date-fns";
-import { CreditCard, FileText, Shield, UserCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CreditCard,
+  FileText,
+  Shield,
+  UserCircle,
+} from "lucide-react";
 import type { Session } from "better-auth";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
+import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
 import { SubscriptionForm } from "@/components/features/subscription/subscription-form";
@@ -104,6 +111,32 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
                 <ExportButton />
                 <ImportButton />
               </CardContent>
+            </CardContent>
+          </Card>
+
+          {/* Danger Zone */}
+          <Card className="border-destructive/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                Danger Zone
+              </CardTitle>
+              <CardDescription>
+                この操作は取り消せません。ご注意ください。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+                <div className="space-y-0.5">
+                  <h4 className="font-medium text-destructive">
+                    アカウント削除
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    アカウントと関連データを完全に削除します
+                  </p>
+                </div>
+                <DeleteAccountButton />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
