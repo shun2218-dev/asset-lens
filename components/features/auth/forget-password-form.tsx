@@ -2,9 +2,6 @@
 
 import { ArrowLeft, Loader2, Lock } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,93 +18,26 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth/client";
+import { useForgetPassword } from "@/hooks/use-forget-password";
 import { SECURITY_CONFIG } from "@/lib/constants";
 
 export function ForgetPasswordForm() {
-  const router = useRouter();
-  // ステップを3段階に分けます
-  const [step, setStep] = useState<"email" | "otp" | "password">("email");
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  // --- Step 1: メール送信 ---
-  const handleSendOtp = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const { error } = await authClient.forgetPassword.emailOtp({ email });
-      if (error) {
-        toast.error("送信に失敗しました", { description: error.message });
-        return;
-      }
-      toast.success("認証コードを送信しました");
-      setStep("otp"); // OTP入力画面へ
-    } catch {
-      toast.error("エラーが発生しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // --- Step 2: OTP検証 (ここを追加！) ---
-  const handleVerifyOtp = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      // 検証だけ行う
-      const { error } = await authClient.emailOtp.checkVerificationOtp({
-        email,
-        otp,
-        type: "forget-password", // typeの指定が必要です
-      });
-
-      if (error) {
-        toast.error("コードが正しくありません");
-        return;
-      }
-
-      // 検証OKならパスワード入力画面へ
-      setStep("password");
-    } catch {
-      toast.error("エラーが発生しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // --- Step 3: パスワードリセット実行 ---
-  const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast.error("パスワードが一致しません");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      // ここでも otp は必要です
-      const { error } = await authClient.emailOtp.resetPassword({
-        email,
-        otp,
-        password: newPassword,
-      });
-
-      if (error) {
-        toast.error("リセットに失敗しました", { description: error.message });
-        return;
-      }
-
-      toast.success("パスワードを変更しました");
-      router.push("/login");
-    } catch {
-      toast.error("予期せぬエラーが発生しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    step,
+    setStep,
+    email,
+    setEmail,
+    otp,
+    setOtp,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    isLoading,
+    handleSendOtp,
+    handleVerifyOtp,
+    handleResetPassword,
+  } = useForgetPassword();
 
   return (
     <Card className="w-full max-w-md">

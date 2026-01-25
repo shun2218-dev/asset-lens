@@ -72,7 +72,10 @@ export async function POST(req: Request) {
       .limit(1);
 
     if (!categoryData) {
-      return NextResponse.json({ error: "Category not found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 },
+      );
     }
 
     // DBに保存
@@ -135,7 +138,10 @@ export async function PUT(req: Request) {
       .limit(1);
 
     if (!categoryData) {
-      return NextResponse.json({ error: "Category not found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 },
+      );
     }
 
     // 更新実行 (自分のデータかつIDが一致するもの)

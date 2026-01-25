@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { deleteTransaction } from "./delete";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { deleteTransaction } from "./delete";
 
 // Mock next/cache
 vi.mock("next/cache", () => ({
@@ -38,7 +38,7 @@ describe("deleteTransaction", () => {
   it("should handle database errors gracefully", async () => {
     // Mock delete failure
     const whereMock = vi.fn().mockImplementation(() => {
-        throw new Error("DB Error");
+      throw new Error("DB Error");
     });
     (db.delete as any).mockReturnValue({ where: whereMock });
 

@@ -1,12 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { createSubscription } from "@/app/actions/subscription/create";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,47 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSubscriptionForm } from "@/hooks/use-subscription-form";
 import { EXPENSE_CATEGORY_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import {
-  type SubscriptionFormValues,
-  subscriptionSchema,
-} from "@/lib/validators";
 
 export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [isPending, setIsPending] = useState(false);
-
-  const form = useForm<SubscriptionFormValues>({
-    resolver: zodResolver(subscriptionSchema),
-    defaultValues: {
-      name: "",
-      amount: 0,
-      billingCycle: "monthly",
-      category: "subscription",
-    },
-  });
-
-  async function onSubmit(data: SubscriptionFormValues) {
-    setIsPending(true);
-    try {
-      const result = await createSubscription(data);
-      if (result.success) {
-        toast.success("サブスクリプションを追加しました");
-        form.reset();
-        onSuccess?.();
-      } else {
-        toast.error(result.error || "エラーが発生しました");
-      }
-    } catch {
-      toast.error("通信エラーが発生しました");
-    } finally {
-      setIsPending(false);
-    }
-  }
+  const { form, isPending, onSubmit } = useSubscriptionForm({ onSuccess });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <FormField
           control={form.control}
           name="name"

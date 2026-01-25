@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { type SignInFormValues, signInSchema } from "@/lib/validators";
-import Link from "next/link";
 
 export function SignInForm() {
   const { signInWithEmail, isLoading, error } = useAuth();

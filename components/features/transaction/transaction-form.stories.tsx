@@ -14,8 +14,26 @@ export default meta;
 type Story = StoryObj<typeof TransactionForm>;
 
 const mockCategories = [
-  { id: "cat-1", slug: "food", name: "食費", type: "expense", userId: "user-1", createdAt: new Date(), updatedAt: new Date(), sortOrder: 1 },
-  { id: "cat-2", slug: "salary", name: "給与", type: "income", userId: "user-1", createdAt: new Date(), updatedAt: new Date(), sortOrder: 2 },
+  {
+    id: "cat-1",
+    slug: "food",
+    name: "食費",
+    type: "expense",
+    userId: "user-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 1,
+  },
+  {
+    id: "cat-2",
+    slug: "salary",
+    name: "給与",
+    type: "income",
+    userId: "user-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 2,
+  },
 ];
 
 export const Create: Story = {
