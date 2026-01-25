@@ -18,10 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  type ProfileFormValues,
-  profileSchema,
-} from "@/lib/validators";
+import { type ProfileFormValues, profileSchema } from "@/lib/validators";
 
 interface ProfileFormProps {
   initialData: {
@@ -84,13 +81,20 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-4">
           <div className="relative group">
-            <Avatar className="h-24 w-24 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-              <AvatarImage src={previewImage ?? ""} alt="Profile" className="object-cover" />
+            <Avatar
+              className="h-24 w-24 cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <AvatarImage
+                src={previewImage ?? ""}
+                alt="Profile"
+                className="object-cover"
+              />
               <AvatarFallback>
                 <User className="h-12 w-12 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
-            <div 
+            <div
               className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white"
               onClick={() => fileInputRef.current?.click()}
             >

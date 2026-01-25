@@ -15,10 +15,46 @@ export default meta;
 type Story = StoryObj<typeof CategorySelect>;
 
 const mockCategories = [
-  { id: "cat-1", slug: "food", name: "食費", type: "expense", userId: null, createdAt: new Date(), updatedAt: new Date(), sortOrder: 1 },
-  { id: "cat-2", slug: "rent", name: "家賃", type: "expense", userId: null, createdAt: new Date(), updatedAt: new Date(), sortOrder: 2 },
-  { id: "cat-3", slug: "salary", name: "給与", type: "income", userId: null, createdAt: new Date(), updatedAt: new Date(), sortOrder: 3 },
-  { id: "cat-4", slug: "custom-1", name: "おやつ", type: "expense", userId: "user-1", createdAt: new Date(), updatedAt: new Date(), sortOrder: 4 },
+  {
+    id: "cat-1",
+    slug: "food",
+    name: "食費",
+    type: "expense",
+    userId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 1,
+  },
+  {
+    id: "cat-2",
+    slug: "rent",
+    name: "家賃",
+    type: "expense",
+    userId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 2,
+  },
+  {
+    id: "cat-3",
+    slug: "salary",
+    name: "給与",
+    type: "income",
+    userId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 3,
+  },
+  {
+    id: "cat-4",
+    slug: "custom-1",
+    name: "おやつ",
+    type: "expense",
+    userId: "user-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    sortOrder: 4,
+  },
 ];
 
 export const Expense: Story = {

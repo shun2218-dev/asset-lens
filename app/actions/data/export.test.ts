@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { exportData } from "./export";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { exportData } from "./export";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({
@@ -93,13 +93,13 @@ describe("exportData", () => {
     // Note: implementation uses EXPENSE_CATEGORY_LABELS map or similar
     // The implementation might translate 'food' slug to '食費' label if defined in constants.
     // If not defined, it uses slug. "food" -> "食費" usually.
-    
+
     // We expect basic CSV structure matches
     expect(csv).toContain("2024-01-01");
     expect(csv).toContain("ランチ");
     expect(csv).toContain("1000");
     expect(csv).toContain("食費"); // Mapped from 'food'
-    
+
     expect(csv).toContain("2024-01-02");
     expect(csv).toContain("給与");
     expect(csv).toContain("200000");
@@ -108,7 +108,7 @@ describe("exportData", () => {
   });
 
   it("should throw error if unauthorized", async () => {
-     // Override auth mock to return null
+    // Override auth mock to return null
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 

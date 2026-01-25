@@ -1,16 +1,9 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Camera, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { scanReceipt } from "@/app/actions/analysis/scan-receipt";
-import { createTransaction } from "@/app/actions/transaction/create";
-import { updateTransaction } from "@/app/actions/transaction/update";
+import { useEffect, useState } from "react";
 import { CategorySelect } from "@/components/features/category/category-select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui//tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -27,14 +20,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Note: Fixed double slash
 import type { SelectCategory } from "@/db/schema";
+import { useTransactionForm } from "@/hooks/use-transaction-form";
 import { useSession } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
-import {
-  type TransactionFormValues,
-  transactionSchema,
-} from "@/lib/validators";
-import type { TransactionResult } from "@/types";
 
 interface TransactionFormProps {
   initialData?: {
@@ -60,135 +50,25 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const { data: session } = useSession();
 
-  const form = useForm<TransactionFormValues>({
-    resolver: zodResolver(transactionSchema),
-    defaultValues: initialData
-      ? { ...initialData }
-      : {
-          userId: "dummy-user-id",
-          amount: 0,
-          description: "",
-          category: "",
-          date: new Date(),
-          isExpense: true,
-        },
+  const {
+    form,
+    isScanning,
+    fileInputRef,
+    handleFileChange,
+    triggerFileInput,
+    onSubmit,
+    // isSubmitting,
+    // isValid,
+  } = useTransactionForm({
+    initialData,
+    id,
+    onSuccess,
   });
 
   const isExpense = form.watch("isExpense");
 
-  const [isScanning, setIsScanning] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Vercelの制限(4.5MB)を考慮し、余裕を持って4MBを上限とする
-    const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
-
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("ファイルサイズが大きすぎます(上限4MB)", {
-        description: "別の画像を選択するか、サイズを小さくしてください。",
-      });
-
-      // 入力をリセットして中断
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-
-    try {
-      setIsScanning(true);
-      toast.loading("レシートを解析中...", { id: "scan-toast" });
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const result = await scanReceipt(formData);
-
-      toast.success("解析が完了しました", { id: "scan-toast" });
-
-      // 結果をフォームに反映
-      if (result.amount)
-        form.setValue("amount", result.amount, { shouldValidate: true });
-      if (result.description)
-        form.setValue("description", result.description, {
-          shouldValidate: true,
-        });
-      if (result.category)
-        form.setValue("category", result.category, { shouldValidate: true });
-      if (result.date) {
-        // 文字列(YYYY-MM-DD)をDateオブジェクトに変換
-        form.setValue("date", new Date(result.date), { shouldValidate: true });
-      }
-
-      // 必要ならトースト通知などをここで出す
-    } catch (error) {
-      console.error(error);
-      toast.error("読み取りに失敗しました", { id: "scan-toast" });
-    } finally {
-      setIsScanning(false);
-      // 同じファイルを再度選べるようにリセット
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  async function onSubmit(data: TransactionFormValues) {
-    try {
-      // 日付をUTCの0時0分0秒に補正して送信する
-      // これにより、サーバー側(UTC)での日付ズレを防ぐ
-      // 例: JST 1/25 00:00 -> UTC 1/24 15:00 -> DB 1/24 (×)
-      // 補正後: UTC 1/25 00:00 -> DB 1/25 (○)
-      const normalizedDate = new Date(
-        Date.UTC(
-          data.date.getFullYear(),
-          data.date.getMonth(),
-          data.date.getDate(),
-        ),
-      );
-
-      const payload = { ...data, date: normalizedDate };
-
-      let result: TransactionResult;
-      if (id) {
-        // 編集
-        result = await updateTransaction(id, payload);
-        if (result.success) {
-          toast.success("更新しました");
-          onSuccess?.();
-        } else {
-          toast.error("更新に失敗しました");
-        }
-      } else {
-        // 新規登録
-        const result = await createTransaction(payload);
-        if (result.success) {
-          form.reset({
-            userId: "dummy-user-id",
-            amount: 0,
-            description: "",
-            category: "",
-            date: new Date(),
-            isExpense: true,
-          });
-
-          toast.success("登録しました");
-        } else {
-          toast.error("登録に失敗しました");
-        }
-      }
-    } catch (error) {
-      toast.error("予期せぬエラーが発生しました");
-      console.error(error);
-    }
-  }
-
-  /*
-   * ハイドレーションミスマッチを防ぐため、マウントされるまではnullを返す
-   * サーバー側ではsessionが取得できずnullになる可能性があるが、
-   * クライアント側ですぐにsessionが取得できた場合に不整合が起きるため
-   */
+  // Fix: Hydration mismatch prevention
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -197,7 +77,7 @@ export function TransactionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         {!id && (
           <div>
             <input
@@ -212,7 +92,7 @@ export function TransactionForm({
               variant="outline"
               className="w-full"
               disabled={isScanning}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={triggerFileInput}
             >
               {isScanning ? (
                 <>

@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createSubscription } from "./create";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { createSubscription } from "./create";
 
 // Mock next/cache
 vi.mock("next/cache", () => ({
@@ -65,12 +65,14 @@ describe("createSubscription", () => {
 
     expect(result.success).toBe(true);
     expect(db.insert).toHaveBeenCalled();
-    expect(valuesMock).toHaveBeenCalledWith(expect.objectContaining({
-      name: "Netflix",
-      amount: 1500,
-      userId: "user-123",
-      category: "entertainment",
-    }));
+    expect(valuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Netflix",
+        amount: 1500,
+        userId: "user-123",
+        category: "entertainment",
+      }),
+    );
   });
 
   it("should throw error if unauthorized", async () => {
@@ -93,9 +95,9 @@ describe("createSubscription", () => {
   });
 
   it("should handle database errors gracefully", async () => {
-     // Mock insert failure
+    // Mock insert failure
     const valuesMock = vi.fn().mockImplementation(() => {
-        throw new Error("DB Error");
+      throw new Error("DB Error");
     });
     (db.insert as any).mockReturnValue({ values: valuesMock });
 

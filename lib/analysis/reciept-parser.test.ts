@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { parseReceipt } from "./reciept-parser";
 
 // Mock GoogleGenerativeAI
@@ -8,11 +8,9 @@ const mockGetGenerativeModel = vi.fn(() => ({
 }));
 
 vi.mock("@google/generative-ai", () => ({
-  GoogleGenerativeAI: vi.fn(function () {
-    return {
-      getGenerativeModel: mockGetGenerativeModel,
-    };
-  }),
+  GoogleGenerativeAI: vi.fn(() => ({
+    getGenerativeModel: mockGetGenerativeModel,
+  })),
 }));
 
 describe("parseReceipt", () => {
@@ -89,7 +87,7 @@ describe("parseReceipt", () => {
     delete process.env.GEMINI_API_KEY;
 
     await expect(parseReceipt("base64data", "image/jpeg")).rejects.toThrow(
-      "GEMINI_API_KEY が設定されていません"
+      "GEMINI_API_KEY が設定されていません",
     );
   });
 
@@ -97,7 +95,7 @@ describe("parseReceipt", () => {
     mockGenerateContent.mockRejectedValue(new Error("API Error"));
 
     await expect(parseReceipt("base64data", "image/jpeg")).rejects.toThrow(
-      "解析処理に失敗しました"
+      "解析処理に失敗しました",
     );
   });
 });

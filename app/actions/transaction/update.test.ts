@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { updateTransaction } from "./update";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { updateTransaction } from "./update";
 
 // Mock next/cache
 vi.mock("next/cache", () => ({
@@ -35,7 +35,7 @@ describe("updateTransaction", () => {
   it("should successfully update a transaction", async () => {
     // Mock category lookup
     const mockCategory = { slug: "transport", id: "cat-uuid-456" };
-    
+
     // Mock db.select chain
     const limitMock = vi.fn().mockResolvedValue([mockCategory]);
     const whereSelectMock = vi.fn().mockReturnValue({ limit: limitMock });
@@ -54,13 +54,15 @@ describe("updateTransaction", () => {
     expect(db.update).toHaveBeenCalled();
 
     // Verify update values
-    expect(setMock).toHaveBeenCalledWith(expect.objectContaining({
-      amount: 2000,
-      description: "Updated Transaction",
-      category: "transport", // Legacy slug
-      categoryId: "cat-uuid-456",
-      date: mockData.date,
-    }));
+    expect(setMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 2000,
+        description: "Updated Transaction",
+        category: "transport", // Legacy slug
+        categoryId: "cat-uuid-456",
+        date: mockData.date,
+      }),
+    );
   });
 
   it("should return error if category is not found", async () => {
@@ -78,7 +80,7 @@ describe("updateTransaction", () => {
   });
 
   it("should handle database errors gracefully", async () => {
-     // Mock category lookup success
+    // Mock category lookup success
     const mockCategory = { slug: "transport", id: "cat-uuid-456" };
     const limitMock = vi.fn().mockResolvedValue([mockCategory]);
     const whereSelectMock = vi.fn().mockReturnValue({ limit: limitMock });
@@ -87,7 +89,7 @@ describe("updateTransaction", () => {
 
     // Mock update failure
     const setMock = vi.fn().mockImplementation(() => {
-        throw new Error("DB Error");
+      throw new Error("DB Error");
     });
     (db.update as any).mockReturnValue({ set: setMock });
 

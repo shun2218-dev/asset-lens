@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createCustomCategory } from "./create";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { createCustomCategory } from "./create";
 
 // Mock next/cache
 vi.mock("next/cache", () => ({
@@ -55,11 +55,13 @@ describe("createCustomCategory", () => {
 
     expect(result.success).toBe(true);
     expect(db.insert).toHaveBeenCalled();
-    expect(valuesMock).toHaveBeenCalledWith(expect.objectContaining({
-      name: "My Category",
-      type: "expense",
-      userId: "user-123",
-    }));
+    expect(valuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "My Category",
+        type: "expense",
+        userId: "user-123",
+      }),
+    );
   });
 
   it("should throw error if unauthorized", async () => {
@@ -67,17 +69,21 @@ describe("createCustomCategory", () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
-    await expect(createCustomCategory("My Category")).rejects.toThrow("Unauthorized");
+    await expect(createCustomCategory("My Category")).rejects.toThrow(
+      "Unauthorized",
+    );
   });
 
   it("should throw error if name is empty", async () => {
-    await expect(createCustomCategory("  ")).rejects.toThrow("カテゴリ名を入力してください");
+    await expect(createCustomCategory("  ")).rejects.toThrow(
+      "カテゴリ名を入力してください",
+    );
   });
 
   it("should return error on database failure", async () => {
-     // Mock insert failure
+    // Mock insert failure
     const valuesMock = vi.fn().mockImplementation(() => {
-        throw new Error("DB Error");
+      throw new Error("DB Error");
     });
     (db.insert as any).mockReturnValue({ values: valuesMock });
 

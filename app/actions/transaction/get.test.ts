@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { getTransaction } from "./get";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
+import { getTransaction } from "./get";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({
@@ -69,20 +69,20 @@ describe("getTransaction", () => {
     const whereDataMock = vi.fn().mockReturnValue({ orderBy: orderByMock });
     const leftJoinMock = vi.fn().mockReturnValue({ where: whereDataMock });
     const fromDataMock = vi.fn().mockReturnValue({ leftJoin: leftJoinMock });
-    
+
     // Mock Count Query Chain
     // select({ count }) -> from -> where
     // This is tricky because db.select is called twice.
     // First call is for data (args provided), second for count (args provided).
-    
+
     const whereCountMock = vi.fn().mockResolvedValue([{ count: 25 }]); // Total 25 items
     const fromCountMock = vi.fn().mockReturnValue({ where: whereCountMock });
 
     (db.select as any).mockImplementation((args: any) => {
-        if (args && args.count) {
-             return { from: fromCountMock };
-        }
-        return { from: fromDataMock };
+      if (args && args.count) {
+        return { from: fromCountMock };
+      }
+      return { from: fromDataMock };
     });
 
     const result = await getTransaction(1);
@@ -106,12 +106,12 @@ describe("getTransaction", () => {
     // Zero count
     const whereCountMock = vi.fn().mockResolvedValue([{ count: 0 }]);
     const fromCountMock = vi.fn().mockReturnValue({ where: whereCountMock });
-    
+
     (db.select as any).mockImplementation((args: any) => {
-        if (args && args.count) {
-             return { from: fromCountMock };
-        }
-        return { from: fromDataMock };
+      if (args && args.count) {
+        return { from: fromCountMock };
+      }
+      return { from: fromDataMock };
     });
 
     const result = await getTransaction(1);
@@ -122,11 +122,11 @@ describe("getTransaction", () => {
 
   it("should return empty structure on error", async () => {
     (db.select as any).mockImplementation(() => {
-        throw new Error("DB Connection Error");
+      throw new Error("DB Connection Error");
     });
 
     const result = await getTransaction(1);
-    
+
     expect(result.data).toEqual([]);
     expect(result.metadata.totalCount).toBe(0);
   });

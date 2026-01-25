@@ -60,7 +60,7 @@ export async function importData(formData: FormData) {
     // カテゴリのマッピング用 (Label -> Slug -> ID, or Label -> ID direct if name matches?)
     // CONSTANTS mapping defines: "食費" -> "food". "food" is the slug.
     // We need to find the category where slug === "food".
-    
+
     const categorySlugToIdMap = new Map<string, string>();
     allCategories.forEach((c) => {
       categorySlugToIdMap.set(c.slug, c.id);
@@ -85,7 +85,7 @@ export async function importData(formData: FormData) {
 
       // 1. Label ("食費") -> Slug ("food")
       const slug = CATEGORY_LABEL_TO_ID[categoryLabel] || "other";
-      
+
       // 2. Slug ("food") -> ID (UUID)
       // もしDBにそのslugがない場合は "other" のIDを探す、それもなければ...
       let categoryId = categorySlugToIdMap.get(slug);
@@ -96,9 +96,9 @@ export async function importData(formData: FormData) {
       }
 
       // If still no categoryId (e.g. even 'other' is missing), we might have a problem.
-      // For now, assume 'other' exists or we skip/error. 
+      // For now, assume 'other' exists or we skip/error.
       // strict schema says categoryId is nullable? No, schema says reference.
-      // But transaction.categoryId is nullable reference. 
+      // But transaction.categoryId is nullable reference.
       // legacy category is not null.
 
       const isExpense = typeLabel === "支出";

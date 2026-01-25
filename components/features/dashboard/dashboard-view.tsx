@@ -7,7 +7,12 @@ import { TransactionForm } from "@/components/features/transaction/transaction-f
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SelectCategory, SelectTransaction } from "@/db/schema";
-import type { CategoryStats, MonthlyStats, SummaryStats, TransactionMetadata } from "@/types";
+import type {
+  CategoryStats,
+  MonthlyStats,
+  SummaryStats,
+  TransactionMetadata,
+} from "@/types";
 
 interface DashboardViewProps {
   summary: SummaryStats;
