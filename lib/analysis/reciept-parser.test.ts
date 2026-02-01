@@ -2,15 +2,27 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { parseReceipt } from "./reciept-parser";
 
 // Mock GoogleGenerativeAI
-const mockGenerateContent = vi.fn();
-const mockGetGenerativeModel = vi.fn(() => ({
-  generateContent: mockGenerateContent,
-}));
+// Mock GoogleGenerativeAI with hoisting
+const { mockGenerateContent, mockGetGenerativeModel, MockGoogleGenerativeAI } =
+  vi.hoisted(() => {
+    const mockGenerateContent = vi.fn();
+    const mockGetGenerativeModel = vi.fn(() => ({
+      generateContent: mockGenerateContent,
+    }));
+    const MockGoogleGenerativeAI = vi.fn(function () {
+      return {
+        getGenerativeModel: mockGetGenerativeModel,
+      };
+    });
+    return {
+      mockGenerateContent,
+      mockGetGenerativeModel,
+      MockGoogleGenerativeAI,
+    };
+  });
 
 vi.mock("@google/generative-ai", () => ({
-  GoogleGenerativeAI: vi.fn(() => ({
-    getGenerativeModel: mockGetGenerativeModel,
-  })),
+  GoogleGenerativeAI: MockGoogleGenerativeAI,
 }));
 
 describe("parseReceipt", () => {

@@ -13,11 +13,13 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(process.cwd(), "./"),
+    },
+  },
   test: {
     environment: "jsdom",
-    alias: {
-      "@": path.resolve(__dirname, "./"),
-    },
     projects: [
       {
         extends: true,
@@ -41,6 +43,19 @@ export default defineConfig({
             ],
           },
           setupFiles: [".storybook/vitest.setup.ts"],
+        },
+      },
+      {
+        test: {
+          name: "unit",
+          include: ["**/*.test.ts", "**/*.test.tsx"],
+          exclude: ["**/*.stories.tsx", "node_modules/**", "e2e/**"],
+          environment: "jsdom",
+        },
+        resolve: {
+          alias: {
+            "@": path.resolve(process.cwd(), "./"),
+          },
         },
       },
     ],

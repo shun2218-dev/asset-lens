@@ -75,6 +75,26 @@ describe("createSubscription", () => {
     );
   });
 
+  it("should successfully create a subscription with 'subscription' category", async () => {
+    // This test ensures the new category "subscription" is valid and handled correctly
+    const subscriptionData = {
+      ...mockData,
+      category: "subscription",
+    };
+
+    const valuesMock = vi.fn().mockResolvedValue([{ id: "sub-124" }]);
+    (db.insert as any).mockReturnValue({ values: valuesMock });
+
+    const result = await createSubscription(subscriptionData);
+
+    expect(result.success).toBe(true);
+    expect(valuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: "subscription",
+      }),
+    );
+  });
+
   it("should throw error if unauthorized", async () => {
     // Override auth mock to return null
     const { auth } = await import("@/lib/auth");

@@ -10,6 +10,7 @@ export const EXPENSE_CATEGORY_LABELS: Record<string, string> = {
   housing: "住居費",
   medical: "医療費",
   fashion: "衣服・美容",
+  subscription: "サブスクリプション",
   other: "その他",
 };
 
