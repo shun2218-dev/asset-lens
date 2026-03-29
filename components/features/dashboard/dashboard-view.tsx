@@ -111,7 +111,7 @@ export function DashboardView({
 
       {/* サマリーカード (MoM比較付き) */}
       <div className="grid grid-cols-3 gap-4">
-        <Card>
+        <Card className="animate-fade-in-up stagger-1">
           <CardContent className="pt-4 pb-3 text-center">
             <p className="text-sm text-muted-foreground">収入</p>
             <p className="text-xl font-bold text-blue-600">
@@ -123,7 +123,7 @@ export function DashboardView({
             />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="animate-fade-in-up stagger-2">
           <CardContent className="pt-4 pb-3 text-center">
             <p className="text-sm text-muted-foreground">支出</p>
             <p className="text-xl font-bold text-red-600">
@@ -135,7 +135,7 @@ export function DashboardView({
             />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="animate-fade-in-up stagger-3">
           <CardContent className="pt-4 pb-3 text-center">
             <p className="text-sm text-muted-foreground">収支</p>
             <p
@@ -153,7 +153,7 @@ export function DashboardView({
 
       {/* チャートエリア */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+        <Card className="animate-fade-in-up stagger-4">
           <CardHeader>
             <CardTitle>月次収支推移</CardTitle>
           </CardHeader>
@@ -162,7 +162,7 @@ export function DashboardView({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in-up stagger-5">
           <CardHeader>
             <CardTitle>今月の支出内訳</CardTitle>
           </CardHeader>
