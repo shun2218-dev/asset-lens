@@ -1,9 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { parse } from "date-fns";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createBulkTransaction } from "@/app/actions/transaction/create-bulk";
+import type { ParsedReceiptBulk } from "@/lib/analysis/reciept-parser";
 import type { BulkTransactionFormValues } from "@/lib/validators";
 import { bulkTransactionSchema } from "@/lib/validators";
 
@@ -31,7 +33,7 @@ export function useBulkTransactionForm({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "entries",
   });
@@ -49,6 +51,50 @@ export function useBulkTransactionForm({
   const removeEntry = (index: number) => {
     if (fields.length > 1) {
       remove(index);
+    }
+  };
+
+  // レシートスキャン結果をフォームに反映
+  const setEntriesFromScan = (
+    scanResult: ParsedReceiptBulk,
+    resolveCategoryId?: (slug: string) => string | undefined,
+  ) => {
+    // 日付を反映
+    if (scanResult.date) {
+      const parsedDate = parse(scanResult.date, "yyyy-MM-dd", new Date());
+      form.setValue("date", parsedDate, { shouldValidate: true });
+    }
+
+    // エントリを生成
+    const entries = scanResult.items.map((item) => {
+      // カテゴリslugからcategoryIdを解決
+      let categoryId = "";
+      if (item.category && resolveCategoryId) {
+        categoryId = resolveCategoryId(item.category) ?? "";
+      }
+
+      return {
+        amount: item.amount ?? 0,
+        description: item.description ?? "",
+        storeName: scanResult.storeName ?? "",
+        category: categoryId,
+        isExpense: true,
+      };
+    });
+
+    // エントリが空の場合はデフォルト1件
+    if (entries.length === 0) {
+      replace([
+        {
+          amount: 0,
+          description: "",
+          storeName: scanResult.storeName ?? "",
+          category: "",
+          isExpense: true,
+        },
+      ]);
+    } else {
+      replace(entries);
     }
   };
 
@@ -95,6 +141,7 @@ export function useBulkTransactionForm({
     fields,
     addEntry,
     removeEntry,
+    setEntriesFromScan,
     onSubmit: form.handleSubmit(onSubmit),
     isSubmitting: form.formState.isSubmitting,
     isValid: form.formState.isValid,

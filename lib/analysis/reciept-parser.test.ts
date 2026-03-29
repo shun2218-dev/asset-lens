@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { parseReceipt } from "./reciept-parser";
+import { parseReceipt, parseReceiptBulk } from "./reciept-parser";
 
-// Mock GoogleGenerativeAI
 // Mock GoogleGenerativeAI with hoisting
 const { mockGenerateContent, mockGetGenerativeModel, MockGoogleGenerativeAI } =
   vi.hoisted(() => {
@@ -109,5 +108,123 @@ describe("parseReceipt", () => {
     await expect(parseReceipt("base64data", "image/jpeg")).rejects.toThrow(
       "解析処理に失敗しました",
     );
+  });
+});
+
+describe("parseReceiptBulk", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.GEMINI_API_KEY = "mock-key";
+  });
+
+  it("should parse receipt with multiple items", async () => {
+    const mockResponseText = JSON.stringify({
+      storeName: "イオン",
+      date: "2026-03-29",
+      items: [
+        { amount: 298, description: "牛乳", category: "food" },
+        { amount: 158, description: "パン", category: "food" },
+        { amount: 498, description: "シャンプー", category: "daily" },
+      ],
+    });
+
+    mockGenerateContent.mockResolvedValue({
+      response: { text: () => mockResponseText },
+    });
+
+    const result = await parseReceiptBulk("base64data", "image/jpeg");
+
+    expect(result.storeName).toBe("イオン");
+    expect(result.date).toBe("2026-03-29");
+    expect(result.items).toHaveLength(3);
+    expect(result.items[0]).toEqual({
+      amount: 298,
+      description: "牛乳",
+      category: "food",
+    });
+    expect(result.items[2]).toEqual({
+      amount: 498,
+      description: "シャンプー",
+      category: "daily",
+    });
+  });
+
+  it("should handle null values for unreadable fields", async () => {
+    const mockResponseText = JSON.stringify({
+      storeName: "コンビニ",
+      date: null,
+      items: [
+        { amount: 150, description: null, category: null },
+        { amount: null, description: "おにぎり", category: "food" },
+      ],
+    });
+
+    mockGenerateContent.mockResolvedValue({
+      response: { text: () => mockResponseText },
+    });
+
+    const result = await parseReceiptBulk("base64data", "image/jpeg");
+
+    expect(result.storeName).toBe("コンビニ");
+    expect(result.date).toBeNull();
+    expect(result.items[0]).toEqual({
+      amount: 150,
+      description: null,
+      category: null,
+    });
+    expect(result.items[1]).toEqual({
+      amount: null,
+      description: "おにぎり",
+      category: "food",
+    });
+  });
+
+  it("should return empty items when no items found", async () => {
+    const mockResponseText = JSON.stringify({
+      storeName: "テスト店",
+      date: "2026-03-01",
+      items: [],
+    });
+
+    mockGenerateContent.mockResolvedValue({
+      response: { text: () => mockResponseText },
+    });
+
+    const result = await parseReceiptBulk("base64data", "image/jpeg");
+
+    expect(result.storeName).toBe("テスト店");
+    expect(result.items).toEqual([]);
+  });
+
+  it("should handle missing storeName", async () => {
+    const mockResponseText = JSON.stringify({
+      storeName: null,
+      date: "2026-03-01",
+      items: [{ amount: 100, description: "商品A", category: "other" }],
+    });
+
+    mockGenerateContent.mockResolvedValue({
+      response: { text: () => mockResponseText },
+    });
+
+    const result = await parseReceiptBulk("base64data", "image/jpeg");
+
+    expect(result.storeName).toBeNull();
+  });
+
+  it("should throw error if API key is missing", async () => {
+    delete process.env.GEMINI_API_KEY;
+
+    await expect(
+      parseReceiptBulk("base64data", "image/jpeg"),
+    ).rejects.toThrow("GEMINI_API_KEY が設定されていません");
+  });
+
+  it("should throw error on API failure", async () => {
+    mockGenerateContent.mockRejectedValue(new Error("API Error"));
+
+    await expect(
+      parseReceiptBulk("base64data", "image/jpeg"),
+    ).rejects.toThrow("レシートの解析処理に失敗しました");
   });
 });

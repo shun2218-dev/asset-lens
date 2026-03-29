@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as parser from "@/lib/analysis/reciept-parser";
-import { scanReceipt } from "./scan-receipt";
+import { scanReceipt, scanReceiptBulk } from "./scan-receipt";
 
-// Mock parseReceipt
+// Mock parseReceipt and parseReceiptBulk
 vi.mock("@/lib/analysis/reciept-parser", () => ({
   parseReceipt: vi.fn(),
+  parseReceiptBulk: vi.fn(),
 }));
 
 describe("scanReceipt", () => {
@@ -54,6 +55,57 @@ describe("scanReceipt", () => {
     };
 
     await expect(scanReceipt(mockFormData as any)).rejects.toThrow(
+      "ファイルが見つかりません",
+    );
+  });
+});
+
+describe("scanReceiptBulk", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should successfully scan a receipt in bulk mode", async () => {
+    const mockParsedBulk = {
+      storeName: "テスト店",
+      date: "2026-03-29",
+      items: [
+        { amount: 298, description: "牛乳", category: "food" },
+        { amount: 158, description: "パン", category: "food" },
+      ],
+    };
+
+    (parser.parseReceiptBulk as any).mockResolvedValue(mockParsedBulk);
+
+    const fileContent = "fake-image-content";
+    const mockFile = {
+      arrayBuffer: vi.fn().mockResolvedValue(Buffer.from(fileContent)),
+      type: "image/jpeg",
+      size: fileContent.length,
+    };
+
+    const mockFormData = {
+      get: (key: string) => (key === "file" ? mockFile : null),
+    };
+
+    const result = await scanReceiptBulk(mockFormData as any);
+
+    expect(result).toEqual(mockParsedBulk);
+    expect(parser.parseReceiptBulk).toHaveBeenCalled();
+
+    const expectedBase64 = Buffer.from(fileContent).toString("base64");
+    expect(parser.parseReceiptBulk).toHaveBeenCalledWith(
+      expectedBase64,
+      "image/jpeg",
+    );
+  });
+
+  it("should throw error if file is missing", async () => {
+    const mockFormData = {
+      get: () => null,
+    };
+
+    await expect(scanReceiptBulk(mockFormData as any)).rejects.toThrow(
       "ファイルが見つかりません",
     );
   });
