@@ -27,7 +27,7 @@ export default async function LandingPage() {
 
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70">
             資産管理を、
-            <br className="md:hidden" />
+            <br />
             もっとシンプルに。
           </h1>
 

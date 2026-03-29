@@ -9,7 +9,7 @@ description: How to implement a new feature from planning to merge
 > - ALL work (features, fixes, docs, chores) MUST be done on a dedicated branch first.
 > - Branch types: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 > - Even single-file changes (docs, config) require a branch.
-> - **NEVER manually close Issues**. Issues are closed automatically when the PR with `Closes #<number>` is merged.
+> - **Issue closing**: Feature PRs (→ `develop`) should reference Issues (e.g. `Relates to #<number>`) for traceability. **Release PRs (`release/vX.Y.Z` → `main`)** must include `Closes #<number>` for all Issues resolved in that release — GitHub auto-closes Issues only on merge to the default branch (`main`).
 > - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text and comments in code may be in Japanese.
 
 ## 1. Create Issue
@@ -69,7 +69,9 @@ npx playwright test --project=chromium --workers=1
 - Quality checklist (Step 5) is satisfied
 
 Push the branch and create a PR targeting `develop`.
-**Include `Closes #<issue-number>` in the PR body** to auto-close the Issue on merge.
+**Include `Relates to #<issue-number>` in the PR body** for traceability (do NOT use `Closes` here — it won't work on non-default branches).
+
+> ⚠️ `Closes #` only auto-closes Issues on merge to `main`. All `Closes #` references should be consolidated in the **release PR** (see release workflow).
 
 ```bash
 git push origin <branch-name>

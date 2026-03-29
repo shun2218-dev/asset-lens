@@ -57,6 +57,8 @@ gh pr create --base main --head release/v<VERSION> --title "Release v<VERSION>" 
 ```
 PR description should include: New Features, Bug Fixes, Improvements, Test Results, Migration Notes.
 
+> **⚠️ IMPORTANT**: Include `Closes #<number>` for **every Issue** resolved in this release. This is the only place where Issues get auto-closed (GitHub only auto-closes on merge to the default branch `main`).
+
 ## 6. After PR Merge — Tag & Release
 ```bash
 git checkout main && git pull origin main
@@ -74,8 +76,12 @@ git branch -d release/v<VERSION>
 git push origin --delete release/v<VERSION>
 ```
 
-## 8. Close Related Issues
+## 8. Verify Issues Closed
+After the release PR is merged, verify that all referenced Issues were auto-closed:
+```bash
+gh issue list --state open --json number,title
+```
+If any Issues that should be closed are still open, it means they were not referenced with `Closes #` in the release PR. Fix by manually closing:
 ```bash
 gh issue close <NUMBER> --reason completed
 ```
-Or reference `Closes #<NUMBER>` in the PR body for auto-close on merge.
