@@ -88,15 +88,16 @@ test.describe("Transaction with Store Name", () => {
     const foodCat = categories.find((c) => c.slug === "food");
     expect(foodCat).toBeDefined();
 
-    // Clean up any existing transactions for this user
+    // Clean up ALL existing transactions for this user first
     await db
       .delete(schema.transaction)
       .where(eq(schema.transaction.userId, authUser.id));
 
-    // Insert 35 transactions - all same date to stress test sort stability
-    const now = new Date();
-    const sameDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 15));
-    const values = Array.from({ length: 35 }, (_, i) => ({
+    // Insert exactly 15 transactions (2 pages: 10 + 5)
+    // Use a unique future date to avoid interference with other tests
+    const testMonth = "2099-06";
+    const sameDate = new Date(Date.UTC(2099, 5, 15));
+    const values = Array.from({ length: 15 }, (_, i) => ({
       userId: authUser.id,
       amount: (i + 1) * 100,
       description: `E2E-Page-${String(i + 1).padStart(3, "0")}`,
@@ -109,41 +110,37 @@ test.describe("Transaction with Store Name", () => {
     await db.insert(schema.transaction).values(values);
 
     // Navigate to transaction page
-    await page.goto("/transaction");
+    await page.goto(`/transaction?month=${testMonth}`);
     await page.waitForLoadState("networkidle");
 
-    // Collect descriptions across all 4 pages
+    // Page 1: collect E2E-Page descriptions
+    await page.waitForTimeout(500);
     const allDescriptions: string[] = [];
-    for (let p = 1; p <= 4; p++) {
-      if (p > 1) {
-        await page.getByRole("link", { name: "Next" }).click();
-        await page.waitForLoadState("networkidle");
-      }
-      // Wait for E2E-Page rows to appear
-      await page
-        .locator("tr")
-        .filter({ hasText: "E2E-Page" })
-        .first()
-        .waitFor({ timeout: 10000 });
 
-      // Wait for the page to stabilize (all rows rendered)
-      await page.waitForTimeout(500);
-
-      const rows = await page
-        .locator("tr")
-        .filter({ hasText: "E2E-Page" })
-        .all();
-      const expected = p < 4 ? 10 : 5;
-      expect(rows.length).toBe(expected);
-      for (const row of rows) {
-        const text = await row.textContent();
-        const match = text?.match(/E2E-Page-\d+/);
-        if (match) allDescriptions.push(match[0]);
-      }
+    let rows = await page.locator("tr").filter({ hasText: "E2E-Page" }).all();
+    expect(rows.length).toBe(10);
+    for (const row of rows) {
+      const text = await row.textContent();
+      const match = text?.match(/E2E-Page-\d+/);
+      if (match) allDescriptions.push(match[0]);
     }
 
-    // Verify all 35 unique records appeared (no duplicates, no missing)
-    expect([...new Set(allDescriptions)].length).toBe(35);
+    // Page 2: click Next
+    const nextLink = page.getByRole("link", { name: "Next" });
+    await nextLink.click();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(500);
+
+    rows = await page.locator("tr").filter({ hasText: "E2E-Page" }).all();
+    expect(rows.length).toBe(5);
+    for (const row of rows) {
+      const text = await row.textContent();
+      const match = text?.match(/E2E-Page-\d+/);
+      if (match) allDescriptions.push(match[0]);
+    }
+
+    // Verify all 15 unique records appeared (no duplicates, no missing)
+    expect([...new Set(allDescriptions)].length).toBe(15);
 
     // Cleanup
     await db

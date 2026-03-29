@@ -281,3 +281,38 @@ export const passkeyRelations = relations(passkey, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+// Budget: hybrid model
+// categoryId = null → overall monthly budget (parent)
+// categoryId = uuid → per-category budget (child)
+export const budget = pgTable("budget", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  categoryId: uuid("category_id").references(() => category.id, {
+    onDelete: "cascade",
+  }),
+  amount: integer("amount").notNull(),
+  createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export type SelectBudget = typeof budget.$inferSelect;
+export type InsertBudget = typeof budget.$inferInsert;
+
+export const budgetRelations = relations(budget, ({ one }) => ({
+  user: one(user, {
+    fields: [budget.userId],
+    references: [user.id],
+  }),
+  category: one(category, {
+    fields: [budget.categoryId],
+    references: [category.id],
+  }),
+}));

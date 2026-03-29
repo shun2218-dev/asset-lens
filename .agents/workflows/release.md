@@ -1,0 +1,81 @@
+---
+description: How to create a production release from develop to main
+---
+
+# Release Workflow
+
+// turbo-all
+
+> **📦 RELEASE CADENCE POLICY:**
+> - **Minor releases (features)**: Batch related features into a single release. Don't release per-feature unless the feature is standalone and high-impact.
+> - **Patch releases (fixes)**: Release immediately for critical bug fixes or security issues.
+> - **Judgment call**: If multiple features are planned in sequence, complete them all before releasing. If there's a natural pause (waiting for user feedback), release what's ready.
+
+## Prerequisites
+- All features merged into `develop`
+- All tests passing
+- Lint errors resolved
+
+## 1. Run All Tests
+```bash
+npx vitest run
+```
+```bash
+npx playwright test --project=chromium --workers=1
+```
+
+## 2. Run Linter
+```bash
+npx biome check --write .
+npx biome check . --diagnostic-level=error
+```
+
+## 3. Create Release Branch
+Determine version bump (major.minor.patch):
+- **major**: breaking changes
+- **minor**: new features
+- **patch**: bug fixes only
+
+```bash
+git checkout -b release/v<VERSION> develop
+```
+
+## 4. Update CHANGELOG & Docs (MANDATORY)
+On the release branch:
+- Move `[Unreleased]` entries in `CHANGELOG.md` to a new `[<VERSION>] - <DATE>` section
+- Update `README.md` if features affect usage or setup
+- Update `package.json` version field
+
+```bash
+git add -A && git commit -m "chore: bump version to <VERSION>"
+git push origin release/v<VERSION>
+```
+
+## 5. Create PR
+```bash
+gh pr create --base main --head release/v<VERSION> --title "Release v<VERSION>" --body "<release notes in English>"
+```
+PR description should include: New Features, Bug Fixes, Improvements, Test Results, Migration Notes.
+
+## 6. After PR Merge — Tag & Release
+```bash
+git checkout main && git pull origin main
+git tag v<VERSION>
+git push origin v<VERSION>
+gh release create v<VERSION> --title "v<VERSION>" --notes "<release notes>"
+```
+
+## 7. Sync develop & Clean Up
+```bash
+git checkout develop
+git merge release/v<VERSION> --no-ff -m "Merge branch 'release/v<VERSION>' into develop"
+git push origin develop
+git branch -d release/v<VERSION>
+git push origin --delete release/v<VERSION>
+```
+
+## 8. Close Related Issues
+```bash
+gh issue close <NUMBER> --reason completed
+```
+Or reference `Closes #<NUMBER>` in the PR body for auto-close on merge.
