@@ -88,6 +88,11 @@ test.describe("Transaction with Store Name", () => {
     const foodCat = categories.find((c) => c.slug === "food");
     expect(foodCat).toBeDefined();
 
+    // Clean up any existing transactions for this user
+    await db
+      .delete(schema.transaction)
+      .where(eq(schema.transaction.userId, authUser.id));
+
     // Insert 35 transactions - all same date to stress test sort stability
     const now = new Date();
     const sameDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 15));
@@ -112,8 +117,18 @@ test.describe("Transaction with Store Name", () => {
     for (let p = 1; p <= 4; p++) {
       if (p > 1) {
         await page.getByRole("link", { name: "Next" }).click();
-        await page.waitForTimeout(2000);
+        await page.waitForLoadState("networkidle");
       }
+      // Wait for E2E-Page rows to appear
+      await page
+        .locator("tr")
+        .filter({ hasText: "E2E-Page" })
+        .first()
+        .waitFor({ timeout: 10000 });
+
+      // Wait for the page to stabilize (all rows rendered)
+      await page.waitForTimeout(500);
+
       const rows = await page
         .locator("tr")
         .filter({ hasText: "E2E-Page" })
