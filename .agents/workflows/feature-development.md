@@ -17,6 +17,7 @@ description: How to implement a new feature from planning to merge
 > 1. Run `git branch --show-current` to confirm you are NOT on `develop` or `main`
 > 2. If you are on `develop` or `main`, STOP and create a branch first (`git checkout -b <type>/<name>`)
 > 3. No exceptions — even for "trivial" changes (formatting, config, package installs)
+> 4. **NEVER use `--no-verify`** — husky hooks enforce lint/format and must always run
 
 ## 1. Create Issue
 // turbo
