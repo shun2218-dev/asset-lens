@@ -3,7 +3,9 @@
 import { format } from "date-fns";
 import { CalendarIcon, Loader2, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createStore } from "@/app/actions/store/create";
 import { CategorySelect } from "@/components/features/category/category-select";
+import { StoreSelect } from "@/components/features/store/store-select";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -21,27 +23,48 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { SelectCategory } from "@/db/schema";
+import type { SelectCategory, SelectStore } from "@/db/schema";
 import { useBulkTransactionForm } from "@/hooks/use-bulk-transaction-form";
 import { useSession } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 
 interface BulkTransactionFormProps {
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
-export function BulkTransactionForm({ categories }: BulkTransactionFormProps) {
+export function BulkTransactionForm({ categories, stores: initialStores }: BulkTransactionFormProps) {
   const { data: session } = useSession();
 
   const { form, fields, addEntry, removeEntry, onSubmit, isSubmitting } =
     useBulkTransactionForm();
 
   const [mounted, setMounted] = useState(false);
+  const [stores, setStores] = useState(initialStores);
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted || !session) return null;
+
+  const handleCreateStore = async (name: string) => {
+    const result = await createStore(name);
+    if (result.success && result.id) {
+      setStores((prev) => {
+        if (prev.some((s) => s.name === name)) return prev;
+        return [
+          ...prev,
+          {
+            id: result.id as string,
+            name,
+            userId: session.user.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ];
+      });
+    }
+  };
 
   return (
     <Form {...form}>
@@ -201,6 +224,24 @@ export function BulkTransactionForm({ categories }: BulkTransactionFormProps) {
                     )}
                   />
                 </div>
+
+                {/* Store */}
+                <FormField
+                  control={form.control}
+                  name={`entries.${index}.storeName`}
+                  render={({ field: entryField }) => (
+                    <FormItem>
+                      <FormLabel>店舗・サービス名</FormLabel>
+                      <StoreSelect
+                        value={entryField.value ?? ""}
+                        onChange={entryField.onChange}
+                        stores={stores}
+                        onCreateStore={handleCreateStore}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 {/* Description */}
                 <FormField

@@ -134,7 +134,7 @@ export function DashboardView({
                   <TransactionForm categories={categories} stores={stores} />
                 </TabsContent>
                 <TabsContent value="bulk">
-                  <BulkTransactionForm categories={categories} />
+                  <BulkTransactionForm categories={categories} stores={stores} />
                 </TabsContent>
               </Tabs>
             </CardContent>
