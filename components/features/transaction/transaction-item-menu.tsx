@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { SelectCategory, SelectStore } from "@/db/schema";
 import { TransactionForm } from "./transaction-form";
+import type { OptimisticDeleteFn } from "./transaction-list";
 
 interface TransactionItemMenuProps {
   transaction: {
@@ -45,30 +46,32 @@ interface TransactionItemMenuProps {
   };
   categories: SelectCategory[];
   stores: SelectStore[];
+  onOptimisticDelete?: OptimisticDeleteFn;
 }
 
 export function TransactionItemMenu({
   transaction,
   categories,
   stores,
+  onOptimisticDelete,
 }: TransactionItemMenuProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   const handleDelete = () => {
-    // confirm は削除
+    setShowDeleteDialog(false);
 
-    const toastId = toast.loading("削除しています...");
+    const rollback = onOptimisticDelete?.(transaction.id);
 
     startTransition(async () => {
       const result = await deleteTransaction(transaction.id);
 
       if (result.success) {
-        toast.success("削除しました", { id: toastId });
-        setShowDeleteDialog(false);
+        toast.success("削除しました");
       } else {
-        toast.error("削除に失敗しました", { id: toastId });
+        rollback?.restore();
+        toast.error("削除に失敗しました");
       }
     });
   };

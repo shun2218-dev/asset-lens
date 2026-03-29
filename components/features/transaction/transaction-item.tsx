@@ -6,17 +6,20 @@ import type {
   SelectTransaction,
 } from "@/db/schema";
 import { TransactionItemMenu } from "./transaction-item-menu";
+import type { OptimisticDeleteFn } from "./transaction-list";
 
-interface TransactionItemProps {
+export interface TransactionItemProps {
   data: SelectTransaction;
   categories: SelectCategory[];
   stores: SelectStore[];
+  onOptimisticDelete?: OptimisticDeleteFn;
 }
 
 export function TransactionItem({
   data,
   categories,
   stores,
+  onOptimisticDelete,
 }: TransactionItemProps) {
   return (
     <TableRow key={data.id}>
@@ -45,6 +48,7 @@ export function TransactionItem({
           transaction={data}
           categories={categories}
           stores={stores}
+          onOptimisticDelete={onOptimisticDelete}
         />
       </TableCell>
     </TableRow>

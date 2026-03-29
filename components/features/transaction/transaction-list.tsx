@@ -35,6 +35,8 @@ interface TransactionListProps {
   showFilters?: boolean;
 }
 
+export type OptimisticDeleteFn = (id: string) => { restore: () => void };
+
 export function TransactionList({
   initialData,
   initialMetadata,
@@ -55,6 +57,17 @@ export function TransactionList({
     setTransactions(initialData);
     setMetadata(initialMetadata);
   }, [initialMetadata, initialData]);
+
+  const optimisticDelete: OptimisticDeleteFn = useCallback(
+    (id: string) => {
+      const prev = transactions;
+      setTransactions((t) => t.filter((item) => item.id !== id));
+      return {
+        restore: () => setTransactions(prev),
+      };
+    },
+    [transactions],
+  );
 
   // データを取得する共通関数
   const fetchData = useCallback(
@@ -152,6 +165,7 @@ export function TransactionList({
               key={t.id}
               categories={categories}
               stores={stores}
+              onOptimisticDelete={optimisticDelete}
             />
           ))}
           {transactions.length === 0 && (
