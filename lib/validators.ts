@@ -18,6 +18,33 @@ export const transactionSchema = z.object({
 
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
 
+export const bulkTransactionEntrySchema = z.object({
+  amount: z
+    .number("金額は数字で入力してください")
+    .positive("金額は1以上で入力してください"),
+  description: z.string().min(1, "用途を入力してください"),
+  category: z.string().min(1, "カテゴリを選択してください"),
+  isExpense: z.boolean(),
+});
+
+export const bulkTransactionSchema = z.object({
+  userId: z.string().min(1, "ユーザーIDが必要です"),
+  date: z.date({
+    error: (issue) => {
+      if (issue.input === undefined) return "日付を選択してください";
+      return "無効な日付です";
+    },
+  }),
+  entries: z
+    .array(bulkTransactionEntrySchema)
+    .min(1, "少なくとも1件のデータが必要です"),
+});
+
+export type BulkTransactionEntryValues = z.infer<
+  typeof bulkTransactionEntrySchema
+>;
+export type BulkTransactionFormValues = z.infer<typeof bulkTransactionSchema>;
+
 export const signInSchema = z.object({
   email: z
     .email("メールアドレスの形式で入力してください")

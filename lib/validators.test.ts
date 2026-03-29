@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { transactionSchema } from "./validators";
+import { bulkTransactionSchema, transactionSchema } from "./validators";
 
 describe("transactionSchema", () => {
   it("should validate a valid transaction", () => {
@@ -71,6 +71,74 @@ describe("transactionSchema", () => {
       isExpense: true,
     };
     const result = transactionSchema.safeParse(invalidData);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("bulkTransactionSchema", () => {
+  it("should validate a valid bulk transaction", () => {
+    const validData = {
+      userId: "user-123",
+      date: new Date(),
+      entries: [
+        {
+          amount: 1000,
+          description: "Lunch",
+          category: "food",
+          isExpense: true,
+        },
+        {
+          amount: 2000,
+          description: "Dinner",
+          category: "food",
+          isExpense: true,
+        },
+      ],
+    };
+    const result = bulkTransactionSchema.safeParse(validData);
+    expect(result.success).toBe(true);
+  });
+
+  it("should fail with empty entries", () => {
+    const invalidData = {
+      userId: "user-123",
+      date: new Date(),
+      entries: [],
+    };
+    const result = bulkTransactionSchema.safeParse(invalidData);
+    expect(result.success).toBe(false);
+  });
+
+  it("should fail if an entry has invalid amount", () => {
+    const invalidData = {
+      userId: "user-123",
+      date: new Date(),
+      entries: [
+        {
+          amount: 0,
+          description: "Test",
+          category: "food",
+          isExpense: true,
+        },
+      ],
+    };
+    const result = bulkTransactionSchema.safeParse(invalidData);
+    expect(result.success).toBe(false);
+  });
+
+  it("should fail if date is missing", () => {
+    const invalidData = {
+      userId: "user-123",
+      entries: [
+        {
+          amount: 1000,
+          description: "Test",
+          category: "food",
+          isExpense: true,
+        },
+      ],
+    };
+    const result = bulkTransactionSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
 });

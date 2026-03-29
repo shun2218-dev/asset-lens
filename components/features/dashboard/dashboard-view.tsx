@@ -4,8 +4,10 @@ import { CategoryPie } from "@/components/features/dashboard/charts/category-pie
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
+import { BulkTransactionForm } from "@/components/features/transaction/bulk-transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { SelectCategory, SelectTransaction } from "@/db/schema";
 import type {
   CategoryStats,
@@ -121,7 +123,18 @@ export function DashboardView({
               <CardTitle>新規入力</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm categories={categories} />
+              <Tabs defaultValue="single" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="single">通常入力</TabsTrigger>
+                  <TabsTrigger value="bulk">一括入力</TabsTrigger>
+                </TabsList>
+                <TabsContent value="single">
+                  <TransactionForm categories={categories} />
+                </TabsContent>
+                <TabsContent value="bulk">
+                  <BulkTransactionForm categories={categories} />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>
