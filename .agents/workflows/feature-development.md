@@ -45,8 +45,14 @@ Before creating a PR, ensure:
 - [ ] Storybook stories for all new/modified UI components
 - [ ] Unit tests for all new/modified server actions
 - [ ] E2E tests for new user-facing features
-- [ ] Lint & format pass (`npx biome check . --diagnostic-level=error`)
+- [ ] All tests pass (unit + E2E)
 
+### Test Execution Strategy
+Husky hooks handle fast feedback automatically:
+- **pre-commit**: `lint-staged` (biome check/format on staged files only) — instant
+- **pre-push**: `vitest --changed` (unit tests related to changed files only) — fast
+
+**Before creating a PR**, run the full suite manually:
 // turbo
 ```bash
 npx vitest run
@@ -54,11 +60,6 @@ npx vitest run
 // turbo
 ```bash
 npx playwright test --project=chromium --workers=1
-```
-// turbo
-```bash
-npx biome check --write .
-npx biome check . --diagnostic-level=error
 ```
 
 ## 6. Push Branch & Create PR
