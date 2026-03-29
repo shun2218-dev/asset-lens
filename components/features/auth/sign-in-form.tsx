@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -65,15 +64,15 @@ export function SignInForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>パスワード</FormLabel>
-              <FormDescription>
+              <div className="flex items-center justify-between">
+                <FormLabel>パスワード</FormLabel>
                 <Link
                   href="/forget-password"
-                  className="text-sm text-muted-foreground hover:underline"
+                  className="text-xs text-muted-foreground hover:underline"
                 >
                   パスワードを忘れた場合
                 </Link>
-              </FormDescription>
+              </div>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -86,7 +85,6 @@ export function SignInForm() {
           type="submit"
           className="w-full"
           disabled={isLoading}
-          variant="secondary"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           ログイン

@@ -36,6 +36,7 @@ export function GuestView() {
           <Button
             onClick={handlePasskeySignIn}
             disabled={isLoading}
+            variant="outline"
             className="w-full h-12 text-base font-semibold shadow-sm"
             size="lg"
           >
