@@ -23,9 +23,27 @@ type Story = StoryObj<typeof StoreSelect>;
 const now = new Date();
 
 const mockStores = [
-  { id: "s-1", userId: "u-1", name: "セブンイレブン", createdAt: now, updatedAt: now },
-  { id: "s-2", userId: "u-1", name: "ファミリーマート", createdAt: now, updatedAt: now },
-  { id: "s-3", userId: "u-1", name: "スターバックス", createdAt: now, updatedAt: now },
+  {
+    id: "s-1",
+    userId: "u-1",
+    name: "セブンイレブン",
+    createdAt: now,
+    updatedAt: now,
+  },
+  {
+    id: "s-2",
+    userId: "u-1",
+    name: "ファミリーマート",
+    createdAt: now,
+    updatedAt: now,
+  },
+  {
+    id: "s-3",
+    userId: "u-1",
+    name: "スターバックス",
+    createdAt: now,
+    updatedAt: now,
+  },
 ];
 
 export const Default: Story = {

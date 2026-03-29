@@ -95,3 +95,9 @@ git pull origin develop
 git branch -d <branch-name>
 ```
 
+## CI (Automated)
+GitHub Actions runs automatically on every PR:
+- **All PRs → develop/main**: Lint + Unit/Storybook tests
+- **PRs → main only**: E2E tests (requires secrets)
+
+CI must pass before merge. See `.github/workflows/ci.yml`.

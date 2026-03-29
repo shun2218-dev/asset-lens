@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
-import { applyStoreNameMigration, getTransactionsWithoutStore } from "./migrate-store";
+import {
+  applyStoreNameMigration,
+  getTransactionsWithoutStore,
+} from "./migrate-store";
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
@@ -38,7 +41,14 @@ describe("getTransactionsWithoutStore", () => {
 
   it("should return transactions without store name", async () => {
     const mockRows = [
-      { id: "tx-1", description: "ファミマ おにぎり", storeName: null, date: new Date(), amount: 300, category: "food" },
+      {
+        id: "tx-1",
+        description: "ファミマ おにぎり",
+        storeName: null,
+        date: new Date(),
+        amount: 300,
+        category: "food",
+      },
     ];
     const orderByMock = vi.fn().mockResolvedValue(mockRows);
     const whereMock = vi.fn().mockReturnValue({ orderBy: orderByMock });
