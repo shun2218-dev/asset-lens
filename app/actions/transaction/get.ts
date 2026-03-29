@@ -53,14 +53,22 @@ export async function getTransaction(
     }
 
     // Filter: date range
+    // Calendar picker returns local timezone dates (e.g. JST 3/23 00:00 = UTC 3/22 15:00),
+    // but DB stores dates as UTC midnight. Normalize to UTC midnight for correct comparison.
     if (filters?.dateFrom) {
-      conditions.push(gte(transaction.date, filters.dateFrom));
+      const d = filters.dateFrom;
+      const utcFrom = new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()),
+      );
+      conditions.push(gte(transaction.date, utcFrom));
     }
     if (filters?.dateTo) {
-      // dateTo is inclusive: add 1 day
-      const dateToEnd = new Date(filters.dateTo);
-      dateToEnd.setDate(dateToEnd.getDate() + 1);
-      conditions.push(lt(transaction.date, dateToEnd));
+      // dateTo is inclusive: use next day UTC midnight as exclusive upper bound
+      const d = filters.dateTo;
+      const utcToEnd = new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate() + 1),
+      );
+      conditions.push(lt(transaction.date, utcToEnd));
     }
 
     // Filter: category
