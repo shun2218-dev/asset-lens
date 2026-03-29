@@ -25,12 +25,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { SelectSubscription } from "@/db/schema";
 import { useSubscriptionForm } from "@/hooks/use-subscription-form";
-import { EXPENSE_CATEGORY_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
-  const { form, isPending, onSubmit } = useSubscriptionForm({ onSuccess });
+interface SubscriptionFormProps {
+  onSuccess?: () => void;
+  editTarget?: SelectSubscription | null;
+  onCancel?: () => void;
+}
+
+export function SubscriptionForm({
+  onSuccess,
+  editTarget,
+  onCancel,
+}: SubscriptionFormProps) {
+  const { form, isPending, isEditing, onSubmit } = useSubscriptionForm({
+    onSuccess,
+    editTarget,
+  });
 
   return (
     <Form {...form}>
@@ -85,7 +98,7 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
                 <FormLabel>支払いサイクル</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
@@ -103,80 +116,64 @@ export function SubscriptionForm({ onSuccess }: { onSuccess?: () => void }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="nextPaymentDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>次回の支払日</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "yyyy/MM/dd")
-                        ) : (
-                          <span>日付を選択</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date("1900-01-01")}
-                      autoFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>カテゴリ</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+        <FormField
+          control={form.control}
+          name="nextPaymentDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>次回の支払日</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
                   <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="選択してください" />
-                    </SelectTrigger>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground",
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "yyyy/MM/dd")
+                      ) : (
+                        <span>日付を選択</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
                   </FormControl>
-                  <SelectContent>
-                    {EXPENSE_CATEGORY_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < new Date("1900-01-01")}
+                    autoFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          登録する
-        </Button>
+        {/* カテゴリは「subscription」固定 (hidden) */}
+        <input type="hidden" {...form.register("category")} />
+
+        <div className="flex gap-2">
+          <Button type="submit" className="flex-1" disabled={isPending}>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isEditing ? "更新する" : "登録する"}
+          </Button>
+          {isEditing && onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+            >
+              キャンセル
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
