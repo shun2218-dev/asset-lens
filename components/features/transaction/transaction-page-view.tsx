@@ -1,7 +1,7 @@
 "use client";
 
 import { TransactionList } from "@/components/features/transaction/transaction-list";
-import type { SelectCategory, SelectTransaction } from "@/db/schema";
+import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
 import type { TransactionMetadata } from "@/types";
 
 interface TransactionPageViewProps {
@@ -9,6 +9,7 @@ interface TransactionPageViewProps {
   metadata: TransactionMetadata;
   currentMonth: string;
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
 export function TransactionPageView({
@@ -16,6 +17,7 @@ export function TransactionPageView({
   metadata,
   currentMonth,
   categories,
+  stores,
 }: TransactionPageViewProps) {
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10 space-y-8 min-h-screen">
@@ -31,6 +33,7 @@ export function TransactionPageView({
         initialMetadata={metadata}
         currentMonth={currentMonth}
         categories={categories}
+        stores={stores}
       />
     </main>
   );

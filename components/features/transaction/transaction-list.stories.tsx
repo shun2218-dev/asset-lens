@@ -42,6 +42,7 @@ const mockTransactions = [
     userId: "user-1",
     amount: 1000,
     description: "Lunch",
+    storeName: null,
     date: new Date("2024-01-01"),
     isExpense: true,
     category: "food",
@@ -54,6 +55,7 @@ const mockTransactions = [
     userId: "user-1",
     amount: 5000,
     description: "Dinner",
+    storeName: "スーパー",
     date: new Date("2024-01-02"),
     isExpense: true,
     category: "food",
@@ -66,6 +68,7 @@ const mockTransactions = [
     userId: "user-1",
     amount: 200000,
     description: "Salary",
+    storeName: null,
     date: new Date("2024-01-25"),
     isExpense: false,
     category: "salary",
@@ -85,6 +88,7 @@ export const Default: Story = {
     },
     currentMonth: "2024-01",
     categories: mockCategories,
+    stores: [],
   },
 };
 
@@ -98,5 +102,6 @@ export const Empty: Story = {
     },
     currentMonth: "2024-01",
     categories: mockCategories,
+    stores: [],
   },
 };

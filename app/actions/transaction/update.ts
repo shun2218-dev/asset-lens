@@ -31,6 +31,7 @@ export async function updateTransaction(
       .set({
         amount: data.amount,
         description: data.description,
+        storeName: data.storeName ?? null,
         category: categoryData.slug, // Legacy column: use slug
         categoryId: data.category, // New column: use UUID
         date: data.date,

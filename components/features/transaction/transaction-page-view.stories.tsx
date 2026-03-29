@@ -40,6 +40,7 @@ const mockTransactions = [
     id: "t1",
     amount: 1200,
     description: "Lunch",
+    storeName: "コンビニ",
     category: "food",
     categoryId: "1",
     date: new Date(),
@@ -52,6 +53,7 @@ const mockTransactions = [
     id: "t2",
     amount: 500000,
     description: "Salary",
+    storeName: null,
     category: "salary",
     categoryId: "2",
     date: new Date(),
@@ -64,6 +66,7 @@ const mockTransactions = [
     id: "t3",
     amount: 500,
     description: "Coffee",
+    storeName: "カフェ",
     category: "food",
     categoryId: "1",
     date: new Date(),
@@ -88,6 +91,7 @@ export const Default: Story = {
     metadata: mockMetadata,
     currentMonth: "2024-01",
     categories: mockCategories,
+    stores: [],
   },
 };
 
@@ -103,5 +107,6 @@ export const Empty: Story = {
     },
     currentMonth: "2024-01",
     categories: mockCategories,
+    stores: [],
   },
 };

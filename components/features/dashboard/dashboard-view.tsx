@@ -6,7 +6,7 @@ import { MonthSelector } from "@/components/features/dashboard/month-selector";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SelectCategory, SelectTransaction } from "@/db/schema";
+import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
 import type {
   CategoryStats,
   MonthlyStats,
@@ -22,6 +22,7 @@ interface DashboardViewProps {
   transactions: SelectTransaction[];
   metadata: TransactionMetadata;
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
 export function DashboardView({
@@ -32,6 +33,7 @@ export function DashboardView({
   transactions,
   metadata,
   categories,
+  stores,
 }: DashboardViewProps) {
   // グラフ用にデータを変換 (Adapter Pattern)
   // MonthlyChart: { month, income, expense } -> { name, income, expense }
@@ -121,7 +123,7 @@ export function DashboardView({
               <CardTitle>新規入力</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm categories={categories} />
+              <TransactionForm categories={categories} stores={stores} />
             </CardContent>
           </Card>
         </div>
@@ -138,6 +140,7 @@ export function DashboardView({
                 initialMetadata={metadata}
                 currentMonth={currentMonth}
                 categories={categories}
+                stores={stores}
               />
             </CardContent>
           </Card>

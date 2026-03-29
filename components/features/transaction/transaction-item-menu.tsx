@@ -28,7 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { SelectCategory } from "@/db/schema";
+import type { SelectCategory, SelectStore } from "@/db/schema";
 import { TransactionForm } from "./transaction-form";
 
 interface TransactionItemMenuProps {
@@ -37,17 +37,20 @@ interface TransactionItemMenuProps {
     userId: string;
     amount: number;
     description: string;
+    storeName?: string | null;
     category: string;
     categoryId?: string | null;
     date: Date;
     isExpense: boolean;
   };
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
 export function TransactionItemMenu({
   transaction,
   categories,
+  stores,
 }: TransactionItemMenuProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -134,8 +137,9 @@ export function TransactionItemMenu({
             id={transaction.id}
             initialData={{
               userId: transaction.userId,
-              amount: transaction.amount, // 必要に応じて Math.abs(transaction.amount)
+              amount: transaction.amount,
               description: transaction.description,
+              storeName: transaction.storeName ?? "",
               category:
                 transaction.categoryId ??
                 categories.find(
@@ -148,8 +152,9 @@ export function TransactionItemMenu({
               isExpense: transaction.isExpense,
             }}
             categories={categories}
-            onSuccess={() => setShowEditDialog(false)} // 成功したら閉じる
-            onCancel={() => setShowEditDialog(false)} // キャンセルしたら閉じる
+            stores={stores}
+            onSuccess={() => setShowEditDialog(false)}
+            onCancel={() => setShowEditDialog(false)}
           />
         </DialogContent>
       </Dialog>

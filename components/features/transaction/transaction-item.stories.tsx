@@ -53,6 +53,7 @@ export const Expense: Story = {
       userId: "user-1",
       amount: 1000,
       description: "Lunch",
+      storeName: "コンビニ",
       date: new Date("2024-01-01"),
       isExpense: true,
       category: "food",
@@ -61,6 +62,7 @@ export const Expense: Story = {
       updatedAt: new Date(),
     },
     categories: mockCategories,
+    stores: [],
   },
 };
 
@@ -71,6 +73,7 @@ export const Income: Story = {
       userId: "user-1",
       amount: 200000,
       description: "Salary",
+      storeName: null,
       date: new Date("2024-01-25"),
       isExpense: false,
       category: "salary",
@@ -79,5 +82,6 @@ export const Income: Story = {
       updatedAt: new Date(),
     },
     categories: mockCategories,
+    stores: [],
   },
 };

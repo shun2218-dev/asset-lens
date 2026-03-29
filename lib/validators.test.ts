@@ -7,6 +7,20 @@ describe("transactionSchema", () => {
       userId: "user-123",
       amount: 1000,
       description: "Test transaction",
+      storeName: "テスト店舗",
+      category: "food",
+      date: new Date(),
+      isExpense: true,
+    };
+    const result = transactionSchema.safeParse(validData);
+    expect(result.success).toBe(true);
+  });
+
+  it("should validate a transaction without storeName", () => {
+    const validData = {
+      userId: "user-123",
+      amount: 1000,
+      description: "Test transaction",
       category: "food",
       date: new Date(),
       isExpense: true,
