@@ -1,9 +1,18 @@
 "use client";
 
 import { LogIn, LogOut, Settings, User, Wallet } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { QuickEntryDialog } from "@/components/features/transaction/quick-entry-dialog";
+
+const QuickEntryDialog = dynamic(
+  () =>
+    import("@/components/features/transaction/quick-entry-dialog").then(
+      (mod) => mod.QuickEntryDialog,
+    ),
+  { ssr: false },
+);
+
 import { ThemeToggle } from "@/components/layouts/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
