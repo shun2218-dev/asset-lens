@@ -97,9 +97,14 @@ describe("Cron: process-subscriptions", () => {
     // The implementation uses db.transaction(async (tx) => { ... })
     // We should execute the callback immediately with a mock tx object
 
-    // Mock Transaction Object
+    // Mock Transaction Object - capture insert values
+    let capturedInsertValues: Record<string, unknown> = {};
     const txMock = {
-      insert: vi.fn().mockReturnValue({ values: vi.fn() }),
+      insert: vi.fn().mockReturnValue({
+        values: vi.fn().mockImplementation((vals) => {
+          capturedInsertValues = vals;
+        }),
+      }),
       update: vi
         .fn()
         .mockReturnValue({ set: vi.fn().mockReturnValue({ where: vi.fn() }) }),
@@ -115,8 +120,10 @@ describe("Cron: process-subscriptions", () => {
     expect(body.success).toBe(true);
     expect(body.processed).toEqual(["Netflix"]);
 
-    // Verify insert (created transaction)
+    // Verify insert (created transaction with storeName)
     expect(txMock.insert).toHaveBeenCalled();
+    expect(capturedInsertValues.storeName).toBe("Netflix");
+    expect(capturedInsertValues.description).toBe("サブスク");
 
     // Verify update (next payment date)
     expect(txMock.update).toHaveBeenCalled();

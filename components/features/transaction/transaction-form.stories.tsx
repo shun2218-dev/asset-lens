@@ -39,6 +39,7 @@ const mockCategories = [
 export const Create: Story = {
   args: {
     categories: mockCategories,
+    stores: [],
   },
 };
 
@@ -49,10 +50,12 @@ export const Edit: Story = {
       userId: "user-1",
       amount: 1500,
       description: "Lunch Bento",
+      storeName: "コンビニ",
       category: "food",
       date: new Date("2024-02-01"),
       isExpense: true,
     },
     categories: mockCategories,
+    stores: [],
   },
 };

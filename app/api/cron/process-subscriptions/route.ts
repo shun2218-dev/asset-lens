@@ -37,9 +37,10 @@ export async function GET(req: Request) {
           await tx.insert(transaction).values({
             userId: sub.userId,
             amount: sub.amount,
-            description: sub.name, // "Netflix" など
+            description: "サブスク",
+            storeName: sub.name, // "Netflix" など
             category: sub.category,
-            date: new Date(), // 記録日は「今」
+            date: new Date(),
             isExpense: true,
           });
 

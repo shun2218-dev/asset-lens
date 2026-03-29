@@ -1,15 +1,14 @@
 "use client";
 
 import type { Session } from "better-auth";
-import { format } from "date-fns";
-import { AlertTriangle, CreditCard, FileText, Shield } from "lucide-react";
+import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
-import { SubscriptionForm } from "@/components/features/subscription/subscription-form";
-import { Badge } from "@/components/ui/badge";
+import { StoreNameMigrationTool } from "@/components/features/settings/store-name-migration-tool";
+import { SubscriptionList } from "@/components/features/subscription/subscription-list";
 import {
   Card,
   CardContent,
@@ -49,8 +48,9 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:w-100">
+        <TabsList className="grid w-full grid-cols-3 lg:w-150">
           <TabsTrigger value="account">アカウント</TabsTrigger>
+          <TabsTrigger value="data">データ管理</TabsTrigger>
           <TabsTrigger value="subscription">サブスクリプション</TabsTrigger>
         </TabsList>
 
@@ -66,23 +66,6 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
             <PasskeySettings />
             <PasswordSettings />
           </section>
-
-          {/* データ管理 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                データ管理
-              </CardTitle>
-              <CardDescription>データの入出力</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CardContent className="flex flex-wrap gap-4">
-                <ExportButton />
-                <ImportButton />
-              </CardContent>
-            </CardContent>
-          </Card>
 
           {/* Danger Zone */}
           <Card className="border-destructive/50">
@@ -111,85 +94,47 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
           </Card>
         </TabsContent>
 
-        {/* --- タブ2: サブスクリプション管理 (新規追加) --- */}
-        <TabsContent value="subscription" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-7">
-            {/* 左側: 登録フォーム (3カラム分) */}
-            <div className="lg:col-span-3">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    新規登録
-                  </CardTitle>
-                  <CardDescription>
-                    定期支払いのサービスを登録します
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SubscriptionForm />
-                </CardContent>
-              </Card>
-            </div>
+        {/* --- タブ: データ管理 --- */}
+        <TabsContent value="data" className="space-y-6">
+          {/* データ入出力 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                データ入出力
+              </CardTitle>
+              <CardDescription>
+                データのエクスポート・インポート
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-4">
+                <ExportButton />
+                <ImportButton />
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* 右側: 一覧リスト (4カラム分) */}
-            <div className="lg:col-span-4">
-              <Card className="h-full border-dashed lg:border-solid">
-                <CardHeader>
-                  <CardTitle>登録済みリスト</CardTitle>
-                  <CardDescription>
-                    登録中のサブスクリプション一覧
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {subscriptions.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
-                      <CreditCard className="h-10 w-10 mb-2 opacity-20" />
-                      <p>登録されているサブスクリプションはありません</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {subscriptions.map((sub) => (
-                        <div
-                          key={sub.id}
-                          className="flex items-center justify-between p-4 border rounded-lg bg-card shadow-sm"
-                        >
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold">{sub.name}</span>
-                              <Badge
-                                variant="secondary"
-                                className="text-[10px] px-1.5 h-5"
-                              >
-                                {sub.billingCycle === "monthly"
-                                  ? "月額"
-                                  : "年額"}
-                              </Badge>
-                            </div>
-                            <div className="text-xs text-muted-foreground flex gap-2">
-                              <span>
-                                次回:{" "}
-                                {format(sub.nextPaymentDate, "yyyy/MM/dd")}
-                              </span>
-                              <span className="text-muted-foreground/50">
-                                |
-                              </span>
-                              <span>{sub.category}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-bold text-lg">
-                              ¥{sub.amount.toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          {/* 店舗名一括設定ツール */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                店舗名の一括設定
+              </CardTitle>
+              <CardDescription>
+                用途欄から店舗名を抽出して設定します。半角スペースの前を店舗名、後を用途として分割します。プレビューを確認してから適用してください。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StoreNameMigrationTool />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* --- タブ: サブスクリプション管理 --- */}
+        <TabsContent value="subscription" className="space-y-6">
+          <SubscriptionList subscriptions={subscriptions} />
         </TabsContent>
       </Tabs>
     </main>

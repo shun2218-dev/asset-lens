@@ -1,0 +1,153 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import * as schema from "@/db/schema";
+import { expect, test } from "./fixtures";
+
+test.describe("Transaction with Store Name", () => {
+  test("should save storeName when selecting existing store", async ({
+    page,
+    authUser,
+  }) => {
+    // Pre-create a store in DB
+    await db.insert(schema.store).values({
+      userId: authUser.id,
+      name: "既存テスト店舗",
+    });
+
+    // Navigate to Dashboard
+    await page.goto("/dashboard");
+    await expect(page).toHaveURL(/\/dashboard/);
+
+    // Fill form
+    await page.getByLabel("金額").fill("980");
+    await page.getByRole("combobox").first().click();
+    await page.getByRole("option", { name: "食費" }).click();
+
+    // Open store select and choose existing store
+    await page.getByRole("button", { name: /店舗・サービス名を選択/ }).click();
+    await page.waitForTimeout(500);
+    const popover = page.locator("[data-slot='popover-content']");
+    await popover
+      .locator("button")
+      .filter({ hasText: "既存テスト店舗" })
+      .click();
+    await page.waitForTimeout(500);
+
+    // Verify selection
+    await expect(
+      page
+        .getByLabel("通常入力")
+        .getByRole("button", { name: /既存テスト店舗/ }),
+    ).toBeVisible({ timeout: 5000 });
+
+    // Submit
+    await page.getByLabel("用途・メモ").fill("E2E Existing Store Test");
+    await page.getByRole("button", { name: "登録する" }).click();
+    await expect(page.getByText("登録しました")).toBeVisible({
+      timeout: 10000,
+    });
+    await page.waitForTimeout(1000);
+
+    // DB Verification
+    const tx = await db.query.transaction.findFirst({
+      where: eq(schema.transaction.description, "E2E Existing Store Test"),
+    });
+    expect(tx).toBeDefined();
+    expect(tx?.storeName).toBe("既存テスト店舗");
+
+    // Check row appears in dashboard
+    await expect(
+      page.locator("tr").filter({ hasText: "E2E Existing Store Test" }),
+    ).toBeVisible({ timeout: 10000 });
+
+    // Check row appears in transaction page
+    await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
+    await expect(
+      page.locator("tr").filter({ hasText: "E2E Existing Store Test" }),
+    ).toBeVisible({ timeout: 10000 });
+
+    // Cleanup
+    await db
+      .delete(schema.transaction)
+      .where(eq(schema.transaction.userId, authUser.id));
+    await db.delete(schema.store).where(eq(schema.store.userId, authUser.id));
+  });
+
+  test("should show all transactions across pages with stable pagination", async ({
+    page,
+    authUser,
+  }) => {
+    // Get food category
+    const categories = await db.query.category.findMany();
+    const foodCat = categories.find((c) => c.slug === "food");
+    expect(foodCat).toBeDefined();
+
+    // Clean up any existing transactions for this user
+    await db
+      .delete(schema.transaction)
+      .where(eq(schema.transaction.userId, authUser.id));
+
+    // Insert 35 transactions - all same date to stress test sort stability
+    const now = new Date();
+    const sameDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 15));
+    const values = Array.from({ length: 35 }, (_, i) => ({
+      userId: authUser.id,
+      amount: (i + 1) * 100,
+      description: `E2E-Page-${String(i + 1).padStart(3, "0")}`,
+      storeName: (i + 1) % 3 === 0 ? `Store-${i + 1}` : null,
+      category: "food",
+      categoryId: foodCat!.id,
+      date: sameDate,
+      isExpense: true,
+    }));
+    await db.insert(schema.transaction).values(values);
+
+    // Navigate to transaction page
+    await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
+
+    // Collect descriptions across all 4 pages
+    const allDescriptions: string[] = [];
+    for (let p = 1; p <= 4; p++) {
+      if (p > 1) {
+        await page.getByRole("link", { name: "Next" }).click();
+        await page.waitForLoadState("networkidle");
+      }
+      // Wait for E2E-Page rows to appear
+      await page
+        .locator("tr")
+        .filter({ hasText: "E2E-Page" })
+        .first()
+        .waitFor({ timeout: 10000 });
+
+      // Wait for the page to stabilize (all rows rendered)
+      await page.waitForTimeout(500);
+
+      const rows = await page
+        .locator("tr")
+        .filter({ hasText: "E2E-Page" })
+        .all();
+      const expected = p < 4 ? 10 : 5;
+      expect(rows.length).toBe(expected);
+      for (const row of rows) {
+        const text = await row.textContent();
+        const match = text?.match(/E2E-Page-\d+/);
+        if (match) allDescriptions.push(match[0]);
+      }
+    }
+
+    // Verify all 35 unique records appeared (no duplicates, no missing)
+    expect([...new Set(allDescriptions)].length).toBe(35);
+
+    // Cleanup
+    await db
+      .delete(schema.transaction)
+      .where(eq(schema.transaction.userId, authUser.id));
+  });
+});

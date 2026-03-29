@@ -94,12 +94,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 <User className="h-12 w-12 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
-            <div
+            <button
+              type="button"
               className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white"
               onClick={() => fileInputRef.current?.click()}
+              aria-label="プロフィール画像を変更"
             >
               <Camera className="h-6 w-6" />
-            </div>
+            </button>
             <input
               type="file"
               ref={fileInputRef}

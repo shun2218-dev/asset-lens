@@ -53,6 +53,7 @@ describe("createTransaction", () => {
     userId: "user-123",
     amount: 1000,
     description: "Test",
+    storeName: "テスト店舗",
     category: "cat-uuid-123",
     date: new Date("2024-01-01T00:00:00Z"),
     isExpense: true,

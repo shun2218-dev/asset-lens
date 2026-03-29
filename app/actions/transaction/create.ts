@@ -45,6 +45,7 @@ export async function createTransaction(
       userId: session.user.id,
       amount: parsed.data.amount,
       description: parsed.data.description,
+      storeName: parsed.data.storeName || null,
       category: categoryData.slug, // Legacy column: use slug
       categoryId: parsed.data.category, // New column: use UUID
       date: parsed.data.date,
@@ -52,6 +53,7 @@ export async function createTransaction(
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/transaction");
     return { success: true };
   } catch (error) {
     console.error("Failed to add transaction:", error);

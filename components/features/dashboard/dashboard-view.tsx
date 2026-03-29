@@ -3,10 +3,16 @@
 import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
+import { BulkTransactionForm } from "@/components/features/transaction/bulk-transaction-form";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SelectCategory, SelectTransaction } from "@/db/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type {
+  SelectCategory,
+  SelectStore,
+  SelectTransaction,
+} from "@/db/schema";
 import type {
   CategoryStats,
   MonthlyStats,
@@ -22,6 +28,7 @@ interface DashboardViewProps {
   transactions: SelectTransaction[];
   metadata: TransactionMetadata;
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
 export function DashboardView({
@@ -32,6 +39,7 @@ export function DashboardView({
   transactions,
   metadata,
   categories,
+  stores,
 }: DashboardViewProps) {
   // グラフ用にデータを変換 (Adapter Pattern)
   // MonthlyChart: { month, income, expense } -> { name, income, expense }
@@ -121,7 +129,21 @@ export function DashboardView({
               <CardTitle>新規入力</CardTitle>
             </CardHeader>
             <CardContent>
-              <TransactionForm categories={categories} />
+              <Tabs defaultValue="single" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="single">通常入力</TabsTrigger>
+                  <TabsTrigger value="bulk">一括入力</TabsTrigger>
+                </TabsList>
+                <TabsContent value="single">
+                  <TransactionForm categories={categories} stores={stores} />
+                </TabsContent>
+                <TabsContent value="bulk">
+                  <BulkTransactionForm
+                    categories={categories}
+                    stores={stores}
+                  />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>
@@ -138,6 +160,7 @@ export function DashboardView({
                 initialMetadata={metadata}
                 currentMonth={currentMonth}
                 categories={categories}
+                stores={stores}
               />
             </CardContent>
           </Card>

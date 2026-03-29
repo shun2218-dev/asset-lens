@@ -43,11 +43,13 @@ export const Default: Story = {
       userId: "user-1",
       amount: 1000,
       description: "Lunch",
+      storeName: "コンビニ",
       category: "food",
       categoryId: "cat-1",
       date: new Date("2024-01-01"),
       isExpense: true,
     },
     categories: mockCategories,
+    stores: [],
   },
 };

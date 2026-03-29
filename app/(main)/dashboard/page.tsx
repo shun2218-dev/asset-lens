@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { getSummary } from "@/app/actions/analysis/get-summary";
 import { getCategories } from "@/app/actions/category/get";
+import { getStores } from "@/app/actions/store/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { DashboardView } from "@/components/features/dashboard/dashboard-view";
 
@@ -17,11 +18,14 @@ export default async function DashboardPage({
   const defaultMonth = format(now, "yyyy-MM");
   const currentMonth = params.month || defaultMonth;
 
-  const [transactionsData, summaryData, categories] = await Promise.all([
-    getTransaction(initialPage, currentMonth), // リスト用 (10件)
-    getSummary(currentMonth), // グラフ・集計用 (全件集計)
-    getCategories(), // カテゴリ一覧
-  ]);
+  const [transactionsData, summaryData, categories, stores] = await Promise.all(
+    [
+      getTransaction(initialPage, currentMonth), // リスト用 (10件)
+      getSummary(currentMonth), // グラフ・集計用 (全件集計)
+      getCategories(), // カテゴリ一覧
+      getStores(), // 店舗一覧
+    ],
+  );
 
   const { data: transactions, metadata } = transactionsData;
   const { summary, categoryStats, monthlyStats } = summaryData;
@@ -35,6 +39,7 @@ export default async function DashboardPage({
       transactions={transactions}
       metadata={metadata}
       categories={categories}
+      stores={stores}
     />
   );
 }
