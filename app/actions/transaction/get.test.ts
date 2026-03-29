@@ -120,6 +120,40 @@ describe("getTransaction", () => {
     expect(result.metadata.totalCount).toBe(0);
   });
 
+  it("should accept filter and sort parameters", async () => {
+    // Setup mocks for both data and count queries
+    const offsetMock = vi.fn().mockResolvedValue(mockData);
+    const limitMock = vi.fn().mockReturnValue({ offset: offsetMock });
+    const orderByMock = vi.fn().mockReturnValue({ limit: limitMock });
+    const whereDataMock = vi.fn().mockReturnValue({ orderBy: orderByMock });
+    const leftJoinMock = vi.fn().mockReturnValue({ where: whereDataMock });
+    const fromDataMock = vi.fn().mockReturnValue({ leftJoin: leftJoinMock });
+
+    const whereCountMock = vi.fn().mockResolvedValue([{ count: 1 }]);
+    const fromCountMock = vi.fn().mockReturnValue({ where: whereCountMock });
+
+    (db.select as any).mockImplementation((args: any) => {
+      if (args && args.count) {
+        return { from: fromCountMock };
+      }
+      return { from: fromDataMock };
+    });
+
+    const filters = {
+      categoryId: "cat-1",
+      searchQuery: "Test",
+    };
+    const sort = {
+      sortBy: "date" as const,
+      sortOrder: "asc" as const,
+    };
+
+    const result = await getTransaction(1, undefined, filters, sort);
+
+    expect(result.data).toHaveLength(1);
+    expect(db.select).toHaveBeenCalled();
+  });
+
   it("should return empty structure on error", async () => {
     (db.select as any).mockImplementation(() => {
       throw new Error("DB Connection Error");

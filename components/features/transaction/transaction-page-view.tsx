@@ -34,6 +34,7 @@ export function TransactionPageView({
         currentMonth={currentMonth}
         categories={categories}
         stores={stores}
+        showFilters
       />
     </main>
   );
