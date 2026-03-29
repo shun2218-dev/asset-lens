@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.15.0] - 2026-03-30
+
+### Added
+- Dark mode support with `next-themes` integration (#29)
+- Theme toggle in header: light, dark, and system options
+- Sun/moon icon animation on theme switch
+- Agent rules (always-on constraints): branching policy, coding conventions, UI design, testing policy
+- Agent skills (auto-activated): database management, deployment workflow
+
 ## [2.14.0] - 2026-03-30
 
 ### Added
