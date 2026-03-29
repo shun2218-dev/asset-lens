@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-03-29
+
 ### Added
 - **Budget Management**: Hybrid model with overall monthly budget + optional per-category budgets
 - **Budget Progress Widget**: Color-coded progress bars on dashboard (green/yellow/red)
