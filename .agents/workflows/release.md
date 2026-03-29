@@ -6,6 +6,11 @@ description: How to create a production release from develop to main
 
 // turbo-all
 
+> **📦 RELEASE CADENCE POLICY:**
+> - **Minor releases (features)**: Batch related features into a single release. Don't release per-feature unless the feature is standalone and high-impact.
+> - **Patch releases (fixes)**: Release immediately for critical bug fixes or security issues.
+> - **Judgment call**: If multiple features are planned in sequence, complete them all before releasing. If there's a natural pause (waiting for user feedback), release what's ready.
+
 ## Prerequisites
 - All features merged into `develop`
 - All tests passing
