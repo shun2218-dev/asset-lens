@@ -68,12 +68,13 @@ export async function getTransaction(
       conditions.push(eq(transaction.categoryId, filters.categoryId));
     }
 
-    // Filter: text search (description)
+    // Filter: text search (description + storeName)
     if (filters?.searchQuery && filters.searchQuery.trim()) {
       const query = `%${filters.searchQuery.trim()}%`;
       conditions.push(
         or(
           ilike(transaction.description, query),
+          ilike(transaction.storeName, query),
         ) as SQL,
       );
     }
@@ -82,24 +83,32 @@ export async function getTransaction(
       conditions.length > 0 ? and(...conditions) : undefined;
 
     // Build sort order
+    // Secondary sort by id ensures deterministic pagination
+    // (without it, same-date records can shift between pages)
     let orderByClause;
     if (sort?.sortBy) {
       const direction = sort.sortOrder === "asc" ? asc : desc;
       switch (sort.sortBy) {
         case "date":
-          orderByClause = direction(transaction.date);
+          orderByClause = [direction(transaction.date), desc(transaction.id)];
           break;
         case "category":
-          orderByClause = direction(transaction.category);
+          orderByClause = [
+            direction(transaction.category),
+            desc(transaction.id),
+          ];
           break;
         case "amount":
-          orderByClause = direction(transaction.amount);
+          orderByClause = [
+            direction(transaction.amount),
+            desc(transaction.id),
+          ];
           break;
         default:
-          orderByClause = desc(transaction.date);
+          orderByClause = [desc(transaction.date), desc(transaction.id)];
       }
     } else {
-      orderByClause = desc(transaction.date);
+      orderByClause = [desc(transaction.date), desc(transaction.id)];
     }
 
     // データ取得
@@ -111,7 +120,7 @@ export async function getTransaction(
       .from(transaction)
       .leftJoin(category, eq(transaction.categoryId, category.id))
       .where(whereCondition)
-      .orderBy(orderByClause)
+      .orderBy(...orderByClause)
       .limit(PAGE_SIZE)
       .offset(offset);
 
