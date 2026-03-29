@@ -40,6 +40,7 @@ export async function updateTransaction(
       .where(eq(transaction.id, id));
 
     revalidatePath("/dashboard");
+    revalidatePath("/transaction");
     return { success: true };
   } catch (error) {
     console.error("Update Error:", error);

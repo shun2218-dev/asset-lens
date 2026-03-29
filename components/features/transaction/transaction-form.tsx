@@ -265,7 +265,12 @@ export function TransactionForm({
               <FormLabel>店舗・サービス名</FormLabel>
               <StoreSelect
                 value={field.value ?? ""}
-                onChange={field.onChange}
+                onChange={(value) => {
+                  form.setValue("storeName", value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                }}
                 stores={stores}
                 onCreateStore={handleCreateStore}
               />
