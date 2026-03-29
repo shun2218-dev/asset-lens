@@ -25,18 +25,7 @@ npx biome check --write .
 npx biome check . --diagnostic-level=error
 ```
 
-## 3. Update Documentation
-Update relevant docs before releasing:
-- `README.md` — if features affect usage or setup
-- API docs, migration notes, new env vars, etc.
-Commit docs changes to `develop`.
-
-## 4. Push develop
-```bash
-git push origin develop
-```
-
-## 5. Create Release Branch
+## 3. Create Release Branch
 Determine version bump (major.minor.patch):
 - **major**: breaking changes
 - **minor**: new features
@@ -46,20 +35,24 @@ Determine version bump (major.minor.patch):
 git checkout -b release/v<VERSION> develop
 ```
 
-## 6. Bump Version
-Edit `package.json` version field, then:
+## 4. Update CHANGELOG & Docs (MANDATORY)
+On the release branch:
+- Move `[Unreleased]` entries in `CHANGELOG.md` to a new `[<VERSION>] - <DATE>` section
+- Update `README.md` if features affect usage or setup
+- Update `package.json` version field
+
 ```bash
 git add -A && git commit -m "chore: bump version to <VERSION>"
 git push origin release/v<VERSION>
 ```
 
-## 7. Create PR
+## 5. Create PR
 ```bash
 gh pr create --base main --head release/v<VERSION> --title "Release v<VERSION>" --body "<release notes in English>"
 ```
 PR description should include: New Features, Bug Fixes, Improvements, Test Results, Migration Notes.
 
-## 8. After PR Merge — Tag & Release
+## 6. After PR Merge — Tag & Release
 ```bash
 git checkout main && git pull origin main
 git tag v<VERSION>
@@ -67,7 +60,7 @@ git push origin v<VERSION>
 gh release create v<VERSION> --title "v<VERSION>" --notes "<release notes>"
 ```
 
-## 9. Sync develop & Clean Up
+## 7. Sync develop & Clean Up
 ```bash
 git checkout develop
 git merge release/v<VERSION> --no-ff -m "Merge branch 'release/v<VERSION>' into develop"
@@ -76,7 +69,7 @@ git branch -d release/v<VERSION>
 git push origin --delete release/v<VERSION>
 ```
 
-## 10. Close Related Issues
+## 8. Close Related Issues
 ```bash
 gh issue close <NUMBER> --reason completed
 ```
