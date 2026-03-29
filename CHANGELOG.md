@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-03-30
+
+### Added
+- Error boundary pages: global-error, route-level error, custom 404 (#73)
+- Page-specific loading skeletons for dashboard and transactions (#40)
+- Skip-to-content link for keyboard navigation (#64)
+- `<main>` landmark element in root layout (#64)
+- `aria-label` on header navigation (#64)
+
+### Fixed
+- Improve muted-foreground contrast ratio for WCAG AA compliance (#62)
+- Add visible focus rings for keyboard-only navigation (#63)
+- Remove focus outline for mouse/touch users (#63)
+
 ## [2.12.2] - 2026-03-30
 
 ### Fixed
