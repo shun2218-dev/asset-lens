@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { SelectCategory, SelectStore } from "@/db/schema";
+import { useDelayedConfirm } from "@/hooks/use-delayed-confirm";
 import { TransactionForm } from "./transaction-form";
 import type { OptimisticDeleteFn } from "./transaction-list";
 
@@ -58,6 +59,7 @@ export function TransactionItemMenu({
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const confirmLocked = useDelayedConfirm(showDeleteDialog);
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
@@ -118,7 +120,7 @@ export function TransactionItemMenu({
                 handleDelete();
               }}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-              disabled={isPending}
+              disabled={isPending || confirmLocked}
             >
               {isPending ? "削除中..." : "削除する"}
             </AlertDialogAction>
