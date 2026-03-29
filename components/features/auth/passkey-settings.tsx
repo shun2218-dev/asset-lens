@@ -7,6 +7,17 @@ import { Fingerprint, Loader2, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -69,10 +80,7 @@ export function PasskeySettings() {
 
   // 削除処理
   const handleDeletePasskey = async (id: string) => {
-    if (!confirm("このPasskeyを削除してもよろしいですか？")) return;
-
     await deletePasskey({ passkeyId: id });
-    // 削除成功したらリストから除外（再取得より高速にUI反映するため）
     setPasskeys((prev) => prev.filter((pk) => pk.id !== id));
 
     toast.info("アプリからの削除が完了しました", {
@@ -135,15 +143,38 @@ export function PasskeySettings() {
                     })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeletePasskey(pk.id)}
-                      disabled={isLoading}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isLoading}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Passkeyを削除しますか？
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            「{pk.name || "名称未設定"}
+                            」を削除します。端末側の設定は別途手動で削除する必要があります。
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeletePasskey(pk.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            削除する
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}

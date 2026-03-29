@@ -135,3 +135,109 @@
     @apply sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm focus:font-medium;
   }
 }
+
+/* Micro-animation keyframes */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out both;
+}
+
+.animate-progress-fill {
+  animation: progress-fill 0.6s ease-out both;
+  transform-origin: left;
+}
+
+/* Stagger delays for card grids */
+.stagger-1 {
+  animation-delay: 0ms;
+}
+.stagger-2 {
+  animation-delay: 75ms;
+}
+.stagger-3 {
+  animation-delay: 150ms;
+}
+.stagger-4 {
+  animation-delay: 225ms;
+}
+.stagger-5 {
+  animation-delay: 300ms;
+}
+.stagger-6 {
+  animation-delay: 375ms;
+}
+
+/* Page transition fade */
+.page-enter {
+  animation: fade-in 0.2s ease-out both;
+}
+
+/* Button hover lift */
+[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not(
+    [data-variant="link"]
+  ) {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not(
+    [data-variant="link"]
+  ):hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+[data-slot="button"]:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-progress-fill,
+  .page-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-slot="button"]:hover,
+  [data-slot="button"]:active {
+    transform: none;
+  }
+}

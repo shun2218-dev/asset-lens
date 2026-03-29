@@ -29,7 +29,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { SelectCategory, SelectStore } from "@/db/schema";
+import { useDelayedConfirm } from "@/hooks/use-delayed-confirm";
 import { TransactionForm } from "./transaction-form";
+import type { OptimisticDeleteFn } from "./transaction-list";
 
 interface TransactionItemMenuProps {
   transaction: {
@@ -45,30 +47,33 @@ interface TransactionItemMenuProps {
   };
   categories: SelectCategory[];
   stores: SelectStore[];
+  onOptimisticDelete?: OptimisticDeleteFn;
 }
 
 export function TransactionItemMenu({
   transaction,
   categories,
   stores,
+  onOptimisticDelete,
 }: TransactionItemMenuProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const confirmLocked = useDelayedConfirm(showDeleteDialog);
 
   const handleDelete = () => {
-    // confirm は削除
+    setShowDeleteDialog(false);
 
-    const toastId = toast.loading("削除しています...");
+    const rollback = onOptimisticDelete?.(transaction.id);
 
     startTransition(async () => {
       const result = await deleteTransaction(transaction.id);
 
       if (result.success) {
-        toast.success("削除しました", { id: toastId });
-        setShowDeleteDialog(false);
+        toast.success("削除しました");
       } else {
-        toast.error("削除に失敗しました", { id: toastId });
+        rollback?.restore();
+        toast.error("削除に失敗しました");
       }
     });
   };
@@ -115,7 +120,7 @@ export function TransactionItemMenu({
                 handleDelete();
               }}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-              disabled={isPending}
+              disabled={isPending || confirmLocked}
             >
               {isPending ? "削除中..." : "削除する"}
             </AlertDialogAction>

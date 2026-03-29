@@ -17,7 +17,7 @@ export default async function LandingPage() {
     <main className="flex flex-col min-h-screen">
       {/* --- メインビジュアル (Hero Section) --- */}
       <section className="flex-1 flex flex-col items-center justify-center py-24 md:py-32 space-y-8 text-center px-4 bg-linear-to-b from-background to-muted/20">
-        <div className="space-y-4 max-w-3xl">
+        <div className="space-y-4 max-w-3xl animate-fade-in">
           <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 shadow mb-4">
             New
             <span className="ml-2 font-normal text-primary-foreground/80">
@@ -70,7 +70,7 @@ export default async function LandingPage() {
       <section id="features" className="container mx-auto px-4 py-24 md:py-32">
         <div className="grid gap-12 md:grid-cols-3 max-w-6xl mx-auto">
           {/* Feature 1 */}
-          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm animate-fade-in-up stagger-1">
             <div className="p-3 bg-primary/10 rounded-full">
               <BarChart3 className="h-8 w-8 text-primary" />
             </div>
@@ -82,7 +82,7 @@ export default async function LandingPage() {
           </div>
 
           {/* Feature 2 */}
-          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm animate-fade-in-up stagger-2">
             <div className="p-3 bg-primary/10 rounded-full">
               <Fingerprint className="h-8 w-8 text-primary" />
             </div>
@@ -94,7 +94,7 @@ export default async function LandingPage() {
           </div>
 
           {/* Feature 3 */}
-          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm">
+          <div className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-card border shadow-sm animate-fade-in-up stagger-3">
             <div className="p-3 bg-primary/10 rounded-full">
               <Zap className="h-8 w-8 text-primary" />
             </div>

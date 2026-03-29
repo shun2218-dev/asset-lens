@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Receipt } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
@@ -35,6 +35,8 @@ interface TransactionListProps {
   showFilters?: boolean;
 }
 
+export type OptimisticDeleteFn = (id: string) => { restore: () => void };
+
 export function TransactionList({
   initialData,
   initialMetadata,
@@ -55,6 +57,17 @@ export function TransactionList({
     setTransactions(initialData);
     setMetadata(initialMetadata);
   }, [initialMetadata, initialData]);
+
+  const optimisticDelete: OptimisticDeleteFn = useCallback(
+    (id: string) => {
+      const prev = transactions;
+      setTransactions((t) => t.filter((item) => item.id !== id));
+      return {
+        restore: () => setTransactions(prev),
+      };
+    },
+    [transactions],
+  );
 
   // データを取得する共通関数
   const fetchData = useCallback(
@@ -152,15 +165,20 @@ export function TransactionList({
               key={t.id}
               categories={categories}
               stores={stores}
+              onOptimisticDelete={optimisticDelete}
             />
           ))}
           {transactions.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="text-center text-muted-foreground h-24"
-              >
-                データがありません
+              <TableCell colSpan={6} className="text-center h-40">
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <div className="p-3 bg-muted/50 rounded-full">
+                    <Receipt className="h-6 w-6 text-muted-foreground/60" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    まだ取引がありません。左のフォームから記録しましょう
+                  </p>
+                </div>
               </TableCell>
             </TableRow>
           )}

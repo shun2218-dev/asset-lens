@@ -22,6 +22,7 @@ export function SignInForm() {
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
+    mode: "onBlur",
     defaultValues: {
       email: "",
       password: "",

@@ -17,10 +17,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useDelayedConfirm } from "@/hooks/use-delayed-confirm";
 import { signOut } from "@/lib/auth/client";
 
 export function DeleteAccountButton() {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const confirmLocked = useDelayedConfirm(dialogOpen);
 
   const router = useRouter();
 
@@ -39,7 +42,7 @@ export function DeleteAccountButton() {
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="destructive" disabled={isDeleting}>
           {isDeleting ? (
@@ -66,6 +69,7 @@ export function DeleteAccountButton() {
               handleDelete();
             }}
             className="bg-destructive text-white hover:bg-destructive/90"
+            disabled={confirmLocked}
           >
             {isDeleting ? "削除中..." : "削除する"}
           </AlertDialogAction>

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { PasswordStrengthIndicator } from "@/components/features/auth/password-strength-indicator";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,6 +22,7 @@ export function SignUpForm() {
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
+    mode: "onBlur",
     defaultValues: {
       name: "",
       email: "",
@@ -28,6 +30,8 @@ export function SignUpForm() {
       confirmPassword: "",
     },
   });
+
+  const watchPassword = form.watch("password");
 
   async function onSubmit(data: SignUpFormValues) {
     // confirmPassword はAPIには送らないので除外
@@ -88,6 +92,7 @@ export function SignUpForm() {
                   {...field}
                 />
               </FormControl>
+              <PasswordStrengthIndicator password={watchPassword} />
               <FormMessage />
             </FormItem>
           )}

@@ -4,6 +4,17 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { deleteBudget } from "@/app/actions/budget/delete";
 import { upsertBudget } from "@/app/actions/budget/upsert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -128,15 +139,37 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-destructive"
-                    onClick={() => handleDelete(overallBudget.id)}
-                    disabled={isSubmitting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-destructive"
+                        disabled={isSubmitting}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          予算を削除しますか？
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          全体の月間予算を削除します。この操作は取り消せません。
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(overallBudget.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          削除する
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </>
               )}
             </div>
@@ -198,15 +231,38 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 text-destructive"
-                    onClick={() => handleDelete(b.id)}
-                    disabled={isSubmitting}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive"
+                        disabled={isSubmitting}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          予算を削除しますか？
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          「{b.category?.name ?? "不明"}
+                          」の予算を削除します。この操作は取り消せません。
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(b.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          削除する
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </>
               )}
             </div>

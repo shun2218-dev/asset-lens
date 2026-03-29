@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
 import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
@@ -8,6 +8,7 @@ import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-p
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import type {
   SelectBudget,
   SelectCategory,
@@ -109,84 +110,95 @@ export function DashboardView({
         <MonthSelector currentMonth={currentMonth} />
       </div>
 
-      {/* サマリーカード (MoM比較付き) */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
-            <p className="text-sm text-muted-foreground">収入</p>
-            <p className="text-xl font-bold text-blue-600">
-              +¥{summary.totalIncome.toLocaleString()}
-            </p>
-            <MoMBadge
-              current={summary.totalIncome}
-              previous={previousSummary.totalIncome}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
-            <p className="text-sm text-muted-foreground">支出</p>
-            <p className="text-xl font-bold text-red-600">
-              -¥{summary.totalExpense.toLocaleString()}
-            </p>
-            <MoMBadge
-              current={summary.totalExpense}
-              previous={previousSummary.totalExpense}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
-            <p className="text-sm text-muted-foreground">収支</p>
-            <p
-              className={`text-xl font-bold ${summary.balance >= 0 ? "text-emerald-600" : "text-red-600"}`}
-            >
-              ¥{summary.balance.toLocaleString()}
-            </p>
-            <MoMBadge
-              current={summary.balance}
-              previous={previousSummary.balance}
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* チャートエリア */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>月次収支推移</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MonthlyChart data={barData} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>今月の支出内訳</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryPie data={pieData} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* 予算進捗 */}
-      <BudgetProgress
-        budgets={budgets}
-        totalExpense={summary.totalExpense}
-        categoryExpenses={categoryExpenses}
-      />
-
-      {/* ウィジェットエリア */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <StoreRanking data={storeRanking} />
-        <RecentTransactions
-          transactions={recentTransactions}
-          currentMonth={currentMonth}
+      {summary.totalIncome === 0 && summary.totalExpense === 0 ? (
+        <EmptyState
+          icon={BarChart3}
+          title="まずは最初の取引を記録しましょう"
+          description="収入や支出を記録すると、ここにグラフやサマリーが表示されます。"
+          action={{ label: "＋ 取引を記録する", href: "/transaction" }}
         />
-      </div>
+      ) : (
+        <>
+          {/* サマリーカード (MoM比較付き) */}
+          <div className="grid grid-cols-3 gap-4">
+            <Card className="animate-fade-in-up stagger-1">
+              <CardContent className="pt-4 pb-3 text-center">
+                <p className="text-sm text-muted-foreground">収入</p>
+                <p className="text-xl font-bold text-blue-600">
+                  +¥{summary.totalIncome.toLocaleString()}
+                </p>
+                <MoMBadge
+                  current={summary.totalIncome}
+                  previous={previousSummary.totalIncome}
+                />
+              </CardContent>
+            </Card>
+            <Card className="animate-fade-in-up stagger-2">
+              <CardContent className="pt-4 pb-3 text-center">
+                <p className="text-sm text-muted-foreground">支出</p>
+                <p className="text-xl font-bold text-red-600">
+                  -¥{summary.totalExpense.toLocaleString()}
+                </p>
+                <MoMBadge
+                  current={summary.totalExpense}
+                  previous={previousSummary.totalExpense}
+                />
+              </CardContent>
+            </Card>
+            <Card className="animate-fade-in-up stagger-3">
+              <CardContent className="pt-4 pb-3 text-center">
+                <p className="text-sm text-muted-foreground">収支</p>
+                <p
+                  className={`text-xl font-bold ${summary.balance >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                >
+                  ¥{summary.balance.toLocaleString()}
+                </p>
+                <MoMBadge
+                  current={summary.balance}
+                  previous={previousSummary.balance}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* チャートエリア */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="animate-fade-in-up stagger-4">
+              <CardHeader>
+                <CardTitle>月次収支推移</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <MonthlyChart data={barData} />
+              </CardContent>
+            </Card>
+
+            <Card className="animate-fade-in-up stagger-5">
+              <CardHeader>
+                <CardTitle>今月の支出内訳</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CategoryPie data={pieData} />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 予算進捗 */}
+          <BudgetProgress
+            budgets={budgets}
+            totalExpense={summary.totalExpense}
+            categoryExpenses={categoryExpenses}
+          />
+
+          {/* ウィジェットエリア */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <StoreRanking data={storeRanking} />
+            <RecentTransactions
+              transactions={recentTransactions}
+              currentMonth={currentMonth}
+            />
+          </div>
+        </>
+      )}
     </main>
   );
 }

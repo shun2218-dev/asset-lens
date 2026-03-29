@@ -36,6 +36,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    mode: "onBlur",
     defaultValues: {
       name: initialData.name,
     },
