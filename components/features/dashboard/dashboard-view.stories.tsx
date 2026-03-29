@@ -119,6 +119,30 @@ export const Default: Story = {
       { storeName: "ユニクロ", totalAmount: 3000 },
     ],
     categories: mockCategories,
+    budgets: [
+      {
+        id: "b1",
+        userId: "user1",
+        categoryId: null,
+        amount: 200000,
+        category: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "b2",
+        userId: "user1",
+        categoryId: "1",
+        amount: 50000,
+        category: mockCategories[0],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    categoryExpenses: [
+      { categoryId: "1", amount: 45000 },
+      { categoryId: "3", amount: 12000 },
+    ],
   },
 };
 
@@ -132,5 +156,7 @@ export const Empty: Story = {
     recentTransactions: [],
     storeRanking: [],
     categories: mockCategories,
+    budgets: [],
+    categoryExpenses: [],
   },
 };
