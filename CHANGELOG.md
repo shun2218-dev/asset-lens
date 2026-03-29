@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2026-03-30
+
+### Added
+- Reusable `EmptyState` component with icon, title, description, and optional CTA (#67)
+- Dashboard empty state when no income/expense data exists (#67)
+- Transaction list empty state with Receipt icon and friendly message (#67)
+- Budget progress empty state with settings link (#67)
+- Optimistic UI for transaction deletion: instant removal with rollback on error (#71)
+- `useDelayedConfirm` hook: 500ms safety delay on destructive confirm buttons (#72)
+- Password strength indicator for sign-up and password change forms (#69)
+- CSS micro-animations: fade-in-up entrance, staggered cards, progress bar fill (#66)
+- Button hover scale (1.02x) and shadow lift effects (#66)
+- Landing page entrance animations for hero and feature cards (#66)
+- Confirmation dialog safety delay applied to transaction and account deletion (#72)
+
+### Changed
+- All forms use `onBlur` validation mode for real-time inline feedback (#69)
+- Store ranking empty message improved to encouraging text (#67)
+
+### Improved
+- All animations respect `prefers-reduced-motion` media query (#66)
+
 ## [2.13.0] - 2026-03-30
 
 ### Added
