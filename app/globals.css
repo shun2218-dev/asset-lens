@@ -181,12 +181,24 @@
 }
 
 /* Stagger delays for card grids */
-.stagger-1 { animation-delay: 0ms; }
-.stagger-2 { animation-delay: 75ms; }
-.stagger-3 { animation-delay: 150ms; }
-.stagger-4 { animation-delay: 225ms; }
-.stagger-5 { animation-delay: 300ms; }
-.stagger-6 { animation-delay: 375ms; }
+.stagger-1 {
+  animation-delay: 0ms;
+}
+.stagger-2 {
+  animation-delay: 75ms;
+}
+.stagger-3 {
+  animation-delay: 150ms;
+}
+.stagger-4 {
+  animation-delay: 225ms;
+}
+.stagger-5 {
+  animation-delay: 300ms;
+}
+.stagger-6 {
+  animation-delay: 375ms;
+}
 
 /* Page transition fade */
 .page-enter {
@@ -194,11 +206,17 @@
 }
 
 /* Button hover lift */
-[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not([data-variant="link"]) {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not(
+    [data-variant="link"]
+  ) {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not([data-variant="link"]):hover {
+[data-slot="button"]:not(:disabled):not([data-variant="ghost"]):not(
+    [data-variant="link"]
+  ):hover {
   transform: scale(1.02);
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
 }
