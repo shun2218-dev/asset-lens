@@ -66,7 +66,7 @@ function MoMBadge({
 
 export function DashboardView({
   summary,
-  previousSummary,
+  previousSummary = { totalIncome: 0, totalExpense: 0, balance: 0 },
   monthlyStats,
   categoryStats,
   currentMonth,
