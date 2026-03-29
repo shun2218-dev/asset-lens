@@ -118,12 +118,11 @@ test.describe("Transaction with Store Name", () => {
     for (let p = 1; p <= maxPages; p++) {
       if (p > 1) {
         const nextLink = page.getByRole("link", { name: "Next" });
-        // Stop if Next link doesn't exist or is disabled
+        // Stop if Next link doesn't exist
         if ((await nextLink.count()) === 0) break;
-        const isDisabled = await nextLink.evaluate(
-          (el) => el.closest("[aria-disabled]") !== null || el.hasAttribute("aria-disabled"),
-        );
-        if (isDisabled) break;
+        // Check aria-disabled="true" (the attribute exists on all states, check value)
+        const ariaDisabled = await nextLink.getAttribute("aria-disabled");
+        if (ariaDisabled === "true") break;
         await nextLink.click();
         await page.waitForLoadState("networkidle");
       }
