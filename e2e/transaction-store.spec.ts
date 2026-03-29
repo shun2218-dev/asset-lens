@@ -112,29 +112,29 @@ test.describe("Transaction with Store Name", () => {
     await page.goto("/transaction");
     await page.waitForLoadState("networkidle");
 
-    // Collect descriptions across all 4 pages
+    // Collect descriptions across all pages (dynamic - other tests may add data)
     const allDescriptions: string[] = [];
-    for (let p = 1; p <= 4; p++) {
+    const maxPages = 10; // Safety limit
+    for (let p = 1; p <= maxPages; p++) {
       if (p > 1) {
-        await page.getByRole("link", { name: "Next" }).click();
+        const nextLink = page.getByRole("link", { name: "Next" });
+        // Stop if Next link doesn't exist or is disabled
+        if ((await nextLink.count()) === 0) break;
+        const isDisabled = await nextLink.evaluate(
+          (el) => el.closest("[aria-disabled]") !== null || el.hasAttribute("aria-disabled"),
+        );
+        if (isDisabled) break;
+        await nextLink.click();
         await page.waitForLoadState("networkidle");
       }
-      // Wait for E2E-Page rows to appear
-      await page
-        .locator("tr")
-        .filter({ hasText: "E2E-Page" })
-        .first()
-        .waitFor({ timeout: 10000 });
 
-      // Wait for the page to stabilize (all rows rendered)
+      // Wait for table rows to load
       await page.waitForTimeout(500);
 
       const rows = await page
         .locator("tr")
         .filter({ hasText: "E2E-Page" })
         .all();
-      const expected = p < 4 ? 10 : 5;
-      expect(rows.length).toBe(expected);
       for (const row of rows) {
         const text = await row.textContent();
         const match = text?.match(/E2E-Page-\d+/);
