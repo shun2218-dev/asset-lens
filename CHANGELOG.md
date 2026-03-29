@@ -8,12 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Storybook stories for 9 previously uncovered components
-- Unit tests for 5 previously uncovered server actions (173 total tests)
+- **Budget Management**: Hybrid model with overall monthly budget + optional per-category budgets
+- **Budget Progress Widget**: Color-coded progress bars on dashboard (green/yellow/red)
+- **Budget Settings**: New 予算 tab in settings for budget CRUD
+- **Store Ranking Widget**: Top 5 stores by spending on dashboard
+- **Recent Transactions Widget**: Compact 5-item list with "もっと見る" link
+- **QuickEntryDialog**: "＋ 記録する" button in header for one-click transaction recording
+- **MoM Comparison**: Month-over-month badges on dashboard summary cards
+- Storybook stories for 9 previously uncovered components + 4 new widgets
+- Unit tests for 5 previously uncovered + 2 budget server actions (190 total tests)
 - GitHub Actions CI for automated testing on PRs
 - CHANGELOG.md for tracking release history
 
 ### Changed
+- **Dashboard restructured**: Analytics-focused (removed forms, added widgets)
+- **Transaction page**: Now includes form (moved from dashboard) with 1/3 + 2/3 layout
 - Optimized git hooks: pre-commit runs lint-staged only, pre-push runs related unit tests only
 - Updated feature-development workflow with PR-based merge, Issue linking, and quality checklist
 
