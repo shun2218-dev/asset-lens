@@ -4,6 +4,7 @@ import type { Session } from "better-auth";
 import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
+import { BudgetSettings } from "@/components/features/budget/budget-settings";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
@@ -18,9 +19,13 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { subscription } from "@/db/schema";
+import type { SelectBudget, SelectCategory, subscription } from "@/db/schema";
 
 type SelectSubscription = typeof subscription.$inferSelect;
+
+interface BudgetWithCategory extends SelectBudget {
+  category: SelectCategory | null;
+}
 
 // ... existing imports ...
 
@@ -33,9 +38,16 @@ interface SettingsViewProps {
     };
   };
   subscriptions: SelectSubscription[];
+  budgets: BudgetWithCategory[];
+  categories: SelectCategory[];
 }
 
-export function SettingsView({ session, subscriptions }: SettingsViewProps) {
+export function SettingsView({
+  session,
+  subscriptions,
+  budgets,
+  categories,
+}: SettingsViewProps) {
   return (
     <main className="container max-w-5xl px-4 py-10 space-y-8 mx-auto min-h-screen">
       <div>
@@ -48,10 +60,11 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-150">
+        <TabsList className="grid w-full grid-cols-4 lg:w-150">
           <TabsTrigger value="account">アカウント</TabsTrigger>
+          <TabsTrigger value="budget">予算</TabsTrigger>
           <TabsTrigger value="data">データ管理</TabsTrigger>
-          <TabsTrigger value="subscription">サブスクリプション</TabsTrigger>
+          <TabsTrigger value="subscription">サブスク</TabsTrigger>
         </TabsList>
 
         <TabsContent value="account" className="space-y-6">
@@ -92,6 +105,11 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* --- タブ: 予算管理 --- */}
+        <TabsContent value="budget" className="space-y-6">
+          <BudgetSettings budgets={budgets} categories={categories} />
         </TabsContent>
 
         {/* --- タブ: データ管理 --- */}

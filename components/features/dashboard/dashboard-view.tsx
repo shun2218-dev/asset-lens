@@ -4,15 +4,24 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
+import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-progress";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SelectCategory, SelectTransaction } from "@/db/schema";
+import type {
+  SelectBudget,
+  SelectCategory,
+  SelectTransaction,
+} from "@/db/schema";
 import type { CategoryStats, MonthlyStats, SummaryStats } from "@/types";
 
 interface StoreRankingItem {
   storeName: string;
   totalAmount: number;
+}
+
+interface BudgetWithCategory extends SelectBudget {
+  category: SelectCategory | null;
 }
 
 interface DashboardViewProps {
@@ -24,6 +33,8 @@ interface DashboardViewProps {
   recentTransactions: SelectTransaction[];
   storeRanking: StoreRankingItem[];
   categories: SelectCategory[];
+  budgets: BudgetWithCategory[];
+  categoryExpenses: { categoryId: string; amount: number }[];
 }
 
 function MoMBadge({
@@ -62,6 +73,8 @@ export function DashboardView({
   recentTransactions,
   storeRanking,
   categories,
+  budgets,
+  categoryExpenses,
 }: DashboardViewProps) {
   // グラフ用にデータを変換
   const barData = monthlyStats.map((stat) => ({
@@ -158,6 +171,13 @@ export function DashboardView({
           </CardContent>
         </Card>
       </div>
+
+      {/* 予算進捗 */}
+      <BudgetProgress
+        budgets={budgets}
+        totalExpense={summary.totalExpense}
+        categoryExpenses={categoryExpenses}
+      />
 
       {/* ウィジェットエリア */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

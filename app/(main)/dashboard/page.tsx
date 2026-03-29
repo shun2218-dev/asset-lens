@@ -1,6 +1,7 @@
 import { format, subMonths } from "date-fns";
 import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
 import { getSummary } from "@/app/actions/analysis/get-summary";
+import { getBudgets } from "@/app/actions/budget/get";
 import { getCategories } from "@/app/actions/category/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { DashboardView } from "@/components/features/dashboard/dashboard-view";
@@ -22,18 +23,36 @@ export default async function DashboardPage({
   const prevDate = subMonths(new Date(year, month - 1, 1), 1);
   const previousMonth = format(prevDate, "yyyy-MM");
 
-  const [recentData, summaryData, prevSummaryData, categories, storeRanking] =
-    await Promise.all([
-      getTransaction(1, currentMonth), // Recent 10 items
-      getSummary(currentMonth),
-      getSummary(previousMonth),
-      getCategories(),
-      getStoreRanking(currentMonth),
-    ]);
+  const [
+    recentData,
+    summaryData,
+    prevSummaryData,
+    categories,
+    storeRanking,
+    budgets,
+  ] = await Promise.all([
+    getTransaction(1, currentMonth),
+    getSummary(currentMonth),
+    getSummary(previousMonth),
+    getCategories(),
+    getStoreRanking(currentMonth),
+    getBudgets(),
+  ]);
 
   const { data: recentTransactions } = recentData;
   const { summary, categoryStats, monthlyStats } = summaryData;
   const { summary: previousSummary } = prevSummaryData;
+
+  // Build categoryExpenses for budget progress from categoryStats
+  const categoryExpenses = categoryStats.map((cs) => {
+    const cat = categories.find(
+      (c) => c.id === cs.category || c.slug === cs.category,
+    );
+    return {
+      categoryId: cat?.id ?? "",
+      amount: cs.amount,
+    };
+  });
 
   return (
     <DashboardView
@@ -45,6 +64,8 @@ export default async function DashboardPage({
       recentTransactions={recentTransactions}
       storeRanking={storeRanking}
       categories={categories}
+      budgets={budgets}
+      categoryExpenses={categoryExpenses}
     />
   );
 }
