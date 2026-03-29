@@ -13,6 +13,7 @@ export async function deleteTransaction(
     await db.delete(transaction).where(eq(transaction.id, id));
 
     revalidatePath("/dashboard");
+    revalidatePath("/transaction");
     return { success: true };
   } catch (error) {
     console.error("Delete Error:", error);

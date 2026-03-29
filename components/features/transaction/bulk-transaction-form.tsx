@@ -234,7 +234,16 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
                       <FormLabel>店舗・サービス名</FormLabel>
                       <StoreSelect
                         value={entryField.value ?? ""}
-                        onChange={entryField.onChange}
+                        onChange={(value) => {
+                          form.setValue(
+                            `entries.${index}.storeName`,
+                            value,
+                            {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            },
+                          );
+                        }}
                         stores={stores}
                         onCreateStore={handleCreateStore}
                       />

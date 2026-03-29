@@ -80,6 +80,7 @@ export async function createBulkTransaction(
     await db.insert(transaction).values(values);
 
     revalidatePath("/dashboard");
+    revalidatePath("/transaction");
     return { success: true };
   } catch (error) {
     console.error("Failed to bulk add transactions:", error);
