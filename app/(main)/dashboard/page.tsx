@@ -41,7 +41,9 @@ export default async function DashboardPage({
 
   const { data: recentTransactions } = recentData;
   const { summary, categoryStats, monthlyStats } = summaryData;
-  const { summary: previousSummary } = prevSummaryData;
+  const { summary: previousSummary } = prevSummaryData ?? {
+    summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+  };
 
   // Build categoryExpenses for budget progress from categoryStats
   const categoryExpenses = categoryStats.map((cs) => {

@@ -10,6 +10,7 @@ description: How to implement a new feature from planning to merge
 > - Branch types: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 > - Even single-file changes (docs, config) require a branch.
 > - **NEVER manually close Issues**. Issues are closed automatically when the PR with `Closes #<number>` is merged.
+> - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text and comments in code may be in Japanese.
 
 ## 1. Create Issue
 // turbo
