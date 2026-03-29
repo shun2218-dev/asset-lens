@@ -2,12 +2,19 @@
 
 import type { Session } from "better-auth";
 import { format } from "date-fns";
-import { AlertTriangle, CreditCard, FileText, Shield } from "lucide-react";
+import {
+  AlertTriangle,
+  CreditCard,
+  FileText,
+  Shield,
+  Store,
+} from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
+import { StoreNameMigrationTool } from "@/components/features/settings/store-name-migration-tool";
 import { SubscriptionForm } from "@/components/features/subscription/subscription-form";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -49,8 +56,9 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:w-100">
+        <TabsList className="grid w-full grid-cols-3 lg:w-150">
           <TabsTrigger value="account">アカウント</TabsTrigger>
+          <TabsTrigger value="data">データ管理</TabsTrigger>
           <TabsTrigger value="subscription">サブスクリプション</TabsTrigger>
         </TabsList>
 
@@ -67,22 +75,7 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
             <PasswordSettings />
           </section>
 
-          {/* データ管理 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                データ管理
-              </CardTitle>
-              <CardDescription>データの入出力</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CardContent className="flex flex-wrap gap-4">
-                <ExportButton />
-                <ImportButton />
-              </CardContent>
-            </CardContent>
-          </Card>
+
 
           {/* Danger Zone */}
           <Card className="border-destructive/50">
@@ -107,6 +100,42 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
                 </div>
                 <DeleteAccountButton />
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* --- タブ: データ管理 --- */}
+        <TabsContent value="data" className="space-y-6">
+          {/* データ入出力 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                データ入出力
+              </CardTitle>
+              <CardDescription>データのエクスポート・インポート</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-4">
+                <ExportButton />
+                <ImportButton />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 店舗名一括設定ツール */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                店舗名の一括設定
+              </CardTitle>
+              <CardDescription>
+                用途欄から店舗名を抽出して設定します。半角スペースの前を店舗名、後を用途として分割します。プレビューを確認してから適用してください。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StoreNameMigrationTool />
             </CardContent>
           </Card>
         </TabsContent>
