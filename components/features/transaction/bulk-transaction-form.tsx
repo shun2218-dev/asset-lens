@@ -1,8 +1,11 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon, Loader2, Plus, X } from "lucide-react";
+import { CalendarIcon, Camera, Loader2, Plus, X } from "lucide-react";
+import { useCallback, useRef } from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { scanReceiptBulk } from "@/app/actions/analysis/scan-receipt";
 import { createStore } from "@/app/actions/store/create";
 import { CategorySelect } from "@/components/features/category/category-select";
 import { StoreSelect } from "@/components/features/store/store-select";
@@ -36,11 +39,77 @@ interface BulkTransactionFormProps {
 export function BulkTransactionForm({ categories, stores: initialStores }: BulkTransactionFormProps) {
   const { data: session } = useSession();
 
-  const { form, fields, addEntry, removeEntry, onSubmit, isSubmitting } =
-    useBulkTransactionForm();
+  const {
+    form,
+    fields,
+    addEntry,
+    removeEntry,
+    setEntriesFromScan,
+    onSubmit,
+    isSubmitting,
+  } = useBulkTransactionForm();
 
   const [mounted, setMounted] = useState(false);
   const [stores, setStores] = useState(initialStores);
+  const [isScanning, setIsScanning] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // カテゴリslugからIDを解決
+  const resolveCategoryId = useCallback(
+    (slug: string): string | undefined => {
+      const cat = categories.find((c) => c.slug === slug);
+      return cat?.id;
+    },
+    [categories],
+  );
+
+  // レシートスキャン処理
+  const handleReceiptScan = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("ファイルサイズが大きすぎます (上限4MB)");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    try {
+      setIsScanning(true);
+      toast.loading("レシートを解析中...", { id: "bulk-scan" });
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await scanReceiptBulk(formData);
+
+      // 店舗名を自動登録
+      if (result.storeName) {
+        const existing = stores.find((s) => s.name === result.storeName);
+        if (!existing && session) {
+          await handleCreateStore(result.storeName);
+        }
+      }
+
+      // フォームに反映
+      setEntriesFromScan(result, resolveCategoryId);
+
+      const itemCount = result.items.length;
+      toast.success(
+        `解析完了: ${itemCount}件の商品を検出しました`,
+        { id: "bulk-scan" },
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("レシートの読み取りに失敗しました", { id: "bulk-scan" });
+    } finally {
+      setIsScanning(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -69,6 +138,32 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-4">
+        {/* Receipt scan button */}
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1"
+            disabled={isScanning}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isScanning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Camera className="mr-2 h-4 w-4" />
+            )}
+            {isScanning ? "解析中..." : "レシートから読み取り"}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleReceiptScan}
+          />
+        </div>
+
         {/* Date picker - shared across all entries */}
         <FormField
           control={form.control}
