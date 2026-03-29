@@ -27,6 +27,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npx vitest run
 
   e2e-tests:
