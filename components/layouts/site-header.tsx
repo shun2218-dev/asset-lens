@@ -37,7 +37,10 @@ export function SiteHeader() {
           </Link>
           {/* ログイン済み */}
           {!isPending && session && (
-            <nav aria-label="メインナビゲーション" className="hidden md:flex items-center gap-4 text-sm font-medium">
+            <nav
+              aria-label="メインナビゲーション"
+              className="hidden md:flex items-center gap-4 text-sm font-medium"
+            >
               <Link
                 href="/dashboard"
                 className={

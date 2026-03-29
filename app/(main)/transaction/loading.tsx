@@ -17,9 +17,14 @@ export default function TransactionLoading() {
       </div>
 
       <div className="space-y-3">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={`tx-row-${i}`} className="h-14 w-full rounded-lg" />
-        ))}
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-lg" />
       </div>
 
       <div className="flex justify-center">
