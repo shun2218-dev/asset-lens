@@ -3,6 +3,7 @@
 import { LogIn, LogOut, Settings, User, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { QuickEntryDialog } from "@/components/features/transaction/quick-entry-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,8 +72,9 @@ export function SiteHeader() {
           )}
         </div>
 
-        {/* 右側: ユーザーメニュー */}
+        {/* 右側: クイック入力 + ユーザーメニュー */}
         <div className="flex items-center gap-2">
+          {!isPending && session && <QuickEntryDialog />}
           {isPending ? (
             <Skeleton className="h-8 w-8 rounded-full" />
           ) : session ? (

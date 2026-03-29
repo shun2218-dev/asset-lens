@@ -15,7 +15,7 @@ type Story = StoryObj<typeof DashboardView>;
 const mockCategories = [
   {
     id: "1",
-    name: "Food",
+    name: "食費",
     slug: "food",
     type: "expense" as const,
     userId: "user1",
@@ -25,7 +25,7 @@ const mockCategories = [
   },
   {
     id: "2",
-    name: "Salary",
+    name: "給与",
     slug: "salary",
     type: "income" as const,
     userId: "user1",
@@ -35,7 +35,7 @@ const mockCategories = [
   },
   {
     id: "3",
-    name: "Transport",
+    name: "交通費",
     slug: "transport",
     type: "expense" as const,
     userId: "user1",
@@ -45,11 +45,11 @@ const mockCategories = [
   },
 ];
 
-const mockTransactions = [
+const mockRecentTransactions = [
   {
     id: "t1",
     amount: 1200,
-    description: "Lunch",
+    description: "ランチ",
     storeName: "コンビニA",
     category: "food",
     categoryId: "1",
@@ -62,7 +62,7 @@ const mockTransactions = [
   {
     id: "t2",
     amount: 500000,
-    description: "Salary",
+    description: "給与",
     storeName: null,
     category: "salary",
     categoryId: "2",
@@ -72,54 +72,65 @@ const mockTransactions = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-];
-
-const mockSummary = {
-  totalIncome: 500000,
-  totalExpense: 1200,
-  balance: 498800,
-  currentMonth: "2024-01",
-  summary: {
-    totalIncome: 500000,
-    totalExpense: 1200,
-    balance: 498800,
+  {
+    id: "t3",
+    amount: 800,
+    description: "コーヒー",
+    storeName: "スタバ",
+    category: "food",
+    categoryId: "1",
+    date: new Date(),
+    userId: "user1",
+    isExpense: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
-  monthlyStats: [],
-  categoryStats: [],
-};
-
-const mockMetadata = {
-  totalCount: 2,
-  totalPages: 1,
-  currentPage: 1,
-  hasNextPage: false,
-  hasPrevPage: false,
-};
+];
 
 export const Default: Story = {
   args: {
-    summary: mockSummary.summary,
+    summary: {
+      totalIncome: 500000,
+      totalExpense: 82000,
+      balance: 418000,
+    },
+    previousSummary: {
+      totalIncome: 480000,
+      totalExpense: 95000,
+      balance: 385000,
+    },
     monthlyStats: [
       { month: "2023-11", income: 450000, expense: 200000 },
       { month: "2023-12", income: 480000, expense: 250000 },
-      { month: "2024-01", income: 500000, expense: 1200 },
+      { month: "2024-01", income: 500000, expense: 82000 },
     ],
     categoryStats: [
-      { category: "food", amount: 1200 },
-      { category: "transport", amount: 5000 },
+      { category: "food", amount: 45000 },
+      { category: "transport", amount: 12000 },
+      { category: "entertainment", amount: 25000 },
     ],
     currentMonth: "2024-01",
-    transactions: mockTransactions,
-    metadata: mockMetadata,
-    categories: mockCategories,
-    stores: [
-      {
-        id: "store-1",
-        name: "コンビニA",
-        userId: "user1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+    recentTransactions: mockRecentTransactions,
+    storeRanking: [
+      { storeName: "スーパーA", totalAmount: 18000 },
+      { storeName: "コンビニB", totalAmount: 12000 },
+      { storeName: "スタバ", totalAmount: 8000 },
+      { storeName: "ドラッグストア", totalAmount: 5000 },
+      { storeName: "ユニクロ", totalAmount: 3000 },
     ],
+    categories: mockCategories,
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+    previousSummary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+    monthlyStats: [],
+    categoryStats: [],
+    currentMonth: "2024-01",
+    recentTransactions: [],
+    storeRanking: [],
+    categories: mockCategories,
   },
 };

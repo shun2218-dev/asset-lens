@@ -16,11 +16,11 @@ export default async function TransactionPage({
   const now = new Date();
   const defaultMonth = format(now, "yyyy-MM");
   const currentMonth = params.month || defaultMonth;
-  // データ取得
+
   const [transactionsData, categories, stores] = await Promise.all([
-    getTransaction(initialPage, currentMonth), // リスト用 (10件)
-    getCategories(), // カテゴリ一覧
-    getStores(), // 店舗一覧
+    getTransaction(initialPage, currentMonth),
+    getCategories(),
+    getStores(),
   ]);
 
   const { data: transactions, metadata } = transactionsData;
