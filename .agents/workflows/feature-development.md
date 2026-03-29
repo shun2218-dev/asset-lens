@@ -4,18 +4,19 @@ description: How to implement a new feature from planning to merge
 
 # Feature Development Workflow
 
-> **⚠️ CRITICAL BRANCH POLICY:**
+> **⚠️ CRITICAL RULES:**
 > - **NEVER commit directly to `develop` or `main`**. These branches accept merges only.
 > - ALL work (features, fixes, docs, chores) MUST be done on a dedicated branch first.
 > - Branch types: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 > - Even single-file changes (docs, config) require a branch.
+> - **NEVER manually close Issues**. Issues are closed automatically when the PR with `Closes #<number>` is merged.
 
 ## 1. Create Issue
 // turbo
 ```bash
-gh issue create --title "<Issue Title>" --body "<Description with acceptance criteria>" --label "enhancement"
+gh issue create --title "<Issue Title>" --body "<Description with acceptance criteria>"
 ```
-Note the issue number (e.g. #17).
+Note the issue number (e.g. #17). **Every task must start with an Issue.**
 
 ## 2. Create Implementation Plan
 - Research the codebase and create `implementation_plan.md` artifact
@@ -27,11 +28,11 @@ Note the issue number (e.g. #17).
 git checkout develop
 git checkout -b feature/<descriptive-name>
 ```
-Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`
+Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 
 ## 4. Implement
 - Create `task.md` artifact to track progress
-- **Never commit directly to `develop` or `main`**
+- **Update Issue checkboxes** (`gh issue edit <number> --body ...`) as each task is completed
 - Make atomic commits with conventional commit messages:
   - `feat:` for new features
   - `fix:` for bug fixes
@@ -39,7 +40,19 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`
   - `chore:` for tooling/config
   - `docs:` for documentation
 
-## 5. Test
+## 5. Quality Checklist (MANDATORY)
+Before creating a PR, ensure:
+- [ ] Storybook stories for all new/modified UI components
+- [ ] Unit tests for all new/modified server actions
+- [ ] E2E tests for new user-facing features
+- [ ] All tests pass (unit + E2E)
+
+### Test Execution Strategy
+Husky hooks handle fast feedback automatically:
+- **pre-commit**: `lint-staged` (biome check/format on staged files only) — instant
+- **pre-push**: `vitest --changed` (unit tests related to changed files only) — fast
+
+**Before creating a PR**, run the full suite manually:
 // turbo
 ```bash
 npx vitest run
@@ -49,29 +62,38 @@ npx vitest run
 npx playwright test --project=chromium --workers=1
 ```
 
-## 6. Lint & Format
-// turbo
+## 6. Push Branch & Create PR
+**Before creating a PR, verify:**
+- All checkboxes in the linked Issue are checked ✅
+- Quality checklist (Step 5) is satisfied
+
+Push the branch and create a PR targeting `develop`.
+**Include `Closes #<issue-number>` in the PR body** to auto-close the Issue on merge.
+
 ```bash
-npx biome check --write .
-npx biome check . --diagnostic-level=error
+git push origin <branch-name>
+gh pr create --base develop --head <branch-name> --title "<title>" --body "<description>
+
+Closes #<issue-number>"
 ```
 
-## 7. Commit & Merge to develop
+## 7. Merge PR
+After review, merge the PR on GitHub (or via CLI):
 ```bash
-git add -A && git commit -m "<conventional commit message>"
+gh pr merge <pr-number> --merge --delete-branch
+```
+This will:
+- Merge the branch into `develop`
+- Delete the remote branch
+- Auto-close linked Issues
+
+## 8. Clean Up Local Branch
+// turbo
+```bash
 git checkout develop
-git merge feature/<name> --no-ff -m "Merge branch 'feature/<name>' into develop"
+git pull origin develop
+git branch -d <branch-name>
 ```
-
-## 8. Clean Up Branch
-// turbo
-```bash
-git branch -d feature/<name>
-```
-
-## 9. Close Issue (if releasing now)
-Issue will be closed during the release workflow. 
-To reference in commit: include `Closes #<number>` in commit message.
 
 ## CI (Automated)
 GitHub Actions runs automatically on every PR:

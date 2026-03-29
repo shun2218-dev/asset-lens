@@ -1,1 +1,1 @@
-npx playwright test --project=chromium --workers=1
+npx vitest run --changed HEAD~1
