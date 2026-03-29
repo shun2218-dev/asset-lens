@@ -7,6 +7,11 @@ vi.mock("next/headers", () => ({
   headers: vi.fn(),
 }));
 
+// Mock next/cache
+vi.mock("next/cache", () => ({
+  unstable_cache: vi.fn((fn: Function) => fn),
+}));
+
 // Mock auth
 vi.mock("@/lib/auth", () => ({
   auth: {

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.16.0] - 2026-03-30
+
+### Performance
+- Cross-request caching for categories, stores, and budgets with `unstable_cache` (#70)
+- Centralized cache tag system with `updateTag`-based invalidation (#70)
+- Lazy-load chart components (recharts ~200KB) via `next/dynamic` with Skeleton fallback (#74)
+- Lazy-load BulkTransactionForm (deferred until bulk tab selected) (#74)
+- Lazy-load QuickEntryDialog (ssr: false, deferred to client) (#74)
+
 ## [2.15.0] - 2026-03-30
 
 ### Added

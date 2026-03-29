@@ -1,10 +1,21 @@
 "use client";
 
-import { BulkTransactionForm } from "@/components/features/transaction/bulk-transaction-form";
+import dynamic from "next/dynamic";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+/** Lazy-loaded — only rendered when bulk tab is selected */
+const BulkTransactionForm = dynamic(
+  () =>
+    import("@/components/features/transaction/bulk-transaction-form").then(
+      (mod) => mod.BulkTransactionForm,
+    ),
+  { loading: () => <Skeleton className="h-[400px] w-full rounded-lg" /> },
+);
+
 import type {
   SelectCategory,
   SelectStore,

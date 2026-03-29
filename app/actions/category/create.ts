@@ -1,11 +1,12 @@
 // app/actions/category/create.ts
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { category } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { categoryTag } from "@/lib/cache/tags";
 
 export async function createCustomCategory(name: string) {
   const session = await auth.api.getSession({
@@ -29,6 +30,7 @@ export async function createCustomCategory(name: string) {
       sortOrder: 100,
     });
 
+    updateTag(categoryTag(session.user.id));
     revalidatePath("/dashboard");
     revalidatePath("/settings");
 
