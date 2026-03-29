@@ -131,13 +131,16 @@ export function SiteHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            // ▼ 未ログイン: ログインボタン
-            <Button asChild variant="default" size="sm">
-              <Link href="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                ログイン
-              </Link>
-            </Button>
+            // ▼ 未ログイン: ログインボタン（auth ページでは非表示）
+            !pathname.startsWith("/login") &&
+            !pathname.startsWith("/forget-password") && (
+              <Button asChild variant="default" size="sm">
+                <Link href="/login">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  ログイン
+                </Link>
+              </Button>
+            )
           )}
         </div>
       </div>

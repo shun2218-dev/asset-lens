@@ -111,7 +111,6 @@ export function SignUpForm() {
           type="submit"
           className="w-full"
           disabled={isLoading}
-          variant="secondary"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           アカウント作成
