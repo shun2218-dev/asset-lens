@@ -8,9 +8,14 @@ description: How to implement a new feature from planning to merge
 > - **NEVER commit directly to `develop` or `main`**. These branches accept merges only.
 > - ALL work (features, fixes, docs, chores) MUST be done on a dedicated branch first.
 > - Branch types: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
-> - Even single-file changes (docs, config) require a branch.
+> - Even single-file changes (docs, config, biome auto-fix, package install) require a branch.
 > - **Issue closing**: Feature PRs (→ `develop`) should reference Issues (e.g. `Relates to #<number>`) for traceability. **Release PRs (`release/vX.Y.Z` → `main`)** must include `Closes #<number>` for all Issues resolved in that release — GitHub auto-closes Issues only on merge to the default branch (`main`).
 > - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text and comments in code may be in Japanese.
+
+> **🛑 BEFORE EVERY `git add` / `git commit`:**
+> 1. Run `git branch --show-current` to confirm you are NOT on `develop` or `main`
+> 2. If you are on `develop` or `main`, STOP and create a branch first (`git checkout -b <type>/<name>`)
+> 3. No exceptions — even for "trivial" changes (formatting, config, package installs)
 
 ## 1. Create Issue
 // turbo
