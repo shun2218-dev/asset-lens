@@ -32,3 +32,18 @@ export type TransactionMetadata = {
   hasNextPage: boolean;
   hasPrevPage: boolean;
 };
+
+export type TransactionSortField = "date" | "category" | "amount";
+export type TransactionSortOrder = "asc" | "desc";
+
+export type TransactionFilterParams = {
+  categoryId?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  searchQuery?: string;
+};
+
+export type TransactionSortParams = {
+  sortBy?: TransactionSortField;
+  sortOrder?: TransactionSortOrder;
+};

@@ -31,6 +31,7 @@ export function TransactionPageView({
         initialMetadata={metadata}
         currentMonth={currentMonth}
         categories={categories}
+        showFilters
       />
     </main>
   );

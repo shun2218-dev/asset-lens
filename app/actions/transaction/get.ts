@@ -1,42 +1,108 @@
 "use server";
 
 import { addMonths, parse } from "date-fns";
-import { and, count, desc, eq, gte, lt, type SQL } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  lt,
+  or,
+  type SQL,
+} from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import type {
+  TransactionFilterParams,
+  TransactionSortParams,
+} from "@/types";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
 
-export async function getTransaction(page: number = 1, month?: string) {
+export async function getTransaction(
+  page: number = 1,
+  month?: string,
+  filters?: TransactionFilterParams,
+  sort?: TransactionSortParams,
+) {
   // ページ番号が1未満にならないように補正
   const safePage = Math.max(1, page);
   const offset = (safePage - 1) * PAGE_SIZE;
 
   try {
-    let whereCondition: SQL | undefined;
+    const conditions: SQL[] = [];
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
+    if (session) {
+      conditions.push(eq(transaction.userId, session.user.id));
+    }
+
     // month引数がある場合、その月の1日〜翌月1日の範囲条件を作成 ("2025-01" -> 2025-01-01 00:00:00)
-    if (month && session) {
-      // 開始日: 指定月の1日 00:00:00
+    if (month && !filters?.dateFrom && !filters?.dateTo) {
       const startDate = parse(month, "yyyy-MM", new Date());
-
-      // 終了日: 翌月の1日 00:00:00
       const endDate = addMonths(startDate, 1);
+      conditions.push(gte(transaction.date, startDate));
+      conditions.push(lt(transaction.date, endDate));
+    }
 
-      // date >= startDate AND date < endDate
-      whereCondition = and(
-        eq(transaction.userId, session.user.id),
-        gte(transaction.date, startDate),
-        lt(transaction.date, endDate),
+    // Filter: date range
+    if (filters?.dateFrom) {
+      conditions.push(gte(transaction.date, filters.dateFrom));
+    }
+    if (filters?.dateTo) {
+      // dateTo is inclusive: add 1 day
+      const dateToEnd = new Date(filters.dateTo);
+      dateToEnd.setDate(dateToEnd.getDate() + 1);
+      conditions.push(lt(transaction.date, dateToEnd));
+    }
+
+    // Filter: category
+    if (filters?.categoryId) {
+      conditions.push(eq(transaction.categoryId, filters.categoryId));
+    }
+
+    // Filter: text search (description)
+    if (filters?.searchQuery && filters.searchQuery.trim()) {
+      const query = `%${filters.searchQuery.trim()}%`;
+      conditions.push(
+        or(
+          ilike(transaction.description, query),
+        ) as SQL,
       );
     }
 
-    // データ取得 (最新順、10件、指定位置から)
+    const whereCondition =
+      conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Build sort order
+    let orderByClause;
+    if (sort?.sortBy) {
+      const direction = sort.sortOrder === "asc" ? asc : desc;
+      switch (sort.sortBy) {
+        case "date":
+          orderByClause = direction(transaction.date);
+          break;
+        case "category":
+          orderByClause = direction(transaction.category);
+          break;
+        case "amount":
+          orderByClause = direction(transaction.amount);
+          break;
+        default:
+          orderByClause = desc(transaction.date);
+      }
+    } else {
+      orderByClause = desc(transaction.date);
+    }
+
+    // データ取得
     const rows = await db
       .select({
         t: transaction,
@@ -45,7 +111,7 @@ export async function getTransaction(page: number = 1, month?: string) {
       .from(transaction)
       .leftJoin(category, eq(transaction.categoryId, category.id))
       .where(whereCondition)
-      .orderBy(desc(transaction.date))
+      .orderBy(orderByClause)
       .limit(PAGE_SIZE)
       .offset(offset);
 
@@ -55,15 +121,12 @@ export async function getTransaction(page: number = 1, month?: string) {
     }));
 
     // 総件数の取得
-    // count() は [{ count: 123 }] のような配列を返す
     const [totalCountResult] = await db
       .select({ count: count() })
       .from(transaction)
       .where(whereCondition);
 
     const totalCount = totalCountResult?.count ?? 0;
-
-    // 総ページ数の計算
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     return {
@@ -78,7 +141,6 @@ export async function getTransaction(page: number = 1, month?: string) {
     };
   } catch (error) {
     console.error("Failed to fetch transaction:", error);
-    // エラー時は空データを返す
     return {
       data: [],
       metadata: {
