@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Wallet } from "lucide-react";
+import Link from "next/link";
 
 export function SiteFooter() {
   return (
@@ -13,13 +13,22 @@ export function SiteFooter() {
           className="flex items-center gap-4 text-xs"
           aria-label="フッターナビゲーション"
         >
-          <Link href="/terms" className="hover:underline hover:text-foreground transition-colors">
+          <Link
+            href="/terms"
+            className="hover:underline hover:text-foreground transition-colors"
+          >
             利用規約
           </Link>
-          <Link href="/privacy" className="hover:underline hover:text-foreground transition-colors">
+          <Link
+            href="/privacy"
+            className="hover:underline hover:text-foreground transition-colors"
+          >
             プライバシーポリシー
           </Link>
-          <Link href="/contact" className="hover:underline hover:text-foreground transition-colors">
+          <Link
+            href="/contact"
+            className="hover:underline hover:text-foreground transition-colors"
+          >
             お問い合わせ
           </Link>
         </nav>
