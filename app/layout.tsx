@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { SiteFooter } from "@/components/layouts/site-footer";
 import { SiteHeader } from "@/components/layouts/site-header";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,17 +27,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <a href="#main-content" className="skip-to-content">
-          メインコンテンツへスキップ
-        </a>
-        <SiteHeader />
-        <main id="main-content">{children}</main>
-        <Toaster />
-        <SiteFooter />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <a href="#main-content" className="skip-to-content">
+            メインコンテンツへスキップ
+          </a>
+          <SiteHeader />
+          <main id="main-content">{children}</main>
+          <Toaster />
+          <SiteFooter />
+        </ThemeProvider>
       </body>
     </html>
   );
