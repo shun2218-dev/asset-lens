@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.2] - 2026-03-30
+
+### Fixed
+- Hero title awkward line break on landing page (#58)
+- Auth form submit buttons using secondary variant instead of primary (#59)
+- Header showing redundant login button on auth pages (#60)
+- Forgot password link placed in wrong position on sign-in form (#61)
+
+### Added
+- Footer navigation links (利用規約, プライバシーポリシー, お問い合わせ) (#65)
+- Storybook MCP addon for enhanced development tooling
+
+### Changed
+- Passkey login button changed to outline variant for clearer visual hierarchy (#59)
+
+### Docs
+- Updated Issue closing policy in release workflow
+
 ## [2.12.1] - 2026-03-29
 
 ### Fixed
