@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SelectBudget, SelectCategory } from "@/db/schema";
 
@@ -67,10 +69,13 @@ export function BudgetProgress({
         <CardHeader>
           <CardTitle className="text-base">📊 予算進捗</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            予算が設定されていません。設定ページから予算を追加してください。
+        <CardContent className="flex flex-col items-center gap-3 py-6">
+          <p className="text-sm text-muted-foreground text-center">
+            まだ予算が設定されていません
           </p>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/settings">設定から予算を追加</Link>
+          </Button>
         </CardContent>
       </Card>
     );

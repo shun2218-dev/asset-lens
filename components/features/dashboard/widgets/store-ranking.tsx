@@ -20,7 +20,7 @@ export function StoreRanking({ data }: StoreRankingProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            今月の支出データがありません
+            データが増えるとランキングが表示されます
           </p>
         </CardContent>
       </Card>
