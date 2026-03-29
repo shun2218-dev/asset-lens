@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-03-29
+
+### Fixed
+- Dashboard crash when previous month summary data is unavailable (`previousSummary` undefined)
+- CI Storybook tests failing due to missing Playwright browser installation
+
 ## [2.12.0] - 2026-03-29
 
 ### Added
