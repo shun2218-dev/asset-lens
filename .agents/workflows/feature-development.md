@@ -32,6 +32,7 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 
 ## 4. Implement
 - Create `task.md` artifact to track progress
+- **Update Issue checkboxes** (`gh issue edit <number> --body ...`) as each task is completed
 - Make atomic commits with conventional commit messages:
   - `feat:` for new features
   - `fix:` for bug fixes
@@ -61,6 +62,10 @@ npx biome check . --diagnostic-level=error
 ```
 
 ## 6. Push Branch & Create PR
+**Before creating a PR, verify:**
+- All checkboxes in the linked Issue are checked ✅
+- Quality checklist (Step 5) is satisfied
+
 Push the branch and create a PR targeting `develop`.
 **Include `Closes #<issue-number>` in the PR body** to auto-close the Issue on merge.
 
