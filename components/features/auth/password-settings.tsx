@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PasswordStrengthIndicator } from "@/components/features/auth/password-strength-indicator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,12 +46,15 @@ export function PasswordSettings() {
 
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
+    mode: "onBlur",
     defaultValues: {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
   });
+
+  const watchNewPassword = form.watch("newPassword");
 
   async function onSubmit(data: ChangePasswordFormValues) {
     setIsLoading(true);
@@ -127,6 +131,7 @@ export function PasswordSettings() {
                         {...field}
                       />
                     </FormControl>
+                    <PasswordStrengthIndicator password={watchNewPassword} />
                     <FormMessage />
                   </FormItem>
                 )}
