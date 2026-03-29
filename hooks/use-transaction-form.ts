@@ -16,6 +16,7 @@ interface UseTransactionFormProps {
     userId: string;
     amount: number;
     description: string;
+    storeName?: string;
     category: string;
     date: Date;
     isExpense: boolean;
@@ -37,6 +38,7 @@ export function useTransactionForm({
           userId: "dummy-user-id",
           amount: 0,
           description: "",
+          storeName: "",
           category: "",
           date: new Date(),
           isExpense: true,
@@ -121,6 +123,7 @@ export function useTransactionForm({
             userId: "dummy-user-id",
             amount: 0,
             description: "",
+            storeName: "",
             category: "",
             date: new Date(),
             isExpense: true,

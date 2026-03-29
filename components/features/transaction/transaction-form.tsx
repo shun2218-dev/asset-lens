@@ -2,8 +2,10 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Camera, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { createStore } from "@/app/actions/store/create";
 import { CategorySelect } from "@/components/features/category/category-select";
+import { StoreSelect } from "@/components/features/store/store-select";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -20,8 +22,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Note: Fixed double slash
-import type { SelectCategory } from "@/db/schema";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { SelectCategory, SelectStore } from "@/db/schema";
 import { useTransactionForm } from "@/hooks/use-transaction-form";
 import { useSession } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
@@ -31,12 +33,14 @@ interface TransactionFormProps {
     userId: string;
     amount: number;
     description: string;
+    storeName?: string;
     category: string;
     date: Date;
     isExpense: boolean;
   };
   id?: string; // 編集モードの場合はIDを渡す
   categories: SelectCategory[];
+  stores: SelectStore[];
   onSuccess?: () => void; // 完了時の処理
   onCancel?: () => void; // キャンセル時の処理
 }
@@ -45,10 +49,12 @@ export function TransactionForm({
   initialData,
   id,
   categories,
+  stores: initialStores,
   onSuccess,
   onCancel,
 }: TransactionFormProps) {
   const { data: session } = useSession();
+  const [stores, setStores] = useState(initialStores);
 
   const {
     form,
@@ -74,6 +80,25 @@ export function TransactionForm({
   }, []);
 
   if (!mounted || !session) return null;
+
+  const handleCreateStore = async (name: string) => {
+    const result = await createStore(name);
+    if (result.success && result.id) {
+      setStores((prev) => {
+        if (prev.some((s) => s.name === name)) return prev;
+        return [
+          ...prev,
+          {
+            id: result.id as string,
+            name,
+            userId: session.user.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ];
+      });
+    }
+  };
 
   return (
     <Form {...form}>
@@ -226,6 +251,23 @@ export function TransactionForm({
                 onChange={field.onChange}
                 categories={categories}
                 currentType={isExpense ? "expense" : "income"}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="storeName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>店舗・サービス名</FormLabel>
+              <StoreSelect
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                stores={stores}
+                onCreateStore={handleCreateStore}
               />
               <FormMessage />
             </FormItem>

@@ -27,6 +27,7 @@ describe("updateTransaction", () => {
     userId: "user-123",
     amount: 2000,
     description: "Updated Transaction",
+    storeName: "更新店舗",
     category: "cat-uuid-456",
     date: new Date("2024-01-02T00:00:00Z"),
     isExpense: true,

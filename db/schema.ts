@@ -37,6 +37,7 @@ export const transaction = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     amount: integer("amount").notNull(), // セント単位や円単位など、整数管理推奨
     description: text("description").notNull(),
+    storeName: text("store_name"), // 店舗名・サービス名（nullable、後から一括更新可能）
     date: date("date", { mode: "date" }).defaultNow().notNull(),
     isExpense: boolean("is_expense").default(true).notNull(), // true=支出, false=収入
     category: text("category").notNull(), // 初期は単純なテキスト、将来的に別テーブル化も検討
@@ -204,6 +205,28 @@ export const subscription = pgTable(
 export type InsertSubscription = InferInsertModel<typeof subscription>;
 export type SelectSubscription = InferSelectModel<typeof subscription>;
 
+export const store = pgTable(
+  "store",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(), // 店舗名・サービス名
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("store_userId_idx").on(table.userId)],
+);
+
+export type SelectStore = InferSelectModel<typeof store>;
+export type InsertStore = InferInsertModel<typeof store>;
+
 export const categoryRelations = relations(category, ({ many }) => ({
   transactions: many(transaction),
 }));
@@ -221,6 +244,14 @@ export const userRelations = relations(user, ({ many }) => ({
   passkeys: many(passkey),
   transactions: many(transaction),
   subscriptions: many(subscription),
+  stores: many(store),
+}));
+
+export const storeRelations = relations(store, ({ one }) => ({
+  user: one(user, {
+    fields: [store.userId],
+    references: [user.id],
+  }),
 }));
 
 export const subscriptionRelations = relations(subscription, ({ one }) => ({

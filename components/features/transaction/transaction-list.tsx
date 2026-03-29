@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SelectCategory, SelectTransaction } from "@/db/schema";
+import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
 
 interface TransactionListProps {
   initialData: SelectTransaction[];
@@ -24,6 +24,7 @@ interface TransactionListProps {
   };
   currentMonth: string;
   categories: SelectCategory[];
+  stores: SelectStore[];
 }
 
 export function TransactionList({
@@ -31,6 +32,7 @@ export function TransactionList({
   initialMetadata,
   currentMonth,
   categories,
+  stores,
 }: TransactionListProps) {
   // 状態管理
   const [transactions, setTransactions] = useState(initialData);
@@ -70,6 +72,7 @@ export function TransactionList({
           <TableRow>
             <TableHead>日付</TableHead>
             <TableHead>内容</TableHead>
+            <TableHead>店舗</TableHead>
             <TableHead>カテゴリ</TableHead>
             <TableHead className="text-right">金額</TableHead>
             <TableHead className="w-12.5"></TableHead>
@@ -77,12 +80,12 @@ export function TransactionList({
         </TableHeader>
         <TableBody>
           {transactions.map((t) => (
-            <TransactionItem data={t} key={t.id} categories={categories} />
+            <TransactionItem data={t} key={t.id} categories={categories} stores={stores} />
           ))}
           {transactions.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={6}
                 className="text-center text-muted-foreground h-24"
               >
                 データがありません
