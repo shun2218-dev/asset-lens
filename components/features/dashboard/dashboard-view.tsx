@@ -3,12 +3,16 @@
 import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
 import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
-import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { BulkTransactionForm } from "@/components/features/transaction/bulk-transaction-form";
+import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
+import type {
+  SelectCategory,
+  SelectStore,
+  SelectTransaction,
+} from "@/db/schema";
 import type {
   CategoryStats,
   MonthlyStats,
@@ -134,7 +138,10 @@ export function DashboardView({
                   <TransactionForm categories={categories} stores={stores} />
                 </TabsContent>
                 <TabsContent value="bulk">
-                  <BulkTransactionForm categories={categories} stores={stores} />
+                  <BulkTransactionForm
+                    categories={categories}
+                    stores={stores}
+                  />
                 </TabsContent>
               </Tabs>
             </CardContent>

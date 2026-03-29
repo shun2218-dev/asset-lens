@@ -96,10 +96,7 @@ export function SubscriptionForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>支払いサイクル</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="選択してください" />
@@ -165,11 +162,7 @@ export function SubscriptionForm({
             {isEditing ? "更新する" : "登録する"}
           </Button>
           {isEditing && onCancel && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-            >
+            <Button type="button" variant="outline" onClick={onCancel}>
               キャンセル
             </Button>
           )}

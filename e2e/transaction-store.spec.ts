@@ -32,18 +32,25 @@ test.describe("Transaction with Store Name", () => {
     await page.getByRole("button", { name: /店舗・サービス名を選択/ }).click();
     await page.waitForTimeout(500);
     const popover = page.locator("[data-slot='popover-content']");
-    await popover.locator("button").filter({ hasText: "既存テスト店舗" }).click();
+    await popover
+      .locator("button")
+      .filter({ hasText: "既存テスト店舗" })
+      .click();
     await page.waitForTimeout(500);
 
     // Verify selection
     await expect(
-      page.getByLabel("通常入力").getByRole("button", { name: /既存テスト店舗/ }),
+      page
+        .getByLabel("通常入力")
+        .getByRole("button", { name: /既存テスト店舗/ }),
     ).toBeVisible({ timeout: 5000 });
 
     // Submit
     await page.getByLabel("用途・メモ").fill("E2E Existing Store Test");
     await page.getByRole("button", { name: "登録する" }).click();
-    await expect(page.getByText("登録しました")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("登録しました")).toBeVisible({
+      timeout: 10000,
+    });
     await page.waitForTimeout(1000);
 
     // DB Verification
@@ -69,9 +76,7 @@ test.describe("Transaction with Store Name", () => {
     await db
       .delete(schema.transaction)
       .where(eq(schema.transaction.userId, authUser.id));
-    await db
-      .delete(schema.store)
-      .where(eq(schema.store.userId, authUser.id));
+    await db.delete(schema.store).where(eq(schema.store.userId, authUser.id));
   });
 
   test("should show all transactions across pages with stable pagination", async ({
@@ -109,7 +114,10 @@ test.describe("Transaction with Store Name", () => {
         await page.getByRole("link", { name: "Next" }).click();
         await page.waitForTimeout(2000);
       }
-      const rows = await page.locator("tr").filter({ hasText: "E2E-Page" }).all();
+      const rows = await page
+        .locator("tr")
+        .filter({ hasText: "E2E-Page" })
+        .all();
       const expected = p < 4 ? 10 : 5;
       expect(rows.length).toBe(expected);
       for (const row of rows) {

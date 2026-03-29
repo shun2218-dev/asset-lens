@@ -3,8 +3,8 @@
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
-import { TransactionFilters } from "@/components/features/transaction/transaction-filters";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
+import { TransactionFilters } from "@/components/features/transaction/transaction-filters";
 import { TransactionItem } from "@/components/features/transaction/transaction-item";
 import { TransactionSortHeader } from "@/components/features/transaction/transaction-sort-header";
 import {
@@ -15,11 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
 import type {
-  TransactionFilterParams,
-  TransactionSortParams,
-} from "@/types";
+  SelectCategory,
+  SelectStore,
+  SelectTransaction,
+} from "@/db/schema";
+import type { TransactionFilterParams, TransactionSortParams } from "@/types";
 
 interface TransactionListProps {
   initialData: SelectTransaction[];
@@ -146,7 +147,12 @@ export function TransactionList({
         </TableHeader>
         <TableBody>
           {transactions.map((t) => (
-            <TransactionItem data={t} key={t.id} categories={categories} stores={stores} />
+            <TransactionItem
+              data={t}
+              key={t.id}
+              categories={categories}
+              stores={stores}
+            />
           ))}
           {transactions.length === 0 && (
             <TableRow>

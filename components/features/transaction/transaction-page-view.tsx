@@ -1,7 +1,11 @@
 "use client";
 
 import { TransactionList } from "@/components/features/transaction/transaction-list";
-import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
+import type {
+  SelectCategory,
+  SelectStore,
+  SelectTransaction,
+} from "@/db/schema";
 import type { TransactionMetadata } from "@/types";
 
 interface TransactionPageViewProps {

@@ -17,10 +17,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import type {
-  TransactionFilterParams,
-  TransactionSortParams,
-} from "@/types";
+import type { TransactionFilterParams, TransactionSortParams } from "@/types";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
 
@@ -93,7 +90,7 @@ export async function getTransaction(
     // Build sort order
     // Secondary sort by id ensures deterministic pagination
     // (without it, same-date records can shift between pages)
-    let orderByClause;
+    let orderByClause: SQL[] = [];
     if (sort?.sortBy) {
       const direction = sort.sortOrder === "asc" ? asc : desc;
       switch (sort.sortBy) {
@@ -107,10 +104,7 @@ export async function getTransaction(
           ];
           break;
         case "amount":
-          orderByClause = [
-            direction(transaction.amount),
-            desc(transaction.id),
-          ];
+          orderByClause = [direction(transaction.amount), desc(transaction.id)];
           break;
         default:
           orderByClause = [desc(transaction.date), desc(transaction.id)];

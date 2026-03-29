@@ -47,12 +47,8 @@ export function TransactionSortHeader({
     >
       <span className="flex items-center gap-1">
         {label}
-        {!isActive && (
-          <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-        )}
-        {isActive && currentOrder === "asc" && (
-          <ArrowUp className="h-3 w-3" />
-        )}
+        {!isActive && <ArrowUpDown className="h-3 w-3 text-muted-foreground" />}
+        {isActive && currentOrder === "asc" && <ArrowUp className="h-3 w-3" />}
         {isActive && currentOrder === "desc" && (
           <ArrowDown className="h-3 w-3" />
         )}

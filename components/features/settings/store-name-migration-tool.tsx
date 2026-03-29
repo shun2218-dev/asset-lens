@@ -9,7 +9,13 @@ import {
   RotateCcw,
   Store,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { toast } from "sonner";
 import {
   applyStoreNameMigration,
@@ -103,9 +109,7 @@ export function StoreNameMigrationTool() {
 
   const toggleAll = useCallback(() => {
     const allSelected = rows.every((r) => r.selected);
-    setRows((prev) =>
-      prev.map((r) => ({ ...r, selected: !allSelected })),
-    );
+    setRows((prev) => prev.map((r) => ({ ...r, selected: !allSelected })));
   }, [rows]);
 
   // 行の選択切り替え
@@ -116,27 +120,17 @@ export function StoreNameMigrationTool() {
   }, []);
 
   // 提案値の編集
-  const updateProposedStoreName = useCallback(
-    (id: string, value: string) => {
-      setRows((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, proposedStoreName: value } : r,
-        ),
-      );
-    },
-    [],
-  );
+  const updateProposedStoreName = useCallback((id: string, value: string) => {
+    setRows((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, proposedStoreName: value } : r)),
+    );
+  }, []);
 
-  const updateProposedDescription = useCallback(
-    (id: string, value: string) => {
-      setRows((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, proposedDescription: value } : r,
-        ),
-      );
-    },
-    [],
-  );
+  const updateProposedDescription = useCallback((id: string, value: string) => {
+    setRows((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, proposedDescription: value } : r)),
+    );
+  }, []);
 
   // 適用
   const handleApply = () => {
@@ -171,7 +165,9 @@ export function StoreNameMigrationTool() {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-muted-foreground">データを読み込み中...</span>
+        <span className="ml-2 text-muted-foreground">
+          データを読み込み中...
+        </span>
       </div>
     );
   }

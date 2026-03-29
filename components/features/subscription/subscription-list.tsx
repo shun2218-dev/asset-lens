@@ -36,9 +36,7 @@ interface SubscriptionListProps {
 
 export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
   const router = useRouter();
-  const [editTarget, setEditTarget] = useState<SelectSubscription | null>(
-    null,
-  );
+  const [editTarget, setEditTarget] = useState<SelectSubscription | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -79,9 +77,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
               key={editTarget?.id ?? "new"}
               editTarget={editTarget}
               onSuccess={handleEditSuccess}
-              onCancel={
-                editTarget ? () => setEditTarget(null) : undefined
-              }
+              onCancel={editTarget ? () => setEditTarget(null) : undefined}
             />
           </CardContent>
         </Card>
@@ -92,9 +88,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
         <Card className="h-full border-dashed lg:border-solid">
           <CardHeader>
             <CardTitle>登録済みリスト</CardTitle>
-            <CardDescription>
-              登録中のサブスクリプション一覧
-            </CardDescription>
+            <CardDescription>登録中のサブスクリプション一覧</CardDescription>
           </CardHeader>
           <CardContent>
             {subscriptions.length === 0 ? (
@@ -108,9 +102,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                   <div
                     key={sub.id}
                     className={`flex items-center justify-between p-4 border rounded-lg bg-card shadow-sm transition-colors ${
-                      editTarget?.id === sub.id
-                        ? "ring-2 ring-primary"
-                        : ""
+                      editTarget?.id === sub.id ? "ring-2 ring-primary" : ""
                     }`}
                   >
                     <div className="space-y-1 min-w-0 flex-1">
@@ -122,19 +114,14 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                           variant="secondary"
                           className="text-[10px] px-1.5 h-5 shrink-0"
                         >
-                          {sub.billingCycle === "monthly"
-                            ? "月額"
-                            : "年額"}
+                          {sub.billingCycle === "monthly" ? "月額" : "年額"}
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground flex gap-2">
                         <span>
-                          次回:{" "}
-                          {format(sub.nextPaymentDate, "yyyy/MM/dd")}
+                          次回: {format(sub.nextPaymentDate, "yyyy/MM/dd")}
                         </span>
-                        <span className="text-muted-foreground/50">
-                          |
-                        </span>
+                        <span className="text-muted-foreground/50">|</span>
                         <span>
                           {EXPENSE_CATEGORY_LABELS[sub.category] ??
                             sub.category}
@@ -174,9 +161,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              キャンセル
-                            </AlertDialogCancel>
+                            <AlertDialogCancel>キャンセル</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(sub.id)}
                               disabled={isPending}

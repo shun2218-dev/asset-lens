@@ -45,10 +45,7 @@ export async function updateSubscription(
         category: parsed.data.category,
       })
       .where(
-        and(
-          eq(subscription.id, id),
-          eq(subscription.userId, session.user.id),
-        ),
+        and(eq(subscription.id, id), eq(subscription.userId, session.user.id)),
       );
 
     revalidatePath("/settings");

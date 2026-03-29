@@ -90,9 +90,7 @@ export function TransactionFilters({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateFrom
-                ? format(filters.dateFrom, "MM/dd")
-                : "開始日"}
+              {filters.dateFrom ? format(filters.dateFrom, "MM/dd") : "開始日"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

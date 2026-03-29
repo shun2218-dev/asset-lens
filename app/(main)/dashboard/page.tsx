@@ -18,12 +18,14 @@ export default async function DashboardPage({
   const defaultMonth = format(now, "yyyy-MM");
   const currentMonth = params.month || defaultMonth;
 
-  const [transactionsData, summaryData, categories, stores] = await Promise.all([
-    getTransaction(initialPage, currentMonth), // リスト用 (10件)
-    getSummary(currentMonth), // グラフ・集計用 (全件集計)
-    getCategories(), // カテゴリ一覧
-    getStores(), // 店舗一覧
-  ]);
+  const [transactionsData, summaryData, categories, stores] = await Promise.all(
+    [
+      getTransaction(initialPage, currentMonth), // リスト用 (10件)
+      getSummary(currentMonth), // グラフ・集計用 (全件集計)
+      getCategories(), // カテゴリ一覧
+      getStores(), // 店舗一覧
+    ],
+  );
 
   const { data: transactions, metadata } = transactionsData;
   const { summary, categoryStats, monthlyStats } = summaryData;

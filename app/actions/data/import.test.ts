@@ -67,16 +67,13 @@ describe("importData", () => {
     // We can mock the Promise.all result by mocking the execution of the promises if we could,
     // but here we mock the builder chain.
 
-    const fromMock = vi.fn().mockImplementation((table: any) => {
-      // Check table name or object structure if feasible.
-      // For now, let's just make the chain flexible.
-      return {
-        where: vi.fn().mockResolvedValue(existingTransactions), // for transaction query
-        // If it's category query, it doesn't call where, it awaits directly or similar?
-        // The code: db.select().from(category) -> await
-        // So for category, it returns a Promise-like object that resolves to categories.
-        then: (resolve: any) => resolve(mockCategories),
-      };
+    const fromMock = vi.fn().mockImplementation(() => {
+      // Return a Promise that also has a .where() method
+      // - await db.select().from(category) → resolves to mockCategories
+      // - db.select().from(transaction).where(...) → resolves to existingTransactions
+      const p = Promise.resolve(mockCategories);
+      (p as any).where = vi.fn().mockResolvedValue(existingTransactions);
+      return p;
     });
 
     (db.select as any).mockReturnValue({ from: fromMock });

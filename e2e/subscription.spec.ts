@@ -30,9 +30,7 @@ test.describe("Subscription", () => {
     // Pick the 15th
     await page.getByRole("gridcell", { name: "15" }).first().click();
 
-    // Category
-    await page.getByRole("combobox", { name: "カテゴリ" }).click();
-    await page.getByRole("option", { name: "交際費・娯楽" }).click();
+    // Category is now fixed to "subscription" (no UI selection needed)
 
     // 4. Submit
     const submitBtn = page.getByRole("button", { name: "登録する" });
@@ -54,5 +52,6 @@ test.describe("Subscription", () => {
     });
     expect(sub).toBeDefined();
     expect(sub?.amount).toBe(980);
+    expect(sub?.category).toBe("subscription");
   });
 });

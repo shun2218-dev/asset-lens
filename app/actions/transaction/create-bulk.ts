@@ -42,13 +42,10 @@ export async function createBulkTransaction(
     const categoryIds = [
       ...new Set(parsed.data.entries.map((e) => e.category)),
     ];
-    const categoryRows = await db
-      .select()
-      .from(category)
-      .where(
-        // Fetch all needed categories
-        eq(category.id, categoryIds[0]),
-      );
+    const categoryRows = await db.select().from(category).where(
+      // Fetch all needed categories
+      eq(category.id, categoryIds[0]),
+    );
 
     // Build a map for all needed categories
     const categoryMap = new Map<string, string>();

@@ -25,10 +25,7 @@ export async function deleteSubscription(id: string): Promise<ActionResult> {
     await db
       .delete(subscription)
       .where(
-        and(
-          eq(subscription.id, id),
-          eq(subscription.userId, session.user.id),
-        ),
+        and(eq(subscription.id, id), eq(subscription.userId, session.user.id)),
       );
 
     revalidatePath("/settings");

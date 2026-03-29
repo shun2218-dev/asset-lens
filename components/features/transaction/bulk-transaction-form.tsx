@@ -2,8 +2,7 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Camera, Loader2, Plus, X } from "lucide-react";
-import { useCallback, useRef } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { scanReceiptBulk } from "@/app/actions/analysis/scan-receipt";
 import { createStore } from "@/app/actions/store/create";
@@ -36,7 +35,10 @@ interface BulkTransactionFormProps {
   stores: SelectStore[];
 }
 
-export function BulkTransactionForm({ categories, stores: initialStores }: BulkTransactionFormProps) {
+export function BulkTransactionForm({
+  categories,
+  stores: initialStores,
+}: BulkTransactionFormProps) {
   const { data: session } = useSession();
 
   const {
@@ -64,9 +66,7 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
   );
 
   // レシートスキャン処理
-  const handleReceiptScan = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleReceiptScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -98,10 +98,9 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
       setEntriesFromScan(result, resolveCategoryId);
 
       const itemCount = result.items.length;
-      toast.success(
-        `解析完了: ${itemCount}件の商品を検出しました`,
-        { id: "bulk-scan" },
-      );
+      toast.success(`解析完了: ${itemCount}件の商品を検出しました`, {
+        id: "bulk-scan",
+      });
     } catch (error) {
       console.error(error);
       toast.error("レシートの読み取りに失敗しました", { id: "bulk-scan" });
@@ -245,11 +244,9 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
                         onValueChange={(v) => {
                           const newIsExpense = v === "expense";
                           entryField.onChange(newIsExpense);
-                          form.setValue(
-                            `entries.${index}.category`,
-                            "",
-                            { shouldValidate: true },
-                          );
+                          form.setValue(`entries.${index}.category`, "", {
+                            shouldValidate: true,
+                          });
                         }}
                         className="w-full"
                       >
@@ -330,14 +327,10 @@ export function BulkTransactionForm({ categories, stores: initialStores }: BulkT
                       <StoreSelect
                         value={entryField.value ?? ""}
                         onChange={(value) => {
-                          form.setValue(
-                            `entries.${index}.storeName`,
-                            value,
-                            {
-                              shouldValidate: true,
-                              shouldDirty: true,
-                            },
-                          );
+                          form.setValue(`entries.${index}.storeName`, value, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
                         }}
                         stores={stores}
                         onCreateStore={handleCreateStore}

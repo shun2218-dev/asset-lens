@@ -50,12 +50,8 @@ describe("createStore", () => {
     (db.select as any).mockReturnValue({ from: fromMock });
 
     // Mock insert
-    const returningMock = vi
-      .fn()
-      .mockResolvedValue([{ id: "new-store-id" }]);
-    const valuesMock = vi
-      .fn()
-      .mockReturnValue({ returning: returningMock });
+    const returningMock = vi.fn().mockResolvedValue([{ id: "new-store-id" }]);
+    const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
     (db.insert as any).mockReturnValue({ values: valuesMock });
 
     const result = await createStore("テスト店舗");

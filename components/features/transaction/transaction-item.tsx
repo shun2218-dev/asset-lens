@@ -1,6 +1,10 @@
 import { format } from "date-fns";
 import { TableCell, TableRow } from "@/components/ui/table";
-import type { SelectCategory, SelectStore, SelectTransaction } from "@/db/schema";
+import type {
+  SelectCategory,
+  SelectStore,
+  SelectTransaction,
+} from "@/db/schema";
 import { TransactionItemMenu } from "./transaction-item-menu";
 
 interface TransactionItemProps {
@@ -9,7 +13,11 @@ interface TransactionItemProps {
   stores: SelectStore[];
 }
 
-export function TransactionItem({ data, categories, stores }: TransactionItemProps) {
+export function TransactionItem({
+  data,
+  categories,
+  stores,
+}: TransactionItemProps) {
   return (
     <TableRow key={data.id}>
       <TableCell>{format(data.date, "MM/dd")}</TableCell>
@@ -33,7 +41,11 @@ export function TransactionItem({ data, categories, stores }: TransactionItemPro
         {data.isExpense ? "-" : "+"}¥{data.amount.toLocaleString()}
       </TableCell>
       <TableCell>
-        <TransactionItemMenu transaction={data} categories={categories} stores={stores} />
+        <TransactionItemMenu
+          transaction={data}
+          categories={categories}
+          stores={stores}
+        />
       </TableCell>
     </TableRow>
   );

@@ -8,6 +8,7 @@ const { mockGenerateContent, mockGetGenerativeModel, MockGoogleGenerativeAI } =
     const mockGetGenerativeModel = vi.fn(() => ({
       generateContent: mockGenerateContent,
     }));
+    // biome-ignore lint/complexity/useArrowFunction: must be a constructor for `new GoogleGenerativeAI()`
     const MockGoogleGenerativeAI = vi.fn(function () {
       return {
         getGenerativeModel: mockGetGenerativeModel,
@@ -215,16 +216,16 @@ describe("parseReceiptBulk", () => {
   it("should throw error if API key is missing", async () => {
     delete process.env.GEMINI_API_KEY;
 
-    await expect(
-      parseReceiptBulk("base64data", "image/jpeg"),
-    ).rejects.toThrow("GEMINI_API_KEY が設定されていません");
+    await expect(parseReceiptBulk("base64data", "image/jpeg")).rejects.toThrow(
+      "GEMINI_API_KEY が設定されていません",
+    );
   });
 
   it("should throw error on API failure", async () => {
     mockGenerateContent.mockRejectedValue(new Error("API Error"));
 
-    await expect(
-      parseReceiptBulk("base64data", "image/jpeg"),
-    ).rejects.toThrow("レシートの解析処理に失敗しました");
+    await expect(parseReceiptBulk("base64data", "image/jpeg")).rejects.toThrow(
+      "レシートの解析処理に失敗しました",
+    );
   });
 });

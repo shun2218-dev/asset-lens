@@ -1,12 +1,7 @@
 "use client";
 
 import type { Session } from "better-auth";
-import {
-  AlertTriangle,
-  FileText,
-  Shield,
-  Store,
-} from "lucide-react";
+import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
@@ -72,8 +67,6 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
             <PasswordSettings />
           </section>
 
-
-
           {/* Danger Zone */}
           <Card className="border-destructive/50">
             <CardHeader>
@@ -110,7 +103,9 @@ export function SettingsView({ session, subscriptions }: SettingsViewProps) {
                 <FileText className="h-5 w-5" />
                 データ入出力
               </CardTitle>
-              <CardDescription>データのエクスポート・インポート</CardDescription>
+              <CardDescription>
+                データのエクスポート・インポート
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">

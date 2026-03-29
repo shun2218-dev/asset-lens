@@ -155,14 +155,12 @@ export async function parseReceiptBulk(
           amount: typeof item.amount === "number" ? item.amount : null,
           description:
             typeof item.description === "string" ? item.description : null,
-          category:
-            typeof item.category === "string" ? item.category : null,
+          category: typeof item.category === "string" ? item.category : null,
         }))
       : [];
 
     return {
-      storeName:
-        typeof data.storeName === "string" ? data.storeName : null,
+      storeName: typeof data.storeName === "string" ? data.storeName : null,
       date: validDate,
       items,
     };
