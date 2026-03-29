@@ -72,3 +72,10 @@ git branch -d feature/<name>
 ## 9. Close Issue (if releasing now)
 Issue will be closed during the release workflow. 
 To reference in commit: include `Closes #<number>` in commit message.
+
+## CI (Automated)
+GitHub Actions runs automatically on every PR:
+- **All PRs → develop/main**: Lint + Unit/Storybook tests
+- **PRs → main only**: E2E tests (requires secrets)
+
+CI must pass before merge. See `.github/workflows/ci.yml`.
