@@ -1,20 +1,37 @@
 "use client";
 
 import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
-import { CategoryPie } from "@/components/features/dashboard/charts/category-pie";
-import { MonthlyChart } from "@/components/features/dashboard/charts/monthly-chart";
+import dynamic from "next/dynamic";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
 import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-progress";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import type {
   SelectBudget,
   SelectCategory,
   SelectTransaction,
 } from "@/db/schema";
 import type { CategoryStats, MonthlyStats, SummaryStats } from "@/types";
+
+/** Lazy-loaded chart components (recharts is ~200KB) */
+const MonthlyChart = dynamic(
+  () =>
+    import("@/components/features/dashboard/charts/monthly-chart").then(
+      (mod) => mod.MonthlyChart,
+    ),
+  { loading: () => <Skeleton className="h-[300px] w-full rounded-lg" /> },
+);
+
+const CategoryPie = dynamic(
+  () =>
+    import("@/components/features/dashboard/charts/category-pie").then(
+      (mod) => mod.CategoryPie,
+    ),
+  { loading: () => <Skeleton className="h-[300px] w-full rounded-lg" /> },
+);
 
 interface StoreRankingItem {
   storeName: string;
