@@ -1,11 +1,12 @@
 "use server";
 
 import { and, eq, isNull } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { budget } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { budgetTag } from "@/lib/cache/tags";
 import type { ActionResult } from "@/types";
 
 interface UpsertBudgetData {
@@ -54,6 +55,7 @@ export async function upsertBudget(
       });
     }
 
+    updateTag(budgetTag(session.user.id));
     revalidatePath("/dashboard");
     revalidatePath("/settings");
     return { success: true };
