@@ -69,6 +69,7 @@ export async function createBulkTransaction(
       userId: session.user.id,
       amount: entry.amount,
       description: entry.description,
+      storeName: entry.storeName || null,
       category: categoryMap.get(entry.category) ?? "",
       categoryId: entry.category,
       date: normalizedDate,

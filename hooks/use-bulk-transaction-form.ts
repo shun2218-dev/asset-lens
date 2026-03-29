@@ -23,6 +23,7 @@ export function useBulkTransactionForm({
         {
           amount: 0,
           description: "",
+          storeName: "",
           category: "",
           isExpense: true,
         },
@@ -39,6 +40,7 @@ export function useBulkTransactionForm({
     append({
       amount: 0,
       description: "",
+      storeName: "",
       category: "",
       isExpense: true,
     });
@@ -71,6 +73,7 @@ export function useBulkTransactionForm({
             {
               amount: 0,
               description: "",
+              storeName: "",
               category: "",
               isExpense: true,
             },
