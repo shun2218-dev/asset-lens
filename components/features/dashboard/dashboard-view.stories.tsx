@@ -89,74 +89,86 @@ const mockRecentTransactions = [
 
 export const Default: Story = {
   args: {
-    summary: {
-      totalIncome: 500000,
-      totalExpense: 82000,
-      balance: 418000,
-    },
-    previousSummary: {
-      totalIncome: 480000,
-      totalExpense: 95000,
-      balance: 385000,
-    },
-    monthlyStats: [
-      { month: "2023-11", income: 450000, expense: 200000 },
-      { month: "2023-12", income: 480000, expense: 250000 },
-      { month: "2024-01", income: 500000, expense: 82000 },
-    ],
-    categoryStats: [
-      { category: "food", amount: 45000 },
-      { category: "transport", amount: 12000 },
-      { category: "entertainment", amount: 25000 },
-    ],
-    currentMonth: "2024-01",
-    recentTransactions: mockRecentTransactions,
-    storeRanking: [
-      { storeName: "スーパーA", totalAmount: 18000 },
-      { storeName: "コンビニB", totalAmount: 12000 },
-      { storeName: "スタバ", totalAmount: 8000 },
-      { storeName: "ドラッグストア", totalAmount: 5000 },
-      { storeName: "ユニクロ", totalAmount: 3000 },
-    ],
-    categories: mockCategories,
-    budgets: [
-      {
-        id: "b1",
-        userId: "user1",
-        categoryId: null,
-        amount: 200000,
-        category: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+    overview: {
+      summary: {
+        totalIncome: 500000,
+        totalExpense: 82000,
+        balance: 418000,
       },
-      {
-        id: "b2",
-        userId: "user1",
-        categoryId: "1",
-        amount: 50000,
-        category: mockCategories[0],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      previousSummary: {
+        totalIncome: 480000,
+        totalExpense: 95000,
+        balance: 385000,
       },
-    ],
-    categoryExpenses: [
-      { categoryId: "1", amount: 45000 },
-      { categoryId: "3", amount: 12000 },
-    ],
+      currentMonth: "2024-01",
+    },
+    charts: {
+      monthlyStats: [
+        { month: "2023-11", income: 450000, expense: 200000 },
+        { month: "2023-12", income: 480000, expense: 250000 },
+        { month: "2024-01", income: 500000, expense: 82000 },
+      ],
+      categoryStats: [
+        { category: "food", amount: 45000 },
+        { category: "transport", amount: 12000 },
+        { category: "entertainment", amount: 25000 },
+      ],
+      categories: mockCategories,
+    },
+    widgets: {
+      recentTransactions: mockRecentTransactions,
+      storeRanking: [
+        { storeName: "スーパーA", totalAmount: 18000 },
+        { storeName: "コンビニB", totalAmount: 12000 },
+        { storeName: "スタバ", totalAmount: 8000 },
+        { storeName: "ドラッグストア", totalAmount: 5000 },
+        { storeName: "ユニクロ", totalAmount: 3000 },
+      ],
+      budgets: [
+        {
+          id: "b1",
+          userId: "user1",
+          categoryId: null,
+          amount: 200000,
+          category: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: "b2",
+          userId: "user1",
+          categoryId: "1",
+          amount: 50000,
+          category: mockCategories[0],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      categoryExpenses: [
+        { categoryId: "1", amount: 45000 },
+        { categoryId: "3", amount: 12000 },
+      ],
+    },
   },
 };
 
 export const Empty: Story = {
   args: {
-    summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
-    previousSummary: { totalIncome: 0, totalExpense: 0, balance: 0 },
-    monthlyStats: [],
-    categoryStats: [],
-    currentMonth: "2024-01",
-    recentTransactions: [],
-    storeRanking: [],
-    categories: mockCategories,
-    budgets: [],
-    categoryExpenses: [],
+    overview: {
+      summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+      previousSummary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+      currentMonth: "2024-01",
+    },
+    charts: {
+      monthlyStats: [],
+      categoryStats: [],
+      categories: mockCategories,
+    },
+    widgets: {
+      recentTransactions: [],
+      storeRanking: [],
+      budgets: [],
+      categoryExpenses: [],
+    },
   },
 };
