@@ -13,10 +13,15 @@ export function ExportButton() {
   const handleExport = async () => {
     setIsPending(true);
     try {
-      const csvData = await exportData();
+      const result = await exportData();
 
-      // ダウンロード処理
-      const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+      if (!result.success) {
+        toast.error(result.error || "エクスポートに失敗しました");
+        return;
+      }
+
+      // Download CSV
+      const blob = new Blob([result.data], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

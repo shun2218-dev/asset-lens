@@ -46,7 +46,7 @@ export function useSubscriptionForm({
     setIsPending(true);
     try {
       if (isEditing && editTarget) {
-        const result = await updateSubscription(editTarget.id, data);
+        const result = await updateSubscription({ id: editTarget.id, data });
         if (result.success) {
           toast.success("サブスクリプションを更新しました");
           onSuccess?.();

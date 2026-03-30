@@ -29,14 +29,13 @@ export function DeleteAccountButton() {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    try {
-      await deleteUser();
+    const result = await deleteUser();
+    if (result.success) {
       await signOut();
       toast.success("アカウントを削除しました");
       router.replace("/");
-    } catch (error) {
-      console.error(error);
-      toast.error("アカウントの削除に失敗しました");
+    } else {
+      toast.error(result.error || "アカウントの削除に失敗しました");
       setIsDeleting(false);
     }
   };
