@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-03-30
+
+### Added
+- Keyboard shortcuts for power users (#45)
+  - `⌘K` / `Ctrl+K` to open/close quick entry dialog
+  - `G → D` navigate to dashboard, `G → T` to transactions, `G → S` to settings
+  - `?` to open shortcut help modal
+  - Reusable `useKeyboardShortcuts` and `useSequenceShortcuts` hooks
+- `KeyboardShortcutProvider` in root layout for global shortcut registration
+- Storybook story for `ShortcutHelpDialog`
+
+### Performance
+- Composite database indexes for frequently queried columns (#46)
+  - `transaction(userId, date)` for monthly filtering
+  - `transaction(userId, storeName)` for store ranking
+  - `budget(userId, categoryId)` for budget lookups
+  - `category(userId)` for per-user category queries
+
 ## [2.16.0] - 2026-03-30
 
 ### Performance
