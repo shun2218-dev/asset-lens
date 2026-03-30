@@ -121,9 +121,9 @@ export function DashboardView({
   }));
 
   return (
-    <main className="container mx-auto p-4 max-w-6xl space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">ダッシュボード</h1>
+    <main className="container mx-auto p-4 max-w-6xl space-y-6 pb-24 md:pb-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl sm:text-3xl font-bold">ダッシュボード</h1>
         <MonthSelector currentMonth={currentMonth} />
       </div>
 
@@ -137,11 +137,11 @@ export function DashboardView({
       ) : (
         <>
           {/* サマリーカード (MoM比較付き) */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <Card className="animate-fade-in-up stagger-1">
               <CardContent className="pt-4 pb-3 text-center">
                 <p className="text-sm text-muted-foreground">収入</p>
-                <p className="text-xl font-bold text-blue-600">
+                <p className="text-lg sm:text-xl font-bold text-blue-600">
                   +¥{summary.totalIncome.toLocaleString()}
                 </p>
                 <MoMBadge
@@ -153,7 +153,7 @@ export function DashboardView({
             <Card className="animate-fade-in-up stagger-2">
               <CardContent className="pt-4 pb-3 text-center">
                 <p className="text-sm text-muted-foreground">支出</p>
-                <p className="text-xl font-bold text-red-600">
+                <p className="text-lg sm:text-xl font-bold text-red-600">
                   -¥{summary.totalExpense.toLocaleString()}
                 </p>
                 <MoMBadge
@@ -166,7 +166,7 @@ export function DashboardView({
               <CardContent className="pt-4 pb-3 text-center">
                 <p className="text-sm text-muted-foreground">収支</p>
                 <p
-                  className={`text-xl font-bold ${summary.balance >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                  className={`text-lg sm:text-xl font-bold ${summary.balance >= 0 ? "text-emerald-600" : "text-red-600"}`}
                 >
                   ¥{summary.balance.toLocaleString()}
                 </p>

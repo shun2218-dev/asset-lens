@@ -68,6 +68,11 @@ gh release create v<VERSION> --title "v<VERSION>" --notes "<release notes>"
 ```
 
 ## 7. Sync develop & Clean Up
+
+> **⚠️ CRITICAL**: `release/v<VERSION>` ブランチを `develop` にマージすること。
+> `main` → `develop` は **禁止**。release ブランチには CHANGELOG やバージョン更新が含まれており、
+> それを develop に反映するのがこのステップの目的である。
+
 ```bash
 git checkout develop
 git merge release/v<VERSION> --no-ff -m "Merge branch 'release/v<VERSION>' into develop"

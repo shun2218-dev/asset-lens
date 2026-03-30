@@ -1,4 +1,12 @@
 import { format } from "date-fns";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "取引一覧",
+  description:
+    "収入・支出の履歴を検索・フィルタ・ソート。取引データの一元管理と新規記録。",
+};
+
 import { getCategories } from "@/app/actions/category/get";
 import { getStores } from "@/app/actions/store/get";
 import { getTransaction } from "@/app/actions/transaction/get";
