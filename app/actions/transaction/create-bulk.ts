@@ -2,34 +2,25 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import {
   type BulkTransactionFormValues,
   bulkTransactionSchema,
 } from "@/lib/validators";
-import type { TransactionResult } from "@/types";
 
-export async function createBulkTransaction(
-  data: BulkTransactionFormValues,
-): Promise<TransactionResult> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const createBulkTransaction = createSafeAction<
+  BulkTransactionFormValues,
+  void
+>(
+  async (data, userId) => {
+    const parsed = bulkTransactionSchema.safeParse(data);
 
-  if (!session) {
-    return { success: false, error: "ログインしてください" };
-  }
+    if (!parsed.success) {
+      throw new Error(parsed.error.message);
+    }
 
-  const parsed = bulkTransactionSchema.safeParse(data);
-
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.message };
-  }
-
-  try {
     const normalizedDate = new Date(
       Date.UTC(
         parsed.data.date.getFullYear(),
@@ -38,16 +29,11 @@ export async function createBulkTransaction(
       ),
     );
 
-    // Resolve category IDs to slugs in parallel
+    // Resolve category IDs to slugs
     const categoryIds = [
       ...new Set(parsed.data.entries.map((e) => e.category)),
     ];
-    const categoryRows = await db.select().from(category).where(
-      // Fetch all needed categories
-      eq(category.id, categoryIds[0]),
-    );
 
-    // Build a map for all needed categories
     const categoryMap = new Map<string, string>();
     for (const catId of categoryIds) {
       const [catData] = await db
@@ -56,14 +42,14 @@ export async function createBulkTransaction(
         .where(eq(category.id, catId))
         .limit(1);
       if (!catData) {
-        return { success: false, error: `カテゴリが見つかりません: ${catId}` };
+        throw new Error(`Category not found: ${catId}`);
       }
       categoryMap.set(catId, catData.slug);
     }
 
     // Build insert values
     const values = parsed.data.entries.map((entry) => ({
-      userId: session.user.id,
+      userId,
       amount: entry.amount,
       description: entry.description,
       storeName: entry.storeName || null,
@@ -78,9 +64,6 @@ export async function createBulkTransaction(
 
     revalidatePath("/dashboard");
     revalidatePath("/transaction");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to bulk add transactions:", error);
-    return { success: false, error: "一括登録に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to create bulk transactions" },
+);

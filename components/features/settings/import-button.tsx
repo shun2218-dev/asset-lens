@@ -36,11 +36,11 @@ export function ImportButton() {
     try {
       const result = await importData(formData);
 
-      if (result.error) {
+      if (!result.success) {
         toast.error(result.error);
       } else {
         toast.success(
-          `インポート完了: ${result.count}件成功 (重複スキップ: ${result.skipped}件)`,
+          `インポート完了: ${result.data.count}件成功 (重複スキップ: ${result.data.skipped}件)`,
         );
       }
     } catch {

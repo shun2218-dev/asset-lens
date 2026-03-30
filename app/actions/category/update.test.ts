@@ -30,11 +30,7 @@ vi.mock("@/db", () => {
 });
 
 vi.mock("@/lib/mail/client", () => ({
-  resend: {
-    emails: {
-      send: vi.fn(),
-    },
-  },
+  resend: { emails: { send: vi.fn() } },
 }));
 
 describe("updateCategory", () => {
@@ -57,13 +53,20 @@ describe("updateCategory", () => {
     expect(db.update).toHaveBeenCalled();
   });
 
-  it("should throw error if unauthorized", async () => {
+  it("should return error if unauthorized", async () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
-    await expect(
-      updateCategory({ id: "cat-123", name: "Test", type: "expense" }),
-    ).rejects.toThrow("Unauthorized");
+    const result = await updateCategory({
+      id: "cat-123",
+      name: "Test",
+      type: "expense",
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should return error if name is empty", async () => {
@@ -74,7 +77,9 @@ describe("updateCategory", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("カテゴリ名を入力してください");
+    if (!result.success) {
+      expect(result.error).toContain("Category name is required");
+    }
   });
 
   it("should return error on database failure", async () => {
@@ -90,6 +95,8 @@ describe("updateCategory", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("カテゴリの更新に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

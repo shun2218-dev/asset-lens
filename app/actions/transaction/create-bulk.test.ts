@@ -2,17 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
 import { createBulkTransaction } from "./create-bulk";
 
-// Mock next/cache
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
-// Mock next/headers
 vi.mock("next/headers", () => ({
   headers: vi.fn(),
 }));
 
-// Mock auth
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
@@ -23,7 +20,6 @@ vi.mock("@/lib/auth", () => ({
   },
 }));
 
-// Mock db
 vi.mock("@/db", () => {
   return {
     db: {
@@ -33,13 +29,8 @@ vi.mock("@/db", () => {
   };
 });
 
-// Mock mail client
 vi.mock("@/lib/mail/client", () => ({
-  resend: {
-    emails: {
-      send: vi.fn(),
-    },
-  },
+  resend: { emails: { send: vi.fn() } },
 }));
 
 describe("createBulkTransaction", () => {
@@ -73,7 +64,6 @@ describe("createBulkTransaction", () => {
   };
 
   it("should successfully create multiple transactions", async () => {
-    // Mock category lookups
     const limitMock = vi.fn();
     limitMock
       .mockResolvedValueOnce([{ slug: "food", id: "cat-uuid-1" }])
@@ -82,7 +72,6 @@ describe("createBulkTransaction", () => {
     const fromMock = vi.fn().mockReturnValue({ where: whereMock });
     (db.select as any).mockReturnValue({ from: fromMock });
 
-    // Mock insert
     const valuesMock = vi.fn().mockResolvedValue([]);
     (db.insert as any).mockReturnValue({ values: valuesMock });
 
@@ -91,7 +80,6 @@ describe("createBulkTransaction", () => {
     expect(result.success).toBe(true);
     expect(db.insert).toHaveBeenCalled();
 
-    // Should insert 3 records
     expect(valuesMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
@@ -114,7 +102,6 @@ describe("createBulkTransaction", () => {
   });
 
   it("should return error if a category is not found", async () => {
-    // First category found, second not
     const limitMock = vi.fn();
     limitMock
       .mockResolvedValueOnce([{ slug: "food", id: "cat-uuid-1" }])
@@ -126,7 +113,9 @@ describe("createBulkTransaction", () => {
     const result = await createBulkTransaction(mockData);
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain("カテゴリが見つかりません");
+    if (!result.success) {
+      expect(result.error).toContain("Category not found");
+    }
     expect(db.insert).not.toHaveBeenCalled();
   });
 
@@ -141,7 +130,6 @@ describe("createBulkTransaction", () => {
   });
 
   it("should handle database errors gracefully", async () => {
-    // Mock category lookup success
     const limitMock = vi
       .fn()
       .mockResolvedValue([{ slug: "food", id: "cat-uuid-1" }]);
@@ -149,7 +137,6 @@ describe("createBulkTransaction", () => {
     const fromMock = vi.fn().mockReturnValue({ where: whereMock });
     (db.select as any).mockReturnValue({ from: fromMock });
 
-    // Mock insert failure
     const valuesMock = vi.fn().mockImplementation(() => {
       throw new Error("DB Error");
     });
@@ -169,6 +156,8 @@ describe("createBulkTransaction", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("一括登録に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

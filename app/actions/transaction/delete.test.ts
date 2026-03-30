@@ -2,12 +2,24 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
 import { deleteTransaction } from "./delete";
 
-// Mock next/cache
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
-// Mock db
+vi.mock("next/headers", () => ({
+  headers: vi.fn(),
+}));
+
+vi.mock("@/lib/auth", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn().mockResolvedValue({
+        user: { id: "user-123" },
+      }),
+    },
+  },
+}));
+
 vi.mock("@/db", () => {
   return {
     db: {
@@ -15,6 +27,10 @@ vi.mock("@/db", () => {
     },
   };
 });
+
+vi.mock("@/lib/mail/client", () => ({
+  resend: { emails: { send: vi.fn() } },
+}));
 
 describe("deleteTransaction", () => {
   beforeEach(() => {
@@ -24,7 +40,6 @@ describe("deleteTransaction", () => {
   const transactionId = "tx-123";
 
   it("should successfully delete a transaction", async () => {
-    // Mock db.delete chain
     const whereMock = vi.fn().mockResolvedValue([{ id: transactionId }]);
     (db.delete as any).mockReturnValue({ where: whereMock });
 
@@ -36,7 +51,6 @@ describe("deleteTransaction", () => {
   });
 
   it("should handle database errors gracefully", async () => {
-    // Mock delete failure
     const whereMock = vi.fn().mockImplementation(() => {
       throw new Error("DB Error");
     });
@@ -45,6 +59,8 @@ describe("deleteTransaction", () => {
     const result = await deleteTransaction(transactionId);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("削除に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

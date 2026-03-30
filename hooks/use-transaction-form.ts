@@ -9,7 +9,6 @@ import { createTransaction } from "@/app/actions/transaction/create";
 import { updateTransaction } from "@/app/actions/transaction/update";
 import type { TransactionFormValues } from "@/lib/validators";
 import { transactionSchema } from "@/lib/validators";
-import type { TransactionResult } from "@/types";
 
 interface UseTransactionFormProps {
   initialData?: {
@@ -107,9 +106,8 @@ export function useTransactionForm({
 
       const payload = { ...data, date: normalizedDate };
 
-      let result: TransactionResult;
       if (id) {
-        result = await updateTransaction(id, payload);
+        const result = await updateTransaction({ id, data: payload });
         if (result.success) {
           toast.success("更新しました");
           onSuccess?.();
@@ -117,7 +115,7 @@ export function useTransactionForm({
           toast.error("更新に失敗しました");
         }
       } else {
-        result = await createTransaction(payload);
+        const result = await createTransaction(payload);
         if (result.success) {
           form.reset({
             userId: "dummy-user-id",

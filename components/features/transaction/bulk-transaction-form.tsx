@@ -117,13 +117,13 @@ export function BulkTransactionForm({
 
   const handleCreateStore = async (name: string) => {
     const result = await createStore(name);
-    if (result.success && result.id) {
+    if (result.success && result.data?.id) {
       setStores((prev) => {
         if (prev.some((s) => s.name === name)) return prev;
         return [
           ...prev,
           {
-            id: result.id as string,
+            id: result.data!.id,
             name,
             userId: session.user.id,
             createdAt: new Date(),

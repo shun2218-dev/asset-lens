@@ -3,34 +3,24 @@
 import { put } from "@vercel/blob";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { user } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import { profileSchema } from "@/lib/validators";
-import type { ActionResult } from "@/types";
 
-export async function updateProfile(formData: FormData): Promise<ActionResult> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const updateProfile = createSafeAction<FormData, void>(
+  async (formData, userId) => {
+    const name = formData.get("name") as string;
+    const imageFile = formData.get("image") as File | null;
 
-  if (!session) {
-    return { success: false, error: "ログインしてください" };
-  }
+    const parsed = profileSchema.safeParse({ name, image: imageFile });
 
-  const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as File | null;
+    if (!parsed.success) {
+      throw new Error(parsed.error.issues[0].message);
+    }
 
-  const parsed = profileSchema.safeParse({ name, image: imageFile });
+    let imageUrl: string | undefined;
 
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
-  }
-
-  let imageUrl: string | undefined;
-
-  try {
     if (imageFile && imageFile.size > 0) {
       const blob = await put(imageFile.name, imageFile, {
         access: "public",
@@ -45,12 +35,9 @@ export async function updateProfile(formData: FormData): Promise<ActionResult> {
         name: parsed.data.name,
         ...(imageUrl ? { image: imageUrl } : {}),
       })
-      .where(eq(user.id, session.user.id));
+      .where(eq(user.id, userId));
 
     revalidatePath("/settings");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to update profile:", error);
-    return { success: false, error: "プロフィールの更新に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to update profile" },
+);

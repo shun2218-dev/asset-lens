@@ -52,7 +52,9 @@ describe("deleteSubscription", () => {
     const result = await deleteSubscription("sub-123");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("ログインしてください");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should handle database errors gracefully", async () => {
@@ -64,6 +66,8 @@ describe("deleteSubscription", () => {
     const result = await deleteSubscription("sub-123");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("サブスクリプションの削除に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });
