@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-03-30
+
+### Added
+- Category management UI in settings page (#43)
+  - Create, edit, and delete custom categories
+  - Category tab with system vs user category distinction
+  - Delete protection for categories with linked transactions
+  - Server actions for update and delete operations
+  - 8 new unit tests for category CRUD actions
+
 ## [2.17.0] - 2026-03-30
 
 ### Added
