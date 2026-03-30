@@ -11,20 +11,24 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const category = pgTable("category", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name").notNull(), // 表示名 (例: "食費")
-  slug: text("slug").notNull(), // 内部識別用キー (例: "food") ※アイコン判定などに使用
-  type: text("type").default("expense").notNull(), // "expense" | "income"
-  userId: text("userId").references(() => user.id, { onDelete: "cascade" }), // nullの場合は「システム共通カテゴリ」
-  sortOrder: integer("sort_order").default(0), // 表示順
-  createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+export const category = pgTable(
+  "category",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    type: text("type").default("expense").notNull(),
+    userId: text("userId").references(() => user.id, { onDelete: "cascade" }),
+    sortOrder: integer("sort_order").default(0),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("category_userId_idx").on(table.userId)],
+);
 
 export type SelectCategory = typeof category.$inferSelect;
 
@@ -50,7 +54,14 @@ export const transaction = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("transactions_userId_idx").on(table.userId)],
+  (table) => [
+    index("transactions_userId_idx").on(table.userId),
+    index("transactions_userId_date_idx").on(table.userId, table.date),
+    index("transactions_userId_storeName_idx").on(
+      table.userId,
+      table.storeName,
+    ),
+  ],
 );
 
 export type SelectTransaction = InferSelectModel<typeof transaction>;
@@ -285,23 +296,29 @@ export const passkeyRelations = relations(passkey, ({ one }) => ({
 // Budget: hybrid model
 // categoryId = null → overall monthly budget (parent)
 // categoryId = uuid → per-category budget (child)
-export const budget = pgTable("budget", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  categoryId: uuid("category_id").references(() => category.id, {
-    onDelete: "cascade",
-  }),
-  amount: integer("amount").notNull(),
-  createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+export const budget = pgTable(
+  "budget",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    categoryId: uuid("category_id").references(() => category.id, {
+      onDelete: "cascade",
+    }),
+    amount: integer("amount").notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("budget_userId_categoryId_idx").on(table.userId, table.categoryId),
+  ],
+);
 
 export type SelectBudget = typeof budget.$inferSelect;
 export type InsertBudget = typeof budget.$inferInsert;
