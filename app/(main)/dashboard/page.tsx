@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
   const params = await searchParams;
-  const currentMonth = params.month || new Date().toISOString().slice(0, 7);
+  const currentMonth = params.month || format(new Date(), "yyyy-MM");
 
   // 6 parallel calls → 4 parallel calls
   // getSummaryWithComparison replaces 2x getSummary + categoryExpenses computation
