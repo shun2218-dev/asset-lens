@@ -39,9 +39,9 @@ export function TransactionPageView({
   stores,
 }: TransactionPageViewProps) {
   return (
-    <main className="container mx-auto max-w-6xl px-4 py-10 space-y-8 min-h-screen">
+    <main className="container mx-auto max-w-6xl px-4 py-10 pb-24 md:pb-10 space-y-8 min-h-screen">
       <div>
-        <h1 className="text-3xl font-bold">取引管理</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">取引管理</h1>
         <p className="text-muted-foreground mt-2">
           収支の記録と履歴の確認・管理
         </p>
