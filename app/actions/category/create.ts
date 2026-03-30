@@ -8,7 +8,14 @@ import { category } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { categoryTag } from "@/lib/cache/tags";
 
-export async function createCustomCategory(name: string) {
+interface CreateCategoryInput {
+  name: string;
+  type?: "expense" | "income";
+}
+
+export async function createCustomCategory(
+  input: string | CreateCategoryInput,
+) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -17,15 +24,20 @@ export async function createCustomCategory(name: string) {
     throw new Error("Unauthorized");
   }
 
+  // Support both string (backward compat) and object input
+  const name = typeof input === "string" ? input : input.name;
+  const type =
+    typeof input === "string" ? "expense" : (input.type ?? "expense");
+
   if (!name.trim()) {
     throw new Error("カテゴリ名を入力してください");
   }
 
   try {
     await db.insert(category).values({
-      name: name,
+      name: name.trim(),
       slug: `custom_${crypto.randomUUID().split("-")[0]}`,
-      type: "expense",
+      type,
       userId: session.user.id,
       sortOrder: 100,
     });
