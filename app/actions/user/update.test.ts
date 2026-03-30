@@ -67,7 +67,9 @@ describe("updateProfile", () => {
     const result = await updateProfile(formData);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("ログインしてください");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should fail validation with empty name", async () => {
@@ -77,7 +79,9 @@ describe("updateProfile", () => {
     const result = await updateProfile(formData);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.success) {
+      expect(result.error).toBeDefined();
+    }
   });
 
   it("should handle database errors", async () => {
@@ -92,6 +96,8 @@ describe("updateProfile", () => {
     const result = await updateProfile(formData);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("プロフィールの更新に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

@@ -5,17 +5,19 @@ import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import type { transactionSchema } from "@/lib/validators";
-import type { TransactionResult } from "@/types";
 
 type TransactionValues = z.infer<typeof transactionSchema>;
 
-export async function updateTransaction(
-  id: string,
-  data: TransactionValues,
-): Promise<TransactionResult> {
-  try {
-    // カテゴリ情報を取得
+interface UpdateTransactionInput {
+  id: string;
+  data: TransactionValues;
+}
+
+export const updateTransaction = createSafeAction<UpdateTransactionInput, void>(
+  async ({ id, data }, _userId) => {
+    // Fetch category info
     const [categoryData] = await db
       .select()
       .from(category)
@@ -23,7 +25,7 @@ export async function updateTransaction(
       .limit(1);
 
     if (!categoryData) {
-      return { success: false, error: "カテゴリが見つかりません" };
+      throw new Error("Category not found");
     }
 
     await db
@@ -41,9 +43,6 @@ export async function updateTransaction(
 
     revalidatePath("/dashboard");
     revalidatePath("/transaction");
-    return { success: true };
-  } catch (error) {
-    console.error("Update Error:", error);
-    return { success: false, error: "更新に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to update transaction" },
+);

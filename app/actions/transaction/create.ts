@@ -2,35 +2,23 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import {
   type TransactionFormValues,
   transactionSchema,
 } from "@/lib/validators";
-import type { TransactionResult } from "@/types";
 
-export async function createTransaction(
-  data: TransactionFormValues,
-): Promise<TransactionResult> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const createTransaction = createSafeAction<TransactionFormValues, void>(
+  async (data, userId) => {
+    const parsed = transactionSchema.safeParse(data);
 
-  if (!session) {
-    return { success: false, error: "ログインしてください" };
-  }
+    if (!parsed.success) {
+      throw new Error(parsed.error.message);
+    }
 
-  const parsed = transactionSchema.safeParse(data);
-
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.message };
-  }
-
-  try {
-    // カテゴリ情報を取得
+    // Fetch category info
     const [categoryData] = await db
       .select()
       .from(category)
@@ -38,11 +26,11 @@ export async function createTransaction(
       .limit(1);
 
     if (!categoryData) {
-      return { success: false, error: "カテゴリが見つかりません" };
+      throw new Error("Category not found");
     }
 
     await db.insert(transaction).values({
-      userId: session.user.id,
+      userId,
       amount: parsed.data.amount,
       description: parsed.data.description,
       storeName: parsed.data.storeName || null,
@@ -54,9 +42,6 @@ export async function createTransaction(
 
     revalidatePath("/dashboard");
     revalidatePath("/transaction");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to add transaction:", error);
-    return { success: false, error: "データの追加に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to create transaction" },
+);

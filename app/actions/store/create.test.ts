@@ -2,12 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
 import { createStore } from "./create";
 
-// Mock next/headers
 vi.mock("next/headers", () => ({
   headers: vi.fn(),
 }));
 
-// Mock auth
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
@@ -18,7 +16,6 @@ vi.mock("@/lib/auth", () => ({
   },
 }));
 
-// Mock db
 vi.mock("@/db", () => {
   return {
     db: {
@@ -28,13 +25,8 @@ vi.mock("@/db", () => {
   };
 });
 
-// Mock mail client
 vi.mock("@/lib/mail/client", () => ({
-  resend: {
-    emails: {
-      send: vi.fn(),
-    },
-  },
+  resend: { emails: { send: vi.fn() } },
 }));
 
 describe("createStore", () => {
@@ -43,13 +35,11 @@ describe("createStore", () => {
   });
 
   it("should create a new store", async () => {
-    // Mock duplicate check: no existing store
     const limitMock = vi.fn().mockResolvedValue([]);
     const whereMock = vi.fn().mockReturnValue({ limit: limitMock });
     const fromMock = vi.fn().mockReturnValue({ where: whereMock });
     (db.select as any).mockReturnValue({ from: fromMock });
 
-    // Mock insert
     const returningMock = vi.fn().mockResolvedValue([{ id: "new-store-id" }]);
     const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
     (db.insert as any).mockReturnValue({ values: valuesMock });
@@ -57,11 +47,12 @@ describe("createStore", () => {
     const result = await createStore("テスト店舗");
 
     expect(result.success).toBe(true);
-    expect(result.id).toBe("new-store-id");
+    if (result.success) {
+      expect(result.data.id).toBe("new-store-id");
+    }
   });
 
   it("should return existing store if duplicate", async () => {
-    // Mock duplicate check: existing store found
     const limitMock = vi
       .fn()
       .mockResolvedValue([{ id: "existing-store-id", name: "テスト店舗" }]);
@@ -72,7 +63,9 @@ describe("createStore", () => {
     const result = await createStore("テスト店舗");
 
     expect(result.success).toBe(true);
-    expect(result.id).toBe("existing-store-id");
+    if (result.success) {
+      expect(result.data.id).toBe("existing-store-id");
+    }
     expect(db.insert).not.toHaveBeenCalled();
   });
 
@@ -80,7 +73,9 @@ describe("createStore", () => {
     const result = await createStore("");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("店舗名を入力してください");
+    if (!result.success) {
+      expect(result.error).toContain("Store name is required");
+    }
   });
 
   it("should handle database errors", async () => {
@@ -91,6 +86,8 @@ describe("createStore", () => {
     const result = await createStore("テスト");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("店舗の登録に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

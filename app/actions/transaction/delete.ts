@@ -4,19 +4,14 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { transaction } from "@/db/schema";
-import type { TransactionResult } from "@/types";
+import { createSafeAction } from "@/lib/actions/safe-action";
 
-export async function deleteTransaction(
-  id: string,
-): Promise<TransactionResult> {
-  try {
+export const deleteTransaction = createSafeAction<string, void>(
+  async (id, _userId) => {
     await db.delete(transaction).where(eq(transaction.id, id));
 
     revalidatePath("/dashboard");
     revalidatePath("/transaction");
-    return { success: true };
-  } catch (error) {
-    console.error("Delete Error:", error);
-    return { success: false, error: "削除に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to delete transaction" },
+);

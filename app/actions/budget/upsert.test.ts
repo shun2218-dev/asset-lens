@@ -72,7 +72,9 @@ describe("upsertBudget", () => {
     const result = await upsertBudget({ categoryId: null, amount: 0 });
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain("1円以上");
+    if (!result.success) {
+      expect(result.error).toContain("Budget amount must be greater than 0");
+    }
   });
 
   it("should return error if not authenticated", async () => {
@@ -82,6 +84,8 @@ describe("upsertBudget", () => {
     const result = await upsertBudget({ categoryId: null, amount: 200000 });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("ログインしてください");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 });
