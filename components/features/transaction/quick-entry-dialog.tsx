@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getCategories } from "@/app/actions/category/get";
 import { getStores } from "@/app/actions/store/get";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
@@ -30,6 +30,17 @@ export function QuickEntryDialog() {
       });
     }
   }, [open, loaded]);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
