@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.19.0] - 2026-03-30
+
+### Added
+- Mobile bottom navigation bar with 4 nav items + center FAB for quick transaction entry (#106)
+- Comprehensive SEO metadata: title templates, Open Graph, Twitter cards, keywords (#112)
+- Page-specific metadata for Dashboard, Transaction, and Settings pages (#112)
+- PWA manifest (`manifest.json`) with app identity and theme color (#112)
+- `robots.txt` to allow public pages and block authenticated routes (#112)
+- GitHub PR template with standardized sections and checklists (#110)
+
+### Changed
+- Dashboard summary cards stack vertically on mobile (`grid-cols-1 sm:grid-cols-3`) (#106)
+- Settings tabs horizontally scrollable on narrow screens (#106)
+- Footer hidden on mobile (replaced by bottom navigation) (#106)
+- Font sizes scale down on small screens for better readability (#106)
+- lint-staged now auto-runs related unit tests via `vitest related --run` (#110)
+
+### Fixed
+- Removed unused imports (`Session`, `Tag`) from settings-view (#106)
+
 ## [2.18.0] - 2026-03-30
 
 ### Added
