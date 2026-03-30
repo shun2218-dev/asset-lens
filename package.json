@@ -90,7 +90,8 @@
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "biome check --write",
-      "biome format --write"
+      "biome format --write",
+      "vitest related --run"
     ]
   }
 }
