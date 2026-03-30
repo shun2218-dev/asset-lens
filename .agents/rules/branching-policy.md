@@ -52,6 +52,19 @@ If changes span multiple concerns (e.g., feature code + workflow rule update + l
 - `docs:` documentation
 - `style:` formatting (no logic change)
 
+## GitHub Language Policy
+
+ALL GitHub artifacts MUST be written in **English only**:
+
+- **Issue titles and body**
+- **PR titles and body**
+- **Commit messages**
+- **Branch names**
+- **CHANGELOG entries**
+- **Code comments** (inline and JSDoc)
+
+No exceptions — Japanese is NOT permitted in any of the above.
+
 ## Flags
 
 - **NEVER** use `--no-verify` — husky hooks must always run
