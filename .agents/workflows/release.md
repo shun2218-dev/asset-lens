@@ -47,7 +47,8 @@ On the release branch:
 - Update `package.json` version field
 
 ```bash
-git add -A && git commit -m "chore: bump version to <VERSION>"
+git add CHANGELOG.md package.json README.md
+git commit -m "chore: bump version to <VERSION>"
 git push origin release/v<VERSION>
 ```
 
@@ -69,9 +70,9 @@ gh release create v<VERSION> --title "v<VERSION>" --notes "<release notes>"
 
 ## 7. Sync develop & Clean Up
 
-> **⚠️ CRITICAL**: `release/v<VERSION>` ブランチを `develop` にマージすること。
-> `main` → `develop` は **禁止**。release ブランチには CHANGELOG やバージョン更新が含まれており、
-> それを develop に反映するのがこのステップの目的である。
+> **⚠️ CRITICAL**: Merge the `release/v<VERSION>` branch into `develop`.
+> **NEVER** merge `main` → `develop`. The release branch contains CHANGELOG and version updates
+> that must flow into `develop` — this is the purpose of this step.
 
 ```bash
 git checkout develop

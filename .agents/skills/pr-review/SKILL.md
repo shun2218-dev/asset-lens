@@ -26,7 +26,18 @@ If a related Issue exists, fetch it:
 gh issue view <issue-number>
 ```
 
-### 2. PR Draft Creation
+### 2. Pre-Flight Quality Checks
+
+Before creating the PR, verify the quality gate (per `testing-policy.md`):
+
+- Run `npx vitest run` — all unit tests must pass
+- Run `npx tsc --noEmit` — TypeScript must compile cleanly
+- Confirm Storybook stories exist for new/modified UI components
+- Confirm E2E tests pass for user-facing features (if applicable)
+
+If any check fails, **STOP** and fix before proceeding.
+
+### 3. PR Draft Creation
 
 Use `resources/pr_template.md` as the base format to draft the PR title and body.
 
@@ -39,7 +50,7 @@ Use `resources/pr_template.md` as the base format to draft the PR title and body
 - Be specific about what changed and why
 - List focus areas for reviewers
 
-### 3. PR Creation
+### 4. PR Creation
 
 After user confirmation, create the PR:
 
@@ -49,7 +60,7 @@ gh pr create --base develop --head <branch-name> --title "<title>" --body "<body
 
 **IMPORTANT**: Capture the **PR number** from the command output (e.g., `https://github.com/.../pull/42` → PR #42).
 
-### 4. Automated Self-Review
+### 5. Automated Self-Review
 
 After creating the PR, perform a self-review against the diff:
 

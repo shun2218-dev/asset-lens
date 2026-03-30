@@ -93,6 +93,8 @@ git commit -m "{{type}}: {{subject}}"
 git push origin $(git branch --show-current)
 ```
 
+> ⚠️ The `pre-push` husky hook runs `vitest --changed` automatically. If it fails, the push is blocked. Fix the failing tests before retrying.
+
 ### 6. Issue Progress Comment
 
 If an Issue number was identified, post a progress comment:

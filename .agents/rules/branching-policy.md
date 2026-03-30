@@ -51,6 +51,8 @@ If changes span multiple concerns (e.g., feature code + workflow rule update + l
 - `chore:` tooling, config, dependencies
 - `docs:` documentation
 - `style:` formatting (no logic change)
+- `test:` adding or updating tests
+- `perf:` performance improvements
 
 ## GitHub Language Policy
 
