@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { KeyboardShortcutProvider } from "@/components/features/shortcuts/keyboard-shortcut-provider";
+import { BottomNav } from "@/components/layouts/bottom-nav";
 import { SiteFooter } from "@/components/layouts/site-footer";
 import { SiteHeader } from "@/components/layouts/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -45,6 +46,7 @@ export default function RootLayout({
             <SiteHeader />
             <main id="main-content">{children}</main>
             <Toaster />
+            <BottomNav />
             <SiteFooter />
           </KeyboardShortcutProvider>
         </ThemeProvider>

@@ -1,7 +1,6 @@
 "use client";
 
-import type { Session } from "better-auth";
-import { AlertTriangle, FileText, Shield, Store, Tag } from "lucide-react";
+import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { BudgetSettings } from "@/components/features/budget/budget-settings";
@@ -28,8 +27,6 @@ interface BudgetWithCategory extends SelectBudget {
   category: SelectCategory | null;
 }
 
-// ... existing imports ...
-
 interface SettingsViewProps {
   session: {
     user: {
@@ -50,9 +47,9 @@ export function SettingsView({
   categories,
 }: SettingsViewProps) {
   return (
-    <main className="container max-w-5xl px-4 py-10 space-y-8 mx-auto min-h-screen">
+    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen">
       <div>
-        <h1 className="text-3xl font-bold">設定</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">設定</h1>
         <p className="text-muted-foreground">
           アカウント設定とサブスクリプション管理
         </p>
@@ -61,13 +58,15 @@ export function SettingsView({
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-175">
-          <TabsTrigger value="account">アカウント</TabsTrigger>
-          <TabsTrigger value="category">カテゴリ</TabsTrigger>
-          <TabsTrigger value="budget">予算</TabsTrigger>
-          <TabsTrigger value="data">データ管理</TabsTrigger>
-          <TabsTrigger value="subscription">サブスク</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-5 lg:w-175">
+            <TabsTrigger value="account">アカウント</TabsTrigger>
+            <TabsTrigger value="category">カテゴリ</TabsTrigger>
+            <TabsTrigger value="budget">予算</TabsTrigger>
+            <TabsTrigger value="data">データ管理</TabsTrigger>
+            <TabsTrigger value="subscription">サブスク</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="account" className="space-y-6">
           {/* ... security ... */}
