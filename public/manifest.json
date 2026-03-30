@@ -1,0 +1,16 @@
+{
+  "name": "AssetLens",
+  "short_name": "AssetLens",
+  "description": "収支を記録・分析して家計を最適化するパーソナルファイナンスアプリ",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
