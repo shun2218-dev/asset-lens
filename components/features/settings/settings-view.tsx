@@ -1,10 +1,11 @@
 "use client";
 
 import type { Session } from "better-auth";
-import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
+import { AlertTriangle, FileText, Shield, Store, Tag } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { BudgetSettings } from "@/components/features/budget/budget-settings";
+import { CategoryManager } from "@/components/features/category/category-manager";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
@@ -60,8 +61,9 @@ export function SettingsView({
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-150">
+        <TabsList className="grid w-full grid-cols-5 lg:w-175">
           <TabsTrigger value="account">アカウント</TabsTrigger>
+          <TabsTrigger value="category">カテゴリ</TabsTrigger>
           <TabsTrigger value="budget">予算</TabsTrigger>
           <TabsTrigger value="data">データ管理</TabsTrigger>
           <TabsTrigger value="subscription">サブスク</TabsTrigger>
@@ -105,6 +107,11 @@ export function SettingsView({
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* --- タブ: カテゴリ管理 --- */}
+        <TabsContent value="category" className="space-y-6">
+          <CategoryManager categories={categories} />
         </TabsContent>
 
         {/* --- タブ: 予算管理 --- */}
