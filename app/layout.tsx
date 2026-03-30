@@ -19,8 +19,43 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AssetLens",
-  description: "Personal Finance App",
+  title: {
+    default: "AssetLens - スマート家計管理",
+    template: "%s | AssetLens",
+  },
+  description:
+    "収支を記録・分析して家計を最適化。予算管理、カテゴリ別支出分析、サブスクリプション管理など、暮らしのお金を見える化するパーソナルファイナンスアプリ。",
+  keywords: [
+    "家計簿",
+    "家計管理",
+    "収支管理",
+    "予算管理",
+    "支出分析",
+    "asset management",
+  ],
+  authors: [{ name: "AssetLens" }],
+  creator: "AssetLens",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://asset-lens.vercel.app",
+  ),
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    siteName: "AssetLens",
+    title: "AssetLens - スマート家計管理",
+    description:
+      "収支を記録・分析して家計を最適化するパーソナルファイナンスアプリ。",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AssetLens - スマート家計管理",
+    description:
+      "収支を記録・分析して家計を最適化するパーソナルファイナンスアプリ。",
+  },
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

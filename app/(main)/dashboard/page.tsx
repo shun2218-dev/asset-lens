@@ -1,4 +1,12 @@
 import { format, subMonths } from "date-fns";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ダッシュボード",
+  description:
+    "月次収支推移、カテゴリ別支出、予算進捗を一目で確認。家計の全体像を把握できるダッシュボード。",
+};
+
 import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
 import { getSummary } from "@/app/actions/analysis/get-summary";
 import { getBudgets } from "@/app/actions/budget/get";
