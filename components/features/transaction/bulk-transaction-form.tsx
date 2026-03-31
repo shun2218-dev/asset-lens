@@ -253,13 +253,13 @@ export function BulkTransactionForm({
                         <TabsList className="grid w-full grid-cols-2">
                           <TabsTrigger
                             value="expense"
-                            className="data-[state=active]:bg-red-500 data-[state=active]:text-white"
+                            className="data-[state=active]:bg-red-700 data-[state=active]:text-white"
                           >
                             支出
                           </TabsTrigger>
                           <TabsTrigger
                             value="income"
-                            className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                            className="data-[state=active]:bg-blue-700 data-[state=active]:text-white"
                           >
                             収入
                           </TabsTrigger>

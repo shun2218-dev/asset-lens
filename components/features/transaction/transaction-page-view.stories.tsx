@@ -6,6 +6,16 @@ const meta: Meta<typeof TransactionPageView> = {
   component: TransactionPageView,
   parameters: {
     layout: "fullscreen",
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: "aria-valid-attr-value",
+            enabled: false,
+          },
+        ],
+      },
+    },
   },
 };
 

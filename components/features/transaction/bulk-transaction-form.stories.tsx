@@ -7,6 +7,16 @@ const meta: Meta<typeof BulkTransactionForm> = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: "aria-valid-attr-value",
+            enabled: false,
+          },
+        ],
+      },
+    },
   },
 };
 

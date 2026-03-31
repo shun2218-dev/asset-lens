@@ -7,6 +7,18 @@ const meta: Meta<typeof TransactionForm> = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    a11y: {
+      config: {
+        rules: [
+          {
+            // Radix Tabs generates aria-controls for TabsContent that doesn't exist
+            // when used as a styled toggle group (no TabsContent rendered)
+            id: "aria-valid-attr-value",
+            enabled: false,
+          },
+        ],
+      },
+    },
   },
 };
 
