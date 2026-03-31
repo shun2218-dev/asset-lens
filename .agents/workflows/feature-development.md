@@ -123,6 +123,28 @@ gh pr create --base develop --head <branch-name> --title "<title>" --body "<desc
 Relates to #<issue-number>"
 ```
 
+### MANDATORY: PR Metadata (must be set on every PR)
+
+After creating a PR, apply the following metadata:
+
+**6a. Add Labels** — choose from: `feature`, `bug`, `enhancement`, `refactor`, `testing`, `documentation`, `dx`, `ui/ux`, `performance`, `infra`, `seo`, `release`
+```bash
+gh pr edit <pr-number> --add-label "<label1>,<label2>"
+```
+
+**6b. Assign Milestone** — same milestone as the related Issue
+```bash
+gh pr edit <pr-number> --milestone "<MILESTONE_TITLE>"
+```
+
+**6c. Add to Project Board**
+```bash
+gh project item-add 1 --owner shun2218-dev --url "https://github.com/shun2218-dev/asset-lens/pull/<pr-number>"
+```
+
+> ⚠️ **Do NOT skip any step.** All PRs must have: Labels ✅ Milestone ✅ Project ✅
+
+
 ## 7. Merge PR
 After review, merge the PR on GitHub (or via CLI):
 ```bash
