@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -57,17 +58,13 @@ export function ShortcutHelpDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent
-        className="sm:max-w-[480px]"
-        id="shortcut-help-dialog"
-        aria-describedby="shortcut-help-description"
-      >
+      <DialogContent className="sm:max-w-[480px]" id="shortcut-help-dialog">
         <DialogHeader>
           <DialogTitle>キーボードショートカット</DialogTitle>
+          <DialogDescription>
+            利用可能なキーボードショートカットの一覧です
+          </DialogDescription>
         </DialogHeader>
-        <p id="shortcut-help-description" className="sr-only">
-          利用可能なキーボードショートカットの一覧です
-        </p>
         <div className="space-y-6">
           {SHORTCUT_GROUPS.map((group) => (
             <div key={group.title}>
