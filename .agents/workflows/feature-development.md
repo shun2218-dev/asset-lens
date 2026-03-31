@@ -19,30 +19,48 @@ description: How to implement a new feature from planning to merge
 > 3. No exceptions — even for "trivial" changes (formatting, config, package installs)
 > 4. **NEVER use `--no-verify`** — husky hooks enforce lint/format and must always run
 
-## 1. Create Issue
+## 1. Create Issue & Project Setup
 // turbo
 ```bash
 gh issue create --title "<Issue Title>" --body "<Description with acceptance criteria>"
 ```
 Note the issue number (e.g. #17). **Every task must start with an Issue.**
 
-### Add to Project Board (see `/project-sync` skill)
+### MANDATORY: Post-Creation Checklist (see `/project-sync` and `/milestone` skills)
+
+After creating an Issue, complete ALL of the following before proceeding:
+
+**1a. Add to Project Board**
 // turbo
 ```bash
 gh project item-add 1 --owner shun2218-dev --url "https://github.com/shun2218-dev/asset-lens/issues/<NUMBER>"
 ```
 
-### Assign Milestone (see `/project-sync` skill for decision guide)
+**1b. Assign Milestone** (see `/project-sync` milestone decision guide)
 // turbo
 ```bash
 gh issue edit <NUMBER> --milestone "<MILESTONE_TITLE>"
 ```
 
+**1c. Set Relationships** (see `/milestone` skill Step 5)
+Evaluate dependencies: Does this Issue depend on or block other Issues?
+- If YES → set parent/sub-issue relationship using GraphQL API
+- If NO → skip
+
+**1d. Set Project Dates** (Start Date + Target Date)
+```bash
+ITEM_ID=$(gh project item-list 1 --owner shun2218-dev --format json --jq ".items[] | select(.content.number == <NUM>) | .id" --limit 60)
+gh project item-edit --project-id PVT_kwHOBQUjOs4BTRBF --id "$ITEM_ID" --field-id PVTF_lAHOBQUjOs4BTRBFzhAjo8M --date "<START_DATE>"
+gh project item-edit --project-id PVT_kwHOBQUjOs4BTRBF --id "$ITEM_ID" --field-id PVTF_lAHOBQUjOs4BTRBFzhAjo8Q --date "<TARGET_DATE>"
+```
+
+> ⚠️ **Do NOT skip any step.** All Issues must have: Project Board ✅ Milestone ✅ Relationships ✅ Dates ✅
+
 ## 2. Create Implementation Plan
 - Research the codebase and create `implementation_plan.md` artifact
 - Request user feedback before proceeding
 
-## 3. Create Feature Branch
+## 3. Create Feature Branch & Update Status
 // turbo
 ```bash
 git checkout develop
@@ -51,7 +69,7 @@ git checkout -b feature/<descriptive-name>
 Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 
 ### Update Project Status to "In Progress" (see `/project-sync` skill)
-Update the Issue status on the project board when starting work.
+
 
 ## 4. Implement
 - Create `task.md` artifact to track progress
