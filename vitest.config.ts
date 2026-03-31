@@ -20,6 +20,23 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      include: ["app/actions/**", "lib/**", "hooks/**"],
+      exclude: [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.stories.tsx",
+        "**/*.d.ts",
+      ],
+      thresholds: {
+        statements: 45,
+        branches: 35,
+        functions: 40,
+        lines: 45,
+      },
+    },
     projects: [
       {
         extends: true,

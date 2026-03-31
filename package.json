@@ -16,6 +16,7 @@
     "build-storybook": "storybook build",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:coverage": "vitest run --project unit --coverage",
     "prepare": "husky"
   },
   "dependencies": {
