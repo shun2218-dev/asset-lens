@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.20.1] - 2026-03-31
+
+### Added
+- Chromatic visual regression testing integrated with CI (#122)
+- `chromatic` npm script for local visual testing
+- CI job: `Visual Regression (Chromatic)` with TurboSnap and auto-accept on main
+
 ## [2.20.0] - 2026-03-31
 
 ### Added
