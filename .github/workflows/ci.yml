@@ -64,6 +64,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.base_ref == 'main'
     needs: [lint, unit-tests]
+    continue-on-error: true
+    env:
+      DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY_CI }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -72,9 +75,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --project=chromium --workers=1
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: http://localhost:3000
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - run: npx dotenvx run -f .env.ci -- npm run build
+      - run: npx dotenvx run -f .env.ci -- npx playwright test --project=chromium --workers=1

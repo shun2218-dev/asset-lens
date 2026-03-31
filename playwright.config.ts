@@ -1,13 +1,13 @@
-import { defineConfig, devices } from "@playwright/test";
-
 /**
  * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Uses @dotenvx/dotenvx for encrypted env support.
+ * In CI: dotenvx run -f .env.ci injects vars at process level.
+ * Locally: falls back to .env.local if it exists.
  */
-import dotenv from "dotenv";
-import path from "path";
+import { config } from "@dotenvx/dotenvx";
+import { defineConfig, devices } from "@playwright/test";
 
-dotenv.config({ path: path.resolve(__dirname, ".env.local") });
+config({ path: ".env.local", quiet: true });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
