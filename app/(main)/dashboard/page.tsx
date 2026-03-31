@@ -8,11 +8,21 @@ export const metadata: Metadata = {
 };
 
 import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
+import type { DashboardSummaryResult } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getSummaryWithComparison } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getBudgets } from "@/app/actions/budget/get";
 import { getCategories } from "@/app/actions/category/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { DashboardView } from "@/components/features/dashboard/dashboard-view";
+
+const EMPTY_DASHBOARD: DashboardSummaryResult = {
+  currentMonth: "",
+  summary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+  previousSummary: { totalIncome: 0, totalExpense: 0, balance: 0 },
+  categoryStats: [],
+  monthlyStats: [],
+  categoryExpenses: [],
+};
 
 interface DashboardPageProps {
   searchParams: { month?: string };
@@ -24,9 +34,7 @@ export default async function DashboardPage({
   const params = await searchParams;
   const currentMonth = params.month || format(new Date(), "yyyy-MM");
 
-  // 6 parallel calls → 4 parallel calls
-  // getSummaryWithComparison replaces 2x getSummary + categoryExpenses computation
-  const [dashboardSummary, recentData, storeRanking, categories, budgets] =
+  const [summaryResult, recentData, rankingResult, categories, budgets] =
     await Promise.all([
       getSummaryWithComparison(currentMonth),
       getTransaction(1, currentMonth),
@@ -35,6 +43,10 @@ export default async function DashboardPage({
       getBudgets(),
     ]);
 
+  const dashboardSummary = summaryResult.success
+    ? summaryResult.data
+    : { ...EMPTY_DASHBOARD, currentMonth };
+  const storeRanking = rankingResult.success ? rankingResult.data : [];
   const { data: recentTransactions } = recentData;
 
   return (
