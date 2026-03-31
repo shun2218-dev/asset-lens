@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.22.0] - 2026-04-01
+
+### Added
+- Create `/terms` (Terms of Service), `/privacy` (Privacy Policy), `/contact` (Contact) pages (#174)
+- E2E tests for footer pages: response status, heading, content sections, navigation
+
+### Changed
+- Project board: set Start Date and Target Date for all 21 open items
+- Unified project management workflow with `/project-sync` skill
+
 ## [2.21.0] - 2026-03-31
 
 ### Fixed
