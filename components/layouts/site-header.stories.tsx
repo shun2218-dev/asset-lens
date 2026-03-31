@@ -6,6 +6,12 @@ const meta: Meta<typeof SiteHeader> = {
   component: SiteHeader,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Application header with logo, navigation links, theme toggle, and user menu. Adapts layout for authenticated vs guest users.",
+      },
+    },
     layout: "fullscreen",
   },
 };

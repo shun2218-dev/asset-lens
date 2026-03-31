@@ -7,6 +7,12 @@ const meta: Meta<typeof TransactionItemMenu> = {
   component: TransactionItemMenu,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Per-row action dropdown menu for transactions. Provides edit and delete options with confirmation dialog for deletions.",
+      },
+    },
     layout: "centered",
   },
 };

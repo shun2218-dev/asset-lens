@@ -6,6 +6,12 @@ const meta: Meta<typeof ProfileForm> = {
   title: "Features/Settings/ProfileForm",
   component: ProfileForm,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Profile editing form with avatar upload and name change. Supports image preview and 5MB file size validation.",
+      },
+    },
     layout: "centered",
   },
   tags: ["autodocs"],

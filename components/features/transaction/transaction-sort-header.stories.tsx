@@ -7,6 +7,12 @@ const meta: Meta<typeof TransactionSortHeader> = {
   component: TransactionSortHeader,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Sortable table column header with ascending/descending toggle indicators. Used in the transaction list table.",
+      },
+    },
     layout: "centered",
   },
   decorators: [

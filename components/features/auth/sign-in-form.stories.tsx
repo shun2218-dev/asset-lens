@@ -7,6 +7,12 @@ const meta: Meta<typeof SignInForm> = {
   component: SignInForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Email/password sign-in form with validation. Uses react-hook-form with Zod schema validation and blur-mode error display.",
+      },
+    },
     layout: "centered",
   },
 };

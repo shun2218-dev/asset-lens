@@ -5,6 +5,12 @@ const meta: Meta<typeof DashboardView> = {
   title: "Features/Dashboard/DashboardView",
   component: DashboardView,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Main dashboard page with summary cards, month-over-month comparison, budget progress, charts, and recent transactions. Shows empty state for new users.",
+      },
+    },
     layout: "fullscreen",
   },
 };

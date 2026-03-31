@@ -7,6 +7,12 @@ const meta: Meta<typeof ForgetPasswordForm> = {
   component: ForgetPasswordForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Multi-step password reset form with email input, OTP verification, and new password setup. Uses controlled state machine pattern (email → otp → password steps).",
+      },
+    },
     layout: "centered",
   },
 };

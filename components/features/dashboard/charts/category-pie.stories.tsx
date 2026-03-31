@@ -6,6 +6,12 @@ const meta: Meta<typeof CategoryPie> = {
   component: CategoryPie,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Pie chart visualization of expense distribution by category. Uses Recharts with custom tooltip and responsive container.",
+      },
+    },
     layout: "centered",
   },
   decorators: [

@@ -7,6 +7,12 @@ const meta: Meta<typeof MonthSelector> = {
   component: MonthSelector,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Month navigation control with previous/next buttons. Disables forward navigation beyond current month to prevent future date selection.",
+      },
+    },
     layout: "centered",
   },
 };

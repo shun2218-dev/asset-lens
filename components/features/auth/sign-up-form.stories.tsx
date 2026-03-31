@@ -7,6 +7,12 @@ const meta: Meta<typeof SignUpForm> = {
   component: SignUpForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "User registration form with name, email, password, and confirmation. Includes real-time password strength indicator and mismatch detection.",
+      },
+    },
     layout: "centered",
   },
 };

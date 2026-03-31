@@ -6,6 +6,12 @@ const meta: Meta<typeof GuestView> = {
   component: GuestView,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Landing page view shown to unauthenticated users. Displays sign-in and sign-up options with app branding.",
+      },
+    },
     layout: "centered",
   },
 };

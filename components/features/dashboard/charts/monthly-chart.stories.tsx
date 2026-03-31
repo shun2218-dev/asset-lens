@@ -6,6 +6,12 @@ const meta: Meta<typeof MonthlyChart> = {
   component: MonthlyChart,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Bar chart comparing income vs expense over monthly periods. Displays side-by-side bars with Recharts and custom tooltips.",
+      },
+    },
     layout: "centered",
   },
   decorators: [

@@ -6,6 +6,12 @@ const meta: Meta<typeof SiteFooter> = {
   component: SiteFooter,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Application footer with copyright notice and version info. Displayed on public-facing pages.",
+      },
+    },
     layout: "fullscreen",
   },
 };

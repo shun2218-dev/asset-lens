@@ -7,6 +7,12 @@ const meta: Meta<typeof PaginationControl> = {
   component: PaginationControl,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Page navigation control with previous/next buttons and current page indicator. Disables buttons at boundaries (first/last page).",
+      },
+    },
     layout: "centered",
   },
 };

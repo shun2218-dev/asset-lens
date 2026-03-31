@@ -4,6 +4,15 @@ import { StoreRanking } from "./store-ranking";
 const meta: Meta<typeof StoreRanking> = {
   title: "Features/Dashboard/Widgets/StoreRanking",
   component: StoreRanking,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Widget ranking stores by total spending amount. Shows top stores with visit count and total expenditure.",
+      },
+    },
+  },
 };
 
 export default meta;

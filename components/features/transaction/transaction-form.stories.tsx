@@ -6,6 +6,12 @@ const meta: Meta<typeof TransactionForm> = {
   component: TransactionForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Transaction creation/editing form with expense/income toggle, amount, description, store, category, and date fields. Uses react-hook-form with Zod validation.",
+      },
+    },
     layout: "centered",
     a11y: {
       config: {
