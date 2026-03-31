@@ -91,3 +91,37 @@ If any Issues that should be closed are still open, it means they were not refer
 ```bash
 gh issue close <NUMBER> --reason completed
 ```
+
+## 9. Sync Project Board (MANDATORY — see `/project-sync` skill)
+Update the GitHub Project board to reflect the release:
+
+1. **Set closed Issues to "Done"**: Update all `In Progress` items whose Issues are now closed:
+```bash
+gh project item-list 1 --owner shun2218-dev --format json | python3 -c "
+import json, sys, subprocess
+data = json.load(sys.stdin)
+for item in data.get('items', []):
+    status = item.get('status', '')
+    if status in ('In Progress', 'Todo'):
+        item_id = item['id']
+        title = item['title']
+        result = subprocess.run(
+            ['gh', 'issue', 'list', '--state', 'closed', '--search', title[:50], '--json', 'number'],
+            capture_output=True, text=True
+        )
+        if result.stdout.strip() != '[]':
+            subprocess.run([
+                'gh', 'project', 'item-edit',
+                '--project-id', 'PVT_kwHOBQUjOs4BTRBF',
+                '--id', item_id,
+                '--field-id', 'PVTSSF_lAHOBQUjOs4BTRBFzhAjo2I',
+                '--single-select-option-id', '98236657'
+            ])
+            print(f'Updated to Done: {title}')
+"
+```
+
+2. **Add any new Issues created during the release** that are not yet in the project:
+```bash
+gh project item-add 1 --owner shun2218-dev --url "https://github.com/shun2218-dev/asset-lens/issues/<NUMBER>"
+```

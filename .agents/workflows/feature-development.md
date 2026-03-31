@@ -26,6 +26,12 @@ gh issue create --title "<Issue Title>" --body "<Description with acceptance cri
 ```
 Note the issue number (e.g. #17). **Every task must start with an Issue.**
 
+### Add to Project Board (see `/project-sync` skill)
+// turbo
+```bash
+gh project item-add 1 --owner shun2218-dev --url "https://github.com/shun2218-dev/asset-lens/issues/<NUMBER>"
+```
+
 ## 2. Create Implementation Plan
 - Research the codebase and create `implementation_plan.md` artifact
 - Request user feedback before proceeding
@@ -37,6 +43,9 @@ git checkout develop
 git checkout -b feature/<descriptive-name>
 ```
 Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
+
+### Update Project Status to "In Progress" (see `/project-sync` skill)
+Update the Issue status on the project board when starting work.
 
 ## 4. Implement
 - Create `task.md` artifact to track progress
