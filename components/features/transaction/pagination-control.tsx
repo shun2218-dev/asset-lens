@@ -1,13 +1,7 @@
-// components/pagination-control.tsx
 "use client";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PaginationControlProps {
   totalPages: number;
@@ -20,46 +14,42 @@ export function PaginationControl({
   currentPage,
   onPageChange,
 }: PaginationControlProps) {
-  // 1ページしかなければ表示しない
   if (totalPages <= 1) return null;
 
-  const handlePageChange = (e: React.MouseEvent, page: number) => {
-    e.preventDefault(); // リンク遷移を無効化
-    if (onPageChange) {
-      onPageChange(page);
-    }
-  };
-
   return (
-    <Pagination className="mt-8">
-      <PaginationContent>
-        {/* 前へボタン */}
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            onClick={(e) => handlePageChange(e, currentPage - 1)}
-            aria-disabled={currentPage <= 1}
-            className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
-          />
-        </PaginationItem>
+    <nav
+      aria-label="pagination"
+      className="mx-auto flex w-full justify-center mt-8"
+    >
+      <div className="flex flex-row items-center gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange?.(currentPage - 1)}
+          disabled={currentPage <= 1}
+          aria-label="Go to previous page"
+          className="gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span className="hidden sm:block">Previous</span>
+        </Button>
 
-        {/* ページ情報の表示 */}
-        <div className="flex items-center gap-2 mx-4 text-sm font-medium text-muted-foreground">
+        <span className="flex items-center gap-2 mx-4 text-sm font-medium text-muted-foreground">
           Page {currentPage} of {totalPages}
-        </div>
+        </span>
 
-        {/* 次へボタン */}
-        <PaginationItem>
-          <PaginationNext
-            href="#"
-            onClick={(e) => handlePageChange(e, currentPage + 1)}
-            aria-disabled={currentPage >= totalPages}
-            className={
-              currentPage >= totalPages ? "pointer-events-none opacity-50" : ""
-            }
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange?.(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          aria-label="Go to next page"
+          className="gap-1"
+        >
+          <span className="hidden sm:block">Next</span>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </nav>
   );
 }

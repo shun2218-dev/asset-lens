@@ -137,6 +137,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => setEditTarget(sub)}
+                        aria-label="Edit subscription"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -146,6 +147,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive hover:text-destructive"
+                            aria-label="Delete subscription"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>

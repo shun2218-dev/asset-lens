@@ -155,7 +155,9 @@ export function TransactionList({
               onSort={handleSortChange}
               className="text-right"
             />
-            <TableHead className="w-12.5"></TableHead>
+            <TableHead className="w-12.5">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

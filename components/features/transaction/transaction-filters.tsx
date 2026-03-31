@@ -66,7 +66,7 @@ export function TransactionFilters({
             })
           }
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[160px]" aria-label="Filter by category">
             <SelectValue placeholder="カテゴリ" />
           </SelectTrigger>
           <SelectContent>

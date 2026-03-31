@@ -136,6 +136,7 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                     size="icon"
                     variant="ghost"
                     onClick={() => startEditing(overallBudget)}
+                    aria-label="Edit budget"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -146,6 +147,7 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                         variant="ghost"
                         className="text-destructive"
                         disabled={isSubmitting}
+                        aria-label="Delete budget"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -228,6 +230,7 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                     variant="ghost"
                     className="h-7 w-7"
                     onClick={() => startEditing(b)}
+                    aria-label="Edit category budget"
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
@@ -238,6 +241,7 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
                         variant="ghost"
                         className="h-7 w-7 text-destructive"
                         disabled={isSubmitting}
+                        aria-label="Delete category budget"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -274,7 +278,10 @@ export function BudgetSettings({ budgets, categories }: BudgetSettingsProps) {
           <h4 className="text-sm font-medium">予算を追加</h4>
           <div className="flex items-center gap-2">
             <Select value={newCategoryId} onValueChange={setNewCategoryId}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger
+                className="w-36"
+                aria-label="Select budget category"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

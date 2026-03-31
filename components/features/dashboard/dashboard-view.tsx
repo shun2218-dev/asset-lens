@@ -81,7 +81,7 @@ function MoMBadge({
   return (
     <span
       className={`inline-flex items-center gap-0.5 text-xs font-medium ${
-        isUp ? "text-emerald-600" : "text-red-500"
+        isUp ? "text-emerald-700" : "text-red-600"
       }`}
     >
       {isUp ? (
