@@ -64,6 +64,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.base_ref == 'main'
     needs: [lint, unit-tests]
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_URL: http://localhost:3000
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+      EMAIL_FROM: "noreply@asset-lens.app"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -73,14 +81,4 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: http://localhost:3000
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - run: npx playwright test --project=chromium --workers=1
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: http://localhost:3000
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
