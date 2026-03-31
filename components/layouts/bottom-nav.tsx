@@ -16,6 +16,7 @@ import { TransactionForm } from "@/components/features/transaction/transaction-f
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -112,6 +113,9 @@ export function BottomNav() {
         <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>取引を記録</DialogTitle>
+            <DialogDescription>
+              収入・支出の取引情報を入力してください
+            </DialogDescription>
           </DialogHeader>
           {loaded ? (
             <TransactionForm
