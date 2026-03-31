@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-03-31
+
+### Fixed
+- Add `DialogDescription` to all `DialogContent` components — fixes console warning (#173)
+- `quick-entry-dialog`, `bottom-nav`, `shortcut-help-dialog` now have proper aria descriptions
+
+### Changed
+- ShortcutHelpDialog Storybook: add `Open` story variant showing dialog content visible (#172)
+- Add comprehensive component docs with shortcut table and trigger instructions
+- `project-sync` skill for automated Project board + Milestone management
+
 ## [2.20.1] - 2026-03-31
 
 ### Added
