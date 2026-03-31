@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { format } from "date-fns";
 import { expect, userEvent, within } from "storybook/test";
 import { MonthSelector } from "./month-selector";
+
+/** Helper: local-TZ current month in "yyyy-MM" format */
+const CURRENT_MONTH = format(new Date(), "yyyy-MM");
 
 const meta: Meta<typeof MonthSelector> = {
   title: "Features/Dashboard/MonthSelector",
@@ -28,7 +32,7 @@ export const Default: Story = {
 
 export const CurrentMonth: Story = {
   args: {
-    currentMonth: new Date().toISOString().substring(0, 7),
+    currentMonth: CURRENT_MONTH,
   },
 };
 
@@ -47,7 +51,7 @@ export const NavigatePrevious: Story = {
 
 export const NextDisabledOnCurrentMonth: Story = {
   args: {
-    currentMonth: new Date().toISOString().substring(0, 7),
+    currentMonth: CURRENT_MONTH,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

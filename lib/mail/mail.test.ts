@@ -32,7 +32,7 @@ describe("Mail: sendOtpEmail", () => {
   });
 
   it("should throw error if sending fails", async () => {
-    (resend.emails.send as any).mockRejectedValue(new Error("Send Error"));
+    (resend.emails.send as any).mockRejectedValueOnce(new Error("Send Error"));
 
     await expect(sendOtpEmail("test@example.com", "123")).rejects.toThrow(
       "メール送信に失敗しました",
