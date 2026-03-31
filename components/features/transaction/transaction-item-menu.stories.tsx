@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { TransactionItemMenu } from "./transaction-item-menu";
 
 const meta: Meta<typeof TransactionItemMenu> = {
@@ -26,7 +27,7 @@ const mockCategories = [
   },
   {
     id: "cat-2",
-    slug: "salmon",
+    slug: "salary",
     name: "給与",
     type: "income",
     userId: "user-1",
@@ -51,5 +52,25 @@ export const Default: Story = {
     },
     categories: mockCategories,
     stores: [],
+  },
+};
+
+export const OpenMenuAndSelectEdit: Story = {
+  args: {
+    ...Default.args,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Open dropdown menu
+    const menuButton = canvas.getByRole("button", { name: "メニューを開く" });
+    await userEvent.click(menuButton);
+
+    // Verify menu items appear
+    const editItem = await within(document.body).findByText("編集");
+    await expect(editItem).toBeInTheDocument();
+
+    const deleteItem = within(document.body).getByText("削除");
+    await expect(deleteItem).toBeInTheDocument();
   },
 };
