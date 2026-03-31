@@ -123,8 +123,38 @@ gh pr create --base develop --head <branch-name> --title "<title>" --body "<desc
 Relates to #<issue-number>"
 ```
 
-## 7. Merge PR
-After review, merge the PR on GitHub (or via CLI):
+## 7. Self-Review (MANDATORY — see `/pr` skill)
+
+After PR creation and CI passing, perform a **senior engineer self-review** against the diff.
+
+> ⚠️ **This step is NOT optional.** Every PR must have a posted self-review comment before merge.
+
+1. **Analyze the diff**:
+```bash
+git diff develop
+```
+
+2. **Post review as PR comment** covering:
+   - ⚠️ Must Fix — security flaws, missing error handling, broken logic
+   - 💡 Suggestions — performance, naming, patterns
+   - 📝 Design rationale — explain non-obvious decisions
+   - Scalability considerations and follow-up suggestions
+
+```bash
+gh pr comment <PR-number> --body "<review content>"
+```
+
+3. **Fix any Must Fix items**, then re-run tests and push:
+```bash
+git add <fixed-files>
+git commit -m "fix: address self-review findings"
+git push origin <branch-name>
+```
+
+> Refer to the full `/pr` skill (`.agents/skills/pr-review/SKILL.md`) for review criteria, formatting guide, and decision framework.
+
+## 8. Merge PR
+After self-review is complete and CI passes, merge the PR:
 ```bash
 gh pr merge <pr-number> --merge --delete-branch
 ```
@@ -134,7 +164,7 @@ This will:
 
 > ℹ️ Issues are NOT auto-closed here — they are closed via `Closes #` in the **release PR** (merge to `main`).
 
-## 8. Clean Up Local Branch
+## 9. Clean Up Local Branch
 // turbo
 ```bash
 git checkout develop
