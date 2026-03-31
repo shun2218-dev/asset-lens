@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.20.0] - 2026-03-31
+
+### Added
+- Strict Storybook a11y enforcement: test mode upgraded from `todo` to `error` (#121)
+- Playwright E2E accessibility tests with `@axe-core/playwright` for 5 key pages (#121)
+- Storybook interaction tests with `play` functions for 8 component stories (16 new tests) (#123)
+- Component-level documentation descriptions for all 40 Storybook stories (#125)
+- Vitest coverage reporting with `@vitest/coverage-v8` and CI integration (#107)
+- `test:coverage` npm script for coverage report generation (#107)
+- E2E tests for budget CRUD operations and quick entry dialog (#44)
+- Coverage report upload as CI artifact (#107)
+
+### Changed
+- Button-based pagination (replaces shadcn Pagination) for a11y compliance (#121)
+- Tab trigger colors: red-500→red-700, blue-500→blue-700 for WCAG AA contrast (#121)
+- EmptyState heading: h3→h2 for correct heading hierarchy (#121)
+- SettingsView headings: h3→h2, h4→h3 for correct heading hierarchy (#121)
+- Destructive color variable darkened (lightness 0.577→0.535) for contrast (#121)
+- Text colors upgraded: emerald-600→700, red-500→600, green-500→700 (#121)
+
+### Fixed
+- button-name a11y violations: added aria-labels to 12 icon-only buttons (#121)
+- color-contrast violations across transaction forms and status text (#121)
+- heading-order violations in EmptyState and SettingsView (#121)
+- empty-table-header violation in transaction list (#121)
+- list violation from div inside ul in pagination (#121)
+
 ## [2.19.0] - 2026-03-30
 
 ### Added
