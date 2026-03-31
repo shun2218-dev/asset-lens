@@ -6,6 +6,12 @@ const meta: Meta<typeof LoggedInView> = {
   component: LoggedInView,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Authenticated header view displaying user info and navigation. Shows avatar, name, and logout option.",
+      },
+    },
     layout: "centered",
   },
 };

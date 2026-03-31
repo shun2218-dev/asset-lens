@@ -57,16 +57,22 @@ describe("getTransactionsWithoutStore", () => {
 
     const result = await getTransactionsWithoutStore();
 
-    expect(result).toEqual(mockRows);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toEqual(mockRows);
+    }
   });
 
-  it("should return empty array if not authenticated", async () => {
+  it("should return error if not authenticated", async () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
     const result = await getTransactionsWithoutStore();
 
-    expect(result).toEqual([]);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 });
 
@@ -88,7 +94,9 @@ describe("applyStoreNameMigration", () => {
     const result = await applyStoreNameMigration(updates);
 
     expect(result.success).toBe(true);
-    expect(result.updatedCount).toBe(2);
+    if (result.success) {
+      expect(result.data.updatedCount).toBe(2);
+    }
     expect(db.update).toHaveBeenCalledTimes(2);
   });
 
@@ -99,7 +107,9 @@ describe("applyStoreNameMigration", () => {
     const result = await applyStoreNameMigration([]);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("認証されていません");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should handle database errors", async () => {
@@ -113,6 +123,8 @@ describe("applyStoreNameMigration", () => {
     ]);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("更新に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

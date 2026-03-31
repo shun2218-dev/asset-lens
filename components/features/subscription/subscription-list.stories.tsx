@@ -6,6 +6,12 @@ const meta: Meta<typeof SubscriptionList> = {
   component: SubscriptionList,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "List of active subscriptions with edit and delete actions. Shows name, amount, billing cycle, and next billing date.",
+      },
+    },
     layout: "padded",
   },
 };

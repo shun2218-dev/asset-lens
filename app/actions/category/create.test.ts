@@ -2,18 +2,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
 import { createCustomCategory } from "./create";
 
-// Mock next/cache
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
   updateTag: vi.fn(),
 }));
 
-// Mock next/headers
 vi.mock("next/headers", () => ({
   headers: vi.fn(),
 }));
 
-// Mock auth
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
@@ -24,7 +21,6 @@ vi.mock("@/lib/auth", () => ({
   },
 }));
 
-// Mock db
 vi.mock("@/db", () => {
   return {
     db: {
@@ -33,13 +29,8 @@ vi.mock("@/db", () => {
   };
 });
 
-// Mock mail client to avoid init error
 vi.mock("@/lib/mail/client", () => ({
-  resend: {
-    emails: {
-      send: vi.fn(),
-    },
-  },
+  resend: { emails: { send: vi.fn() } },
 }));
 
 describe("createCustomCategory", () => {
@@ -48,7 +39,6 @@ describe("createCustomCategory", () => {
   });
 
   it("should successfully create a category", async () => {
-    // Mock db.insert chain
     const valuesMock = vi.fn().mockResolvedValue([{ id: "cat-123" }]);
     (db.insert as any).mockReturnValue({ values: valuesMock });
 
@@ -65,24 +55,28 @@ describe("createCustomCategory", () => {
     );
   });
 
-  it("should throw error if unauthorized", async () => {
-    // Override auth mock to return null
+  it("should return error if unauthorized", async () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
-    await expect(createCustomCategory("My Category")).rejects.toThrow(
-      "Unauthorized",
-    );
+    const result = await createCustomCategory("My Category");
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
-  it("should throw error if name is empty", async () => {
-    await expect(createCustomCategory("  ")).rejects.toThrow(
-      "カテゴリ名を入力してください",
-    );
+  it("should return error if name is empty", async () => {
+    const result = await createCustomCategory("  ");
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toContain("Category name is required");
+    }
   });
 
   it("should return error on database failure", async () => {
-    // Mock insert failure
     const valuesMock = vi.fn().mockImplementation(() => {
       throw new Error("DB Error");
     });
@@ -91,6 +85,8 @@ describe("createCustomCategory", () => {
     const result = await createCustomCategory("My Category");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("カテゴリの作成に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

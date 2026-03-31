@@ -35,7 +35,7 @@ export function CategorySelect({
 
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full" aria-label="Select category">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

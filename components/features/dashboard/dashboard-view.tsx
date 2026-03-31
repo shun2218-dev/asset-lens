@@ -33,27 +33,39 @@ const CategoryPie = dynamic(
   { loading: () => <Skeleton className="h-[300px] w-full rounded-lg" /> },
 );
 
-interface StoreRankingItem {
+type StoreRankingItem = {
   storeName: string;
   totalAmount: number;
-}
+};
 
-interface BudgetWithCategory extends SelectBudget {
+type BudgetWithCategory = SelectBudget & {
   category: SelectCategory | null;
-}
+};
 
-interface DashboardViewProps {
+type DashboardOverview = {
   summary: SummaryStats;
   previousSummary: SummaryStats;
+  currentMonth: string;
+};
+
+type DashboardCharts = {
   monthlyStats: MonthlyStats[];
   categoryStats: CategoryStats[];
-  currentMonth: string;
+  categories: SelectCategory[];
+};
+
+type DashboardWidgets = {
   recentTransactions: SelectTransaction[];
   storeRanking: StoreRankingItem[];
-  categories: SelectCategory[];
   budgets: BudgetWithCategory[];
   categoryExpenses: { categoryId: string; amount: number }[];
-}
+};
+
+type DashboardViewProps = {
+  overview: DashboardOverview;
+  charts: DashboardCharts;
+  widgets: DashboardWidgets;
+};
 
 function MoMBadge({
   current,
@@ -69,7 +81,7 @@ function MoMBadge({
   return (
     <span
       className={`inline-flex items-center gap-0.5 text-xs font-medium ${
-        isUp ? "text-emerald-600" : "text-red-500"
+        isUp ? "text-emerald-700" : "text-red-600"
       }`}
     >
       {isUp ? (
@@ -83,18 +95,15 @@ function MoMBadge({
 }
 
 export function DashboardView({
-  summary,
-  previousSummary = { totalIncome: 0, totalExpense: 0, balance: 0 },
-  monthlyStats,
-  categoryStats,
-  currentMonth,
-  recentTransactions,
-  storeRanking,
-  categories,
-  budgets,
-  categoryExpenses,
+  overview,
+  charts,
+  widgets,
 }: DashboardViewProps) {
-  // グラフ用にデータを変換
+  const { summary, previousSummary, currentMonth } = overview;
+  const { monthlyStats, categoryStats, categories } = charts;
+  const { recentTransactions, storeRanking, budgets, categoryExpenses } =
+    widgets;
+
   const barData = monthlyStats.map((stat) => ({
     name: stat.month,
     income: stat.income,
@@ -136,7 +145,7 @@ export function DashboardView({
         />
       ) : (
         <>
-          {/* サマリーカード (MoM比較付き) */}
+          {/* Summary cards with MoM comparison */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <Card className="animate-fade-in-up stagger-1">
               <CardContent className="pt-4 pb-3 text-center">
@@ -178,7 +187,7 @@ export function DashboardView({
             </Card>
           </div>
 
-          {/* チャートエリア */}
+          {/* Chart area */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="animate-fade-in-up stagger-4">
               <CardHeader>
@@ -199,14 +208,14 @@ export function DashboardView({
             </Card>
           </div>
 
-          {/* 予算進捗 */}
+          {/* Budget progress */}
           <BudgetProgress
             budgets={budgets}
             totalExpense={summary.totalExpense}
             categoryExpenses={categoryExpenses}
           />
 
-          {/* ウィジェットエリア */}
+          {/* Widget area */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <StoreRanking data={storeRanking} />
             <RecentTransactions

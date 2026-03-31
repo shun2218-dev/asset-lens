@@ -10,7 +10,7 @@ description: How to implement a new feature from planning to merge
 > - Branch types: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 > - Even single-file changes (docs, config, biome auto-fix, package install) require a branch.
 > - **Issue closing**: Feature PRs (→ `develop`) should reference Issues (e.g. `Relates to #<number>`) for traceability. **Release PRs (`release/vX.Y.Z` → `main`)** must include `Closes #<number>` for all Issues resolved in that release — GitHub auto-closes Issues only on merge to the default branch (`main`).
-> - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text and comments in code may be in Japanese.
+> - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text may be in Japanese. Code comments must be in English.
 > - **Code comments**: Write only comments a human developer would write. No AI-style verbose explanations, no issue/ticket numbers in code comments (e.g. `/* #63: ... */`), no narrating what the code obviously does.
 
 > **🛑 BEFORE EVERY `git add` / `git commit`:**
@@ -47,6 +47,9 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
   - `refactor:` for refactoring
   - `chore:` for tooling/config
   - `docs:` for documentation
+  - `style:` for formatting (no logic change)
+  - `test:` for adding/updating tests
+  - `perf:` for performance improvements
 
 ## 5. Quality Checklist (MANDATORY)
 Before creating a PR, ensure:
@@ -84,7 +87,7 @@ Push the branch and create a PR targeting `develop`.
 git push origin <branch-name>
 gh pr create --base develop --head <branch-name> --title "<title>" --body "<description>
 
-Closes #<issue-number>"
+Relates to #<issue-number>"
 ```
 
 ## 7. Merge PR
@@ -95,7 +98,8 @@ gh pr merge <pr-number> --merge --delete-branch
 This will:
 - Merge the branch into `develop`
 - Delete the remote branch
-- Auto-close linked Issues
+
+> ℹ️ Issues are NOT auto-closed here — they are closed via `Closes #` in the **release PR** (merge to `main`).
 
 ## 8. Clean Up Local Branch
 // turbo

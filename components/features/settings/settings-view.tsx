@@ -75,7 +75,7 @@ export function SettingsView({
           <section className="space-y-6">
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-medium">セキュリティ</h3>
+              <h2 className="text-lg font-medium">セキュリティ</h2>
             </div>
             <PasskeySettings />
             <PasswordSettings />
@@ -95,9 +95,9 @@ export function SettingsView({
             <CardContent>
               <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                 <div className="space-y-0.5">
-                  <h4 className="font-medium text-destructive">
+                  <h3 className="font-medium text-destructive">
                     アカウント削除
-                  </h4>
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     アカウントと関連データを完全に削除します
                   </p>

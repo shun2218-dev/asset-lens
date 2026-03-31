@@ -4,6 +4,15 @@ import { RecentTransactions } from "./recent-transactions";
 const meta: Meta<typeof RecentTransactions> = {
   title: "Features/Dashboard/Widgets/RecentTransactions",
   component: RecentTransactions,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Widget showing the most recent transactions on the dashboard. Displays date, description, amount with expense/income coloring.",
+      },
+    },
+  },
 };
 
 export default meta;

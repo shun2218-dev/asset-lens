@@ -51,6 +51,21 @@ If changes span multiple concerns (e.g., feature code + workflow rule update + l
 - `chore:` tooling, config, dependencies
 - `docs:` documentation
 - `style:` formatting (no logic change)
+- `test:` adding or updating tests
+- `perf:` performance improvements
+
+## GitHub Language Policy
+
+ALL GitHub artifacts MUST be written in **English only**:
+
+- **Issue titles and body**
+- **PR titles and body**
+- **Commit messages**
+- **Branch names**
+- **CHANGELOG entries**
+- **Code comments** (inline and JSDoc)
+
+No exceptions — Japanese is NOT permitted in any of the above.
 
 ## Flags
 

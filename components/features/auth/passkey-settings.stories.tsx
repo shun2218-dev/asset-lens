@@ -6,6 +6,12 @@ const meta: Meta<typeof PasskeySettings> = {
   component: PasskeySettings,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Passkey management panel for security settings. Lists registered passkeys and provides add/remove functionality.",
+      },
+    },
     layout: "centered",
   },
 };

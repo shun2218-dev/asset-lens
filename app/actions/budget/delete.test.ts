@@ -53,7 +53,9 @@ describe("deleteBudget", () => {
     const result = await deleteBudget("budget-123");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("ログインしてください");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should handle database errors gracefully", async () => {
@@ -65,6 +67,8 @@ describe("deleteBudget", () => {
     const result = await deleteBudget("budget-123");
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("予算の削除に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

@@ -6,6 +6,12 @@ const meta: Meta<typeof PasskeyAuth> = {
   component: PasskeyAuth,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "WebAuthn passkey authentication component. Handles both passkey registration and login flows with browser credential API.",
+      },
+    },
     layout: "centered",
   },
 };

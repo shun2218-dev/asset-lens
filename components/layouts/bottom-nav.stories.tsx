@@ -66,6 +66,12 @@ const meta: Meta<typeof BottomNavPreview> = {
   title: "Layouts/BottomNav",
   component: BottomNavPreview,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Mobile bottom navigation bar with Dashboard, Transaction, Subscription, and Settings links. Shows active state based on current route.",
+      },
+    },
     viewport: { defaultViewport: "mobile1" },
     layout: "fullscreen",
   },

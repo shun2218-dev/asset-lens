@@ -4,6 +4,15 @@ import { BudgetProgress } from "./budget-progress";
 const meta: Meta<typeof BudgetProgress> = {
   title: "Features/Dashboard/Widgets/BudgetProgress",
   component: BudgetProgress,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Budget usage progress bar widget showing spent vs allocated amounts. Displays percentage and color-coded warning when nearing limit.",
+      },
+    },
+  },
 };
 
 export default meta;

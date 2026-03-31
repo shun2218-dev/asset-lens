@@ -6,6 +6,12 @@ const meta: Meta<typeof PasswordSettings> = {
   component: PasswordSettings,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Password change form in security settings. Validates current password and enforces strength requirements for new password.",
+      },
+    },
     layout: "centered",
   },
 };

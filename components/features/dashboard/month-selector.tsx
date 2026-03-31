@@ -30,7 +30,12 @@ export function MonthSelector({ currentMonth }: MonthSelectorProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <Button variant="outline" size="icon" onClick={() => handleMove(-1)}>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => handleMove(-1)}
+        aria-label="Previous month"
+      >
         <ChevronLeft className="h-4 w-4" />
       </Button>
 
@@ -42,7 +47,8 @@ export function MonthSelector({ currentMonth }: MonthSelectorProps) {
         variant="outline"
         size="icon"
         onClick={() => handleMove(1)}
-        disabled={isNextDisabled} // 現在の月なら「次へ」を無効化
+        disabled={isNextDisabled}
+        aria-label="Next month"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

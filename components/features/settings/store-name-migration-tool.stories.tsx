@@ -6,6 +6,12 @@ const meta: Meta<typeof StoreNameMigrationTool> = {
   component: StoreNameMigrationTool,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Bulk store name migration utility. Allows renaming stores across all historical transactions with preview and selective application.",
+      },
+    },
     layout: "padded",
   },
 };

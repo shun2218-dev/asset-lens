@@ -1,12 +1,10 @@
-// app/actions/category/update.ts
 "use server";
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { category } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import { categoryTag } from "@/lib/cache/tags";
 
 interface UpdateCategoryInput {
@@ -16,21 +14,13 @@ interface UpdateCategoryInput {
   sortOrder?: number;
 }
 
-export async function updateCategory(input: UpdateCategoryInput) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const updateCategory = createSafeAction<UpdateCategoryInput, void>(
+  async (input, userId) => {
+    if (!input.name.trim()) {
+      throw new Error("Category name is required");
+    }
 
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
-  if (!input.name.trim()) {
-    return { success: false, error: "カテゴリ名を入力してください" };
-  }
-
-  try {
-    const result = await db
+    await db
       .update(category)
       .set({
         name: input.name.trim(),
@@ -38,17 +28,11 @@ export async function updateCategory(input: UpdateCategoryInput) {
         sortOrder: input.sortOrder,
         updatedAt: new Date(),
       })
-      .where(
-        and(eq(category.id, input.id), eq(category.userId, session.user.id)),
-      );
+      .where(and(eq(category.id, input.id), eq(category.userId, userId)));
 
-    updateTag(categoryTag(session.user.id));
+    updateTag(categoryTag(userId));
     revalidatePath("/settings");
     revalidatePath("/dashboard");
-
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to update category:", error);
-    return { success: false, error: "カテゴリの更新に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to update category" },
+);

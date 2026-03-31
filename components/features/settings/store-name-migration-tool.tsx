@@ -78,8 +78,12 @@ export function StoreNameMigrationTool() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getTransactionsWithoutStore();
-      const editableRows: EditableRow[] = data.map((row) => {
+      const result = await getTransactionsWithoutStore();
+      if (!result.success) {
+        toast.error(result.error || "Failed to load data");
+        return;
+      }
+      const editableRows: EditableRow[] = result.data.map((row) => {
         const split = splitDescription(row.description);
         return {
           ...row,
@@ -150,7 +154,7 @@ export function StoreNameMigrationTool() {
       const result = await applyStoreNameMigration(updates);
 
       if (result.success) {
-        toast.success(`${result.updatedCount}件を更新しました`);
+        toast.success(`${result.data?.updatedCount ?? 0}件を更新しました`);
         // 更新されたデータをリストから除外
         setRows((prev) =>
           prev.filter((r) => !selectedRows.some((s) => s.id === r.id)),

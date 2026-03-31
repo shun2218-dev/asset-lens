@@ -39,7 +39,7 @@ export function TransactionItem({
         }
       </TableCell>
       <TableCell
-        className={`text-right ${data.isExpense ? "text-red-500" : "text-green-500"}`}
+        className={`text-right ${data.isExpense ? "text-red-600" : "text-green-700"}`}
       >
         {data.isExpense ? "-" : "+"}¥{data.amount.toLocaleString()}
       </TableCell>

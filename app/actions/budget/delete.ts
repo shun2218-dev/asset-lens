@@ -2,33 +2,20 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { budget } from "@/db/schema";
-import { auth } from "@/lib/auth";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import { budgetTag } from "@/lib/cache/tags";
-import type { ActionResult } from "@/types";
 
-export async function deleteBudget(id: string): Promise<ActionResult> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    return { success: false, error: "ログインしてください" };
-  }
-
-  try {
+export const deleteBudget = createSafeAction<string, void>(
+  async (id, userId) => {
     await db
       .delete(budget)
-      .where(and(eq(budget.id, id), eq(budget.userId, session.user.id)));
+      .where(and(eq(budget.id, id), eq(budget.userId, userId)));
 
-    updateTag(budgetTag(session.user.id));
+    updateTag(budgetTag(userId));
     revalidatePath("/dashboard");
     revalidatePath("/settings");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to delete budget:", error);
-    return { success: false, error: "予算の削除に失敗しました" };
-  }
-}
+  },
+  { errorMessage: "Failed to delete budget" },
+);

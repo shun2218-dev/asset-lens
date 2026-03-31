@@ -49,7 +49,7 @@ describe("updateSubscription", () => {
     const setMock = vi.fn().mockReturnValue({ where: whereMock });
     (db.update as any).mockReturnValue({ set: setMock });
 
-    const result = await updateSubscription("sub-123", validData);
+    const result = await updateSubscription({ id: "sub-123", data: validData });
 
     expect(result.success).toBe(true);
     expect(db.update).toHaveBeenCalled();
@@ -65,18 +65,25 @@ describe("updateSubscription", () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
-    const result = await updateSubscription("sub-123", validData);
+    const result = await updateSubscription({ id: "sub-123", data: validData });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("ログインしてください");
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 
   it("should fail validation with empty name", async () => {
     const invalidData = { ...validData, name: "" };
-    const result = await updateSubscription("sub-123", invalidData);
+    const result = await updateSubscription({
+      id: "sub-123",
+      data: invalidData,
+    });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.success) {
+      expect(result.error).toBeDefined();
+    }
   });
 
   it("should handle database errors gracefully", async () => {
@@ -86,9 +93,11 @@ describe("updateSubscription", () => {
     const setMock = vi.fn().mockReturnValue({ where: whereMock });
     (db.update as any).mockReturnValue({ set: setMock });
 
-    const result = await updateSubscription("sub-123", validData);
+    const result = await updateSubscription({ id: "sub-123", data: validData });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("サブスクリプションの更新に失敗しました");
+    if (!result.success) {
+      expect(result.error).toBe("DB Error");
+    }
   });
 });

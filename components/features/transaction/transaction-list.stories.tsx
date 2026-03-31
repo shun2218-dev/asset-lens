@@ -6,6 +6,12 @@ const meta: Meta<typeof TransactionList> = {
   component: TransactionList,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Paginated transaction list with sorting, filtering, and optimistic delete. Fetches data via server actions on page/filter/sort changes.",
+      },
+    },
     layout: "fullscreen",
   },
 };

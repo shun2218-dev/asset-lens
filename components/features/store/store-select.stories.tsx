@@ -6,6 +6,12 @@ const meta: Meta<typeof StoreSelect> = {
   component: StoreSelect,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Store name combobox with autocomplete and create-new functionality. Searches existing stores and allows adding new entries inline.",
+      },
+    },
     layout: "centered",
   },
   decorators: [

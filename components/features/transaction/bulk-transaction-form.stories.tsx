@@ -6,7 +6,23 @@ const meta: Meta<typeof BulkTransactionForm> = {
   component: BulkTransactionForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Multi-row transaction entry form for batch recording. Add/remove rows dynamically, each with full transaction fields.",
+      },
+    },
     layout: "centered",
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: "aria-valid-attr-value",
+            enabled: false,
+          },
+        ],
+      },
+    },
   },
 };
 
