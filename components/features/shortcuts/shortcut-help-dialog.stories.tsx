@@ -5,6 +5,12 @@ const meta: Meta<typeof ShortcutHelpDialog> = {
   title: "Features/Shortcuts/ShortcutHelpDialog",
   component: ShortcutHelpDialog,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Keyboard shortcut reference dialog. Lists all available shortcuts (Cmd+N, Cmd+K, etc.) grouped by feature area.",
+      },
+    },
     layout: "centered",
   },
 };

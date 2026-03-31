@@ -4,6 +4,15 @@ import { BudgetSettings } from "./budget-settings";
 const meta: Meta<typeof BudgetSettings> = {
   title: "Features/Budget/BudgetSettings",
   component: BudgetSettings,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Budget management interface for setting monthly overall and per-category budget limits. Supports inline editing and delete confirmation dialogs.",
+      },
+    },
+  },
 };
 
 export default meta;

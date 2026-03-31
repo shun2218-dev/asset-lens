@@ -5,6 +5,12 @@ const meta: Meta<typeof TransactionPageView> = {
   title: "Features/Transaction/TransactionPageView",
   component: TransactionPageView,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Full transaction page layout combining form, filters, list, and pagination. Orchestrates all transaction sub-components.",
+      },
+    },
     layout: "fullscreen",
     a11y: {
       config: {

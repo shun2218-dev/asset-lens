@@ -6,6 +6,12 @@ const meta: Meta<typeof ImportButton> = {
   component: ImportButton,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "CSV file import button with drag-and-drop support. Parses uploaded CSV and creates transactions in bulk.",
+      },
+    },
     layout: "centered",
   },
 };

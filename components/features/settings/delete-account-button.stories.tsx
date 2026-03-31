@@ -7,6 +7,12 @@ const meta: Meta<typeof DeleteAccountButton> = {
   component: DeleteAccountButton,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Destructive action button with confirmation dialog for permanent account deletion. Uses delayed confirm pattern (3s lock) to prevent accidental clicks.",
+      },
+    },
     layout: "centered",
   },
 };

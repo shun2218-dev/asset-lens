@@ -7,6 +7,12 @@ const meta: Meta<typeof TransactionItem> = {
   component: TransactionItem,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Single transaction row in the transaction table. Displays date, description, store, category, and color-coded amount.",
+      },
+    },
     layout: "centered",
   },
   decorators: [

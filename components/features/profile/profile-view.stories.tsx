@@ -5,6 +5,12 @@ const meta: Meta<typeof ProfileView> = {
   title: "Features/Profile/ProfileView",
   component: ProfileView,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "User profile page displaying avatar, name, email, and account metadata. Provides navigation to edit profile and security settings.",
+      },
+    },
     layout: "fullscreen",
   },
   tags: ["autodocs"],

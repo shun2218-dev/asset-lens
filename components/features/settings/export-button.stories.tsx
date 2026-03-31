@@ -6,6 +6,12 @@ const meta: Meta<typeof ExportButton> = {
   component: ExportButton,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Data export button supporting CSV and PDF formats. Triggers server action to generate and download financial data.",
+      },
+    },
     layout: "centered",
   },
 };

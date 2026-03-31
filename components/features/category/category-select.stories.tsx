@@ -7,6 +7,12 @@ const meta: Meta<typeof CategorySelect> = {
   component: CategorySelect,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Category dropdown selector that groups system and custom categories. Used in transaction forms to assign expense/income categories.",
+      },
+    },
     layout: "centered",
   },
 };

@@ -7,6 +7,12 @@ const meta: Meta<typeof TransactionFilters> = {
   component: TransactionFilters,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Transaction list filter controls: text search, category dropdown, date range pickers, and reset button. All filters are controlled via callbacks.",
+      },
+    },
     layout: "padded",
   },
 };

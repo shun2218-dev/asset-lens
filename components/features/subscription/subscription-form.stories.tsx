@@ -6,6 +6,12 @@ const meta: Meta<typeof SubscriptionForm> = {
   component: SubscriptionForm,
   tags: ["autodocs"],
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Subscription creation/editing form for recurring payments. Includes name, amount, billing cycle, start date, and category.",
+      },
+    },
     layout: "centered",
   },
 };

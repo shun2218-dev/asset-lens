@@ -5,6 +5,12 @@ const meta: Meta<typeof SettingsView> = {
   title: "Features/Settings/SettingsView",
   component: SettingsView,
   parameters: {
+    docs: {
+      description: {
+        component:
+          "Main settings page with tabbed interface: Account, Category, Budget, Data Management, and Subscriptions. Aggregates multiple settings components.",
+      },
+    },
     layout: "fullscreen",
   },
 };
