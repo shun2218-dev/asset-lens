@@ -110,12 +110,43 @@ for item in data.get('items', []):
 
 ---
 
+## Milestone Assignment
+
+Every Issue MUST be assigned to a milestone when created. Use the following guide:
+
+### Active Milestones
+
+| Milestone | Focus Area | Issue Types |
+|-----------|-----------|-------------|
+| `v2.21 — Mobile & Accessibility` | Mobile UX, a11y, Storybook docs | Responsive fixes, accessibility bugs, Storybook improvements |
+| `v2.22 — UX Enhancements` | UI polish, SEO, public pages | Footer pages, SEO/OGP, UI design, user-facing enhancements |
+| `v2.23 — Quality & Security` | Testing, security, CI/CD | E2E fixes, rate limiting, CSP headers, error tracking |
+| `v2.24 — Data & Analytics` | Analytics, data features | Charts, reports, CSV export, spending insights |
+| `v2.25 — Transaction UX` | Transaction workflow | Search, bulk actions, templates, split expenses |
+| `v3.0 — Platform Expansion` | Major features | i18n, multi-currency, social login, PWA |
+| `v3.1 — Advanced Platform` | Advanced features | Voice input, AI insights, shared expenses |
+
+### Assign Milestone
+
+```bash
+gh issue edit <NUMBER> --milestone "<MILESTONE_TITLE>"
+```
+
+### Decision Guide
+
+1. **Bug fix** → assign to the milestone whose focus area matches the bug's domain
+2. **New feature** → assign based on feature category (see table above)
+3. **Chore/refactor** → `v2.23 — Quality & Security` (testing/CI) or the milestone matching the affected area
+4. **Documentation** → `v2.21 — Mobile & Accessibility` (Storybook) or `v2.22 — UX Enhancements` (user-facing docs)
+
+---
+
 ## Integration Points
 
 This skill MUST be invoked at these points in the workflow:
 
 ### Feature Development Workflow (`/feature-development`)
-1. **Step 1 (Create Issue)**: Add issue to project with `Todo` status
+1. **Step 1 (Create Issue)**: Add issue to project with `Todo` status AND assign milestone
 2. **Step 3 (Create Feature Branch)**: Set status to `In Progress`
 
 ### Release Workflow (`/release`)
@@ -123,4 +154,6 @@ This skill MUST be invoked at these points in the workflow:
 
 ### Issue Creation (any context)
 - Always add newly created Issues to the project
+- Always assign a milestone based on the decision guide
 - Set initial status to `Todo`
+

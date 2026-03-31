@@ -32,6 +32,12 @@ Note the issue number (e.g. #17). **Every task must start with an Issue.**
 gh project item-add 1 --owner shun2218-dev --url "https://github.com/shun2218-dev/asset-lens/issues/<NUMBER>"
 ```
 
+### Assign Milestone (see `/project-sync` skill for decision guide)
+// turbo
+```bash
+gh issue edit <NUMBER> --milestone "<MILESTONE_TITLE>"
+```
+
 ## 2. Create Implementation Plan
 - Research the codebase and create `implementation_plan.md` artifact
 - Request user feedback before proceeding
