@@ -2,15 +2,14 @@
 
 import { format, subMonths } from "date-fns";
 import { desc, eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { transaction } from "@/db/schema";
+import { createSafeAction } from "@/lib/actions/safe-action";
 import {
   calculateCategoryBreakdown,
   calculateMonthlyTrends,
   calculatePeriodSummary,
 } from "@/lib/analysis/metrics";
-import { auth } from "@/lib/auth";
 import type { CategoryStats, MonthlyStats, SummaryStats } from "@/types";
 
 export type DashboardSummaryResult = {
@@ -28,52 +27,26 @@ const EMPTY_SUMMARY: SummaryStats = {
   balance: 0,
 };
 
-/**
- * Fetch dashboard summary data for both current and previous month
- * in a single database query, eliminating the duplicate getSummary calls.
- *
- * Also computes categoryExpenses server-side to avoid client-side
- * category ID resolution.
- */
-export async function getSummaryWithComparison(
-  month?: string,
-): Promise<DashboardSummaryResult> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const getSummaryWithComparison = createSafeAction<
+  string | undefined,
+  DashboardSummaryResult
+>(
+  async (month, userId) => {
+    const currentMonth = month || format(new Date(), "yyyy-MM");
+    const [year, mon] = currentMonth.split("-").map(Number);
+    const prevDate = subMonths(new Date(year, mon - 1, 1), 1);
+    const previousMonth = format(prevDate, "yyyy-MM");
 
-  const currentMonth = month || format(new Date(), "yyyy-MM");
-  const [year, mon] = currentMonth.split("-").map(Number);
-  const prevDate = subMonths(new Date(year, mon - 1, 1), 1);
-  const previousMonth = format(prevDate, "yyyy-MM");
-
-  const emptyResult: DashboardSummaryResult = {
-    currentMonth,
-    summary: EMPTY_SUMMARY,
-    previousSummary: EMPTY_SUMMARY,
-    categoryStats: [],
-    monthlyStats: [],
-    categoryExpenses: [],
-  };
-
-  if (!session) {
-    return emptyResult;
-  }
-
-  try {
-    // Single DB query — filter both months in JS (same as original)
     const allTransactions = await db
       .select()
       .from(transaction)
-      .where(eq(transaction.userId, session.user.id))
+      .where(eq(transaction.userId, userId))
       .orderBy(desc(transaction.date));
 
-    // Current month data
     const currentTransactions = allTransactions.filter(
       (t) => format(t.date, "yyyy-MM") === currentMonth,
     );
 
-    // Previous month data — reuse same query result
     const prevTransactions = allTransactions.filter(
       (t) => format(t.date, "yyyy-MM") === previousMonth,
     );
@@ -83,7 +56,6 @@ export async function getSummaryWithComparison(
     const categoryStats = calculateCategoryBreakdown(currentTransactions);
     const monthlyStats = calculateMonthlyTrends(allTransactions);
 
-    // Build categoryExpenses server-side using categoryId from transactions
     const expenseMap = new Map<string, number>();
     for (const t of currentTransactions) {
       if (t.isExpense && t.categoryId) {
@@ -106,8 +78,6 @@ export async function getSummaryWithComparison(
       monthlyStats,
       categoryExpenses,
     };
-  } catch (error) {
-    console.error("Failed to fetch dashboard summary:", error);
-    return emptyResult;
-  }
-}
+  },
+  { errorMessage: "Failed to fetch dashboard summary" },
+);
