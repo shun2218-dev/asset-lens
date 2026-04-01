@@ -58,11 +58,11 @@ export function CategoryPie({ data }: CategoryPieProps) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number | string | undefined) => {
+          formatter={(value) => {
             if (typeof value === "number") {
               return `¥${value.toLocaleString()}`;
             }
-            return value;
+            return String(value);
           }}
         />
         <Legend />
