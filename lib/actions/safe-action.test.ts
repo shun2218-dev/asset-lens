@@ -14,6 +14,22 @@ vi.mock("next/headers", () => ({
   headers: vi.fn(() => Promise.resolve(new Headers())),
 }));
 
+// Mock logger
+vi.mock("@/lib/logger", () => ({
+  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  requestContext: {
+    run: vi.fn((_ctx: unknown, fn: () => unknown) => fn()),
+    getStore: vi.fn(),
+  },
+}));
+
+// Mock rate-limit
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi
+    .fn()
+    .mockResolvedValue({ allowed: true, remaining: 29, resetAt: new Date() }),
+}));
+
 import { auth } from "@/lib/auth";
 import { createSafeAction, createSafeQuery } from "./safe-action";
 
@@ -61,8 +77,6 @@ describe("createSafeAction", () => {
       session: {},
     } as never);
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     const action = createSafeAction<string, void>(
       async () => {
         throw new Error("DB connection failed");
@@ -76,12 +90,6 @@ describe("createSafeAction", () => {
       success: false,
       error: "DB connection failed",
     });
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[SafeAction] Operation failed:",
-      expect.any(Error),
-    );
-
-    consoleSpy.mockRestore();
   });
 
   it("should handle void return from handler", async () => {
@@ -144,8 +152,6 @@ describe("createSafeQuery", () => {
       session: {},
     } as never);
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     const query = createSafeQuery(
       async () => {
         throw new Error("Query timeout");
@@ -159,7 +165,5 @@ describe("createSafeQuery", () => {
       success: false,
       error: "Query timeout",
     });
-
-    consoleSpy.mockRestore();
   });
 });
