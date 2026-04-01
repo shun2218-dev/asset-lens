@@ -21,7 +21,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@better-auth/passkey": "^1.4.10",
+    "@better-auth/passkey": "^1.5.6",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",
