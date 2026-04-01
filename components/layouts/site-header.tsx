@@ -90,16 +90,16 @@ export function SiteHeader() {
           {!isPending && session && <QuickEntryDialog />}
           <ThemeToggle />
           {isPending ? (
-            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-11 w-11 rounded-full" />
           ) : session ? (
             // ログイン済み
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+                  className="relative h-11 w-11 rounded-full"
                 >
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={session.user.image || ""}
                       alt={session.user.name}
@@ -148,7 +148,12 @@ export function SiteHeader() {
             // ▼ 未ログイン: ログインボタン（auth ページでは非表示）
             !pathname.startsWith("/login") &&
             !pathname.startsWith("/forget-password") && (
-              <Button asChild variant="default" size="sm">
+              <Button
+                asChild
+                variant="default"
+                size="default"
+                className="h-11 px-5"
+              >
                 <Link href="/login">
                   <LogIn className="mr-2 h-4 w-4" />
                   ログイン
