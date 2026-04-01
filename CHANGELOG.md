@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.26.0] - 2026-04-01
+
+### Added
+- Contact form with Resend email integration and Zod validation (#216)
+- Google reCAPTCHA v3 bot protection for contact form (#215)
+- Geo-blocking middleware with country whitelist via `ALLOWED_COUNTRIES` env (#214)
+- Savings rate trend line overlay on income/expense chart (#139)
+- Textarea UI component (shadcn pattern)
+- reCAPTCHA v3 global type declarations
+- Dashboard empty state improvement issue tracked (#217)
+
+### Changed
+- FAQ: fixed incorrect Chinese character (开→開), updated CSV export status
+- FAQ: added new entries (pricing, data storage)
+- CSP: added Google reCAPTCHA domains to script-src, connect-src, frame-src
+- Feature development workflow: mandatory test rules for all changes
+
+### Security
+- Contact form: server-side XSS sanitization on all user inputs
+- reCAPTCHA v3 score-based bot filtering (threshold: 0.5)
+- Geo-blocking: public pages open, authenticated routes restricted by country
+
 ## [2.25.0] - 2026-04-01
 
 ### Added
