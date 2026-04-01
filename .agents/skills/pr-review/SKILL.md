@@ -121,9 +121,19 @@ git branch -d <branch-name>
 | Severity | Action | Example |
 |----------|--------|---------|
 | ⚠️ Must Fix | Always fix before merge | Security flaw, missing error handling, broken logic |
-| 💡 Suggestion | Fix if low-risk, skip if out of scope | Performance optimization, naming improvement |
+| 💡 Suggestion | **See rules below** | Performance optimization, naming improvement |
 | 📝 Question | Self-answer and document | Design rationale, magic number explanation |
 | 👍 Praise | No action | Good pattern recognition |
+
+### 💡 Suggestion Handling (MANDATORY)
+
+Suggestions must NEVER be silently ignored. For each suggestion, take ONE of these actions:
+
+1. **Implement it** — if the suggestion is low-risk and clearly beneficial, fix it in the same PR before merge.
+2. **Create a follow-up Issue** — if the suggestion is valid but out of scope for this PR, create a new Issue (or append to an existing one) with the improvement. Reference the PR number.
+3. **Reject with rationale** — if the suggestion is not worth pursuing, explain why in the review comment (e.g., "Not applicable because X").
+
+> ⚠️ **"Skip because out of scope" without a follow-up Issue is NOT acceptable.** If it's worth mentioning in a review, it's worth tracking.
 
 ## Constraints
 

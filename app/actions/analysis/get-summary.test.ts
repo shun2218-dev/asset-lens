@@ -77,23 +77,17 @@ describe("getSummary", () => {
 
     const result = await getSummary("2024-01");
 
-    expect(result.currentMonth).toBe("2024-01");
+    expect(result.success).toBe(true);
+    if (!result.success) return;
 
-    // Check filter: Only Jan transactions (id: 1, 2)
-    // Income: 5000, Expense: 1000, Balance: 4000
-    expect(result.summary.totalIncome).toBe(5000);
-    expect(result.summary.totalExpense).toBe(1000);
-    expect(result.summary.balance).toBe(4000);
-
-    // Check category stats (Jan only)
-    expect(result.categoryStats).toHaveLength(1); // Only 'food' expense
-    expect(result.categoryStats[0].category).toBe("cat-1"); // categoryId used
-
-    // Check monthly stats (All transactions)
-    // Jan: Income 5000, Expense 1000
-    // Feb: Income 0, Expense 2000
-    expect(result.monthlyStats).toHaveLength(2);
-    expect(result.monthlyStats).toEqual(
+    expect(result.data.currentMonth).toBe("2024-01");
+    expect(result.data.summary.totalIncome).toBe(5000);
+    expect(result.data.summary.totalExpense).toBe(1000);
+    expect(result.data.summary.balance).toBe(4000);
+    expect(result.data.categoryStats).toHaveLength(1);
+    expect(result.data.categoryStats[0].category).toBe("cat-1");
+    expect(result.data.monthlyStats).toHaveLength(2);
+    expect(result.data.monthlyStats).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           month: "2024-01",
@@ -105,14 +99,15 @@ describe("getSummary", () => {
     );
   });
 
-  it("should return empty structure if unauthorized", async () => {
-    // Override auth
+  it("should return error if unauthorized", async () => {
     const { auth } = await import("@/lib/auth");
     (auth.api.getSession as any).mockResolvedValueOnce(null);
 
     const result = await getSummary("2024-01");
 
-    expect(result.summary.totalIncome).toBe(0);
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    expect(result.error).toBe("Please sign in to continue");
     expect(db.select).not.toHaveBeenCalled();
   });
 
@@ -123,6 +118,8 @@ describe("getSummary", () => {
 
     const result = await getSummary("2024-01");
 
-    expect(result.summary.totalIncome).toBe(0);
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    expect(result.error).toBe("DB Error");
   });
 });
