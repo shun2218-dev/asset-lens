@@ -1,7 +1,5 @@
 import { format } from "date-fns";
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { DashboardSkeleton } from "@/components/layouts/page-skeletons";
 import { DashboardContent } from "./dashboard-content";
 
 export const metadata: Metadata = {
@@ -21,8 +19,8 @@ export default async function DashboardPage({
   const currentMonth = params.month || format(new Date(), "yyyy-MM");
 
   return (
-    <Suspense fallback={<DashboardSkeleton />}>
+    <main className="container mx-auto p-4 max-w-6xl space-y-6 pb-24 md:pb-6">
       <DashboardContent currentMonth={currentMonth} />
-    </Suspense>
+    </main>
   );
 }
