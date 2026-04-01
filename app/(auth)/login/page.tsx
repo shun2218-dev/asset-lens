@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { PasskeyAuth } from "@/components/features/auth/passkey-auth";
 
 import { requireGuest } from "@/lib/auth/guard";
+
+export const metadata: Metadata = {
+  title: "ログイン",
+  description:
+    "AssetLensにログイン。パスキー認証またはメールアドレスでアクセスできます。",
+};
 
 export default async function LoginPage() {
   await requireGuest();

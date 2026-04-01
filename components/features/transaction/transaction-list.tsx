@@ -77,14 +77,16 @@ export function TransactionList({
       currentSort: TransactionSortParams,
     ) => {
       startTransition(async () => {
-        const { data, metadata: newMeta } = await getTransaction(
+        const result = await getTransaction({
           page,
-          currentMonth,
-          currentFilters,
-          currentSort,
-        );
-        setTransactions(data);
-        setMetadata(newMeta);
+          month: currentMonth,
+          filters: currentFilters,
+          sort: currentSort,
+        });
+        if (result.success) {
+          setTransactions(result.data.data);
+          setMetadata(result.data.metadata);
+        }
       });
     },
     [currentMonth],

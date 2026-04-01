@@ -14,13 +14,24 @@ interface TransactionContentProps {
 export async function TransactionContent({
   currentMonth,
 }: TransactionContentProps) {
-  const [transactionsData, categories, stores] = await Promise.all([
-    getTransaction(1, currentMonth),
+  const [transactionsResult, categories, stores] = await Promise.all([
+    getTransaction({ page: 1, month: currentMonth }),
     getCategories(),
     getStores(),
   ]);
 
-  const { data: transactions, metadata } = transactionsData;
+  const { data: transactions, metadata } = transactionsResult.success
+    ? transactionsResult.data
+    : {
+        data: [],
+        metadata: {
+          totalCount: 0,
+          totalPages: 0,
+          currentPage: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      };
 
   return (
     <TransactionPageView

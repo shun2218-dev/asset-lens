@@ -8,11 +8,23 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { requireGuest } from "@/lib/auth/guard";
+
+export const metadata: Metadata = {
+  title: "AssetLens - スマート家計管理",
+  description:
+    "収支を記録・分析して家計を最適化。予算管理、カテゴリ別支出分析、パスキー認証など、暮らしのお金を見える化するパーソナルファイナンスアプリ。",
+  openGraph: {
+    title: "AssetLens - スマート家計管理",
+    description:
+      "収支を記録・分析して家計を最適化するパーソナルファイナンスアプリ。",
+  },
+};
 
 export default async function LandingPage() {
   const session = await auth.api.getSession({
