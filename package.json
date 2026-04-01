@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@biomejs/biome": "2.2.0",
+    "@biomejs/biome": "2.4.10",
     "@chromatic-com/storybook": "^5.0.0",
     "@dotenvx/dotenvx": "^1.59.1",
     "@playwright/test": "^1.58.0",
@@ -83,7 +83,7 @@
     "drizzle-kit": "^0.31.8",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^16.4.0",
     "playwright": "^1.58.0",
     "storybook": "^10.2.0",
     "tailwindcss": "^4",
