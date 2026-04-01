@@ -26,10 +26,10 @@ interface DashboardContentProps {
 export async function DashboardContent({
   currentMonth,
 }: DashboardContentProps) {
-  const [summaryResult, recentData, rankingResult, categories, budgets] =
+  const [summaryResult, recentResult, rankingResult, categories, budgets] =
     await Promise.all([
       getSummaryWithComparison(currentMonth),
-      getTransaction(1, currentMonth),
+      getTransaction({ page: 1, month: currentMonth }),
       getStoreRanking(currentMonth),
       getCategories(),
       getBudgets(),
@@ -39,7 +39,9 @@ export async function DashboardContent({
     ? summaryResult.data
     : { ...EMPTY_DASHBOARD, currentMonth };
   const storeRanking = rankingResult.success ? rankingResult.data : [];
-  const { data: recentTransactions } = recentData;
+  const { data: recentTransactions } = recentResult.success
+    ? recentResult.data
+    : { data: [] };
 
   return (
     <DashboardView
