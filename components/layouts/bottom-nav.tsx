@@ -66,13 +66,13 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-xs transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 w-16 min-h-[44px] py-1 text-xs transition-colors ${
                   isActive
                     ? "text-primary font-medium"
                     : "text-muted-foreground"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-6 w-6" />
                 <span>{item.label}</span>
               </Link>
             );
