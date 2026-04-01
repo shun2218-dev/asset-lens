@@ -1,8 +1,5 @@
 import { test as base } from "@playwright/test";
 import crypto from "crypto";
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import * as schema from "@/db/schema";
 
 type AuthUser = {
   id: string;
@@ -10,10 +7,10 @@ type AuthUser = {
   name: string;
 };
 
-// Extend basic test by providing a "authUser" fixture.
+const E2E_SECRET = process.env.E2E_SECRET || "";
+
 export const test = base.extend<{ authUser: AuthUser }>({
   authUser: async ({ page }, use) => {
-    // 1. Setup: Create unique user credentials
     const uniqueId = crypto.randomUUID();
     const userEmail = `e2e-user-${uniqueId}@example.com`;
     const userPassword = "Password123!";
@@ -22,7 +19,7 @@ export const test = base.extend<{ authUser: AuthUser }>({
     let userId = "";
 
     try {
-      // 2. Create User via API (using page.request to share context)
+      // 1. Create user via Better Auth sign-up API
       await page.request.post("/api/auth/sign-up/email", {
         data: {
           email: userEmail,
@@ -32,19 +29,20 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { Origin: "http://localhost:3000" },
       });
 
-      // 3. Verify Email (Direct DB update)
-      const user = await db.query.user.findFirst({
-        where: eq(schema.user.email, userEmail),
+      // 2. Verify email via test API (replaces direct DB access)
+      const verifyRes = await page.request.post("/api/e2e", {
+        data: {
+          action: "verify-email",
+          email: userEmail,
+        },
+        headers: { "x-e2e-secret": E2E_SECRET },
       });
-      if (user) {
-        userId = user.id;
-        await db
-          .update(schema.user)
-          .set({ emailVerified: true })
-          .where(eq(schema.user.id, user.id));
+      const verifyData = await verifyRes.json();
+      if (verifyData.userId) {
+        userId = verifyData.userId;
       }
 
-      // 4. Sign In via API (using page.request shares cookies with page)
+      // 3. Sign in via Better Auth API (shares cookies with page)
       await page.request.post("/api/auth/sign-in/email", {
         data: {
           email: userEmail,
@@ -53,27 +51,22 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { Origin: "http://localhost:3000" },
       });
 
-      // 5. Use the fixture value
+      // 4. Provide fixture value to test
       await use({
         id: userId,
         email: userEmail,
         name: userName,
       });
     } finally {
-      // 6. Teardown: Delete user
-      // ユーザーIDが取得できている場合はIDで削除、そうでない場合はメールアドレスで検索して削除
-      if (userId) {
-        await db.delete(schema.user).where(eq(schema.user.id, userId));
-      } else {
-        const userToDelete = await db.query.user.findFirst({
-          where: eq(schema.user.email, userEmail),
-        });
-        if (userToDelete) {
-          await db
-            .delete(schema.user)
-            .where(eq(schema.user.id, userToDelete.id));
-        }
-      }
+      // 5. Cleanup: delete test user via test API
+      await page.request.post("/api/e2e", {
+        data: {
+          action: "delete-user",
+          userId,
+          email: userEmail,
+        },
+        headers: { "x-e2e-secret": E2E_SECRET },
+      });
     }
   },
 });
