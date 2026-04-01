@@ -80,10 +80,9 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: process.env.ASSET_LENS_SENTRY_ORG,
+  project: process.env.ASSET_LENS_SENTRY_PROJECT,
+  authToken: process.env.ASSET_LENS_SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
 });
