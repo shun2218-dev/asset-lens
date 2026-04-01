@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { log, requestContext } from "@/lib/logger";
@@ -77,6 +78,10 @@ export function createSafeAction<TInput, TOutput = void>(
           });
           return { success: true, data };
         } catch (error) {
+          Sentry.captureException(error, {
+            tags: { action: options.errorMessage },
+            extra: { duration: Date.now() - start },
+          });
           log.error(options.errorMessage, {
             action: options.errorMessage,
             duration: Date.now() - start,
@@ -146,6 +151,10 @@ export function createSafeQuery<TOutput>(
           });
           return { success: true, data };
         } catch (error) {
+          Sentry.captureException(error, {
+            tags: { action: options.errorMessage },
+            extra: { duration: Date.now() - start },
+          });
           log.error(options.errorMessage, {
             action: options.errorMessage,
             duration: Date.now() - start,

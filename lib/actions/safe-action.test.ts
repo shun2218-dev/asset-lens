@@ -30,6 +30,11 @@ vi.mock("@/lib/rate-limit", () => ({
     .mockResolvedValue({ allowed: true, remaining: 29, resetAt: new Date() }),
 }));
 
+// Mock Sentry
+vi.mock("@sentry/nextjs", () => ({
+  captureException: vi.fn(),
+}));
+
 import { auth } from "@/lib/auth";
 import { createSafeAction, createSafeQuery } from "./safe-action";
 
