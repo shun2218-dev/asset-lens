@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.27.0] - 2026-04-02
+
+### Added
+- Structured JSON logging with pino and per-request correlation IDs (#158)
+- AsyncLocalStorage-based context propagation for Server Actions (#158)
+- Sentry error tracking and performance monitoring integration (#133)
+- Rate limiting for Server Actions via @upstash/ratelimit (#130)
+- Rate limit tiers: write (30/min), read (60/min), ai (10/min), contact (5/min)
+- 9 new unit tests (logger, rate-limit)
+
+### Changed
+- Server Action errors now reported to Sentry with action name and duration context
+- All Server Actions automatically log execution time, errors, and correlation ID
+- Sentry environment variables use `ASSET_LENS_` prefix for Vercel integration
+- E2E auth fixture updated for CI compatibility (#171)
+
+### Fixed
+- reCAPTCHA v3 badge hidden on all pages with required Google attribution text added
+- Removed deprecated Sentry options (disableLogger, automaticVercelMonitors)
+
+### Security
+- Redis-backed sliding window rate limiting on all Server Actions
+- Fail-open behavior when Redis is unreachable (graceful degradation)
+- IP-based rate limiting for unauthenticated contact form
+- CSP updated for Sentry ingest endpoint
+
 ## [2.26.0] - 2026-04-01
 
 ### Added
