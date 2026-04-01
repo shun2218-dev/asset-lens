@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock db before import
 const mockFindFirst = vi.fn();
 const mockUpdate = vi.fn().mockReturnValue({
   set: vi.fn().mockReturnValue({
@@ -31,10 +30,12 @@ const { POST } = await import("@/app/api/e2e/route");
 
 describe("E2E test API", () => {
   const originalSecret = process.env.E2E_SECRET;
+  const originalVercelEnv = process.env.VERCEL_ENV;
 
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.E2E_SECRET = "test-secret";
+    delete process.env.VERCEL_ENV;
   });
 
   afterEach(() => {
@@ -42,6 +43,11 @@ describe("E2E test API", () => {
       process.env.E2E_SECRET = originalSecret;
     } else {
       delete process.env.E2E_SECRET;
+    }
+    if (originalVercelEnv) {
+      process.env.VERCEL_ENV = originalVercelEnv;
+    } else {
+      delete process.env.VERCEL_ENV;
     }
   });
 
@@ -56,6 +62,16 @@ describe("E2E test API", () => {
     });
   }
 
+  it("should return 404 when VERCEL_ENV is production", async () => {
+    process.env.VERCEL_ENV = "production";
+    const req = makeRequest(
+      { action: "verify-email", email: "e2e-test@example.com" },
+      "test-secret",
+    );
+    const res = await POST(req as any);
+    expect(res.status).toBe(404);
+  });
+
   it("should return 404 when E2E_SECRET is not set", async () => {
     delete process.env.E2E_SECRET;
     const req = makeRequest({ action: "verify-email" }, "any");
@@ -69,10 +85,27 @@ describe("E2E test API", () => {
     expect(res.status).toBe(403);
   });
 
+  it("should return 403 when no secret header is provided", async () => {
+    const req = makeRequest({ action: "verify-email" });
+    const res = await POST(req as any);
+    expect(res.status).toBe(403);
+  });
+
+  it("should reject non-e2e-prefixed emails", async () => {
+    const req = makeRequest(
+      { action: "verify-email", email: "real-user@example.com" },
+      "test-secret",
+    );
+    const res = await POST(req as any);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toContain("e2e-prefixed");
+  });
+
   it("should verify email successfully", async () => {
     mockFindFirst.mockResolvedValueOnce({ id: "user-1" });
     const req = makeRequest(
-      { action: "verify-email", email: "test@example.com" },
+      { action: "verify-email", email: "e2e-test@example.com" },
       "test-secret",
     );
     const res = await POST(req as any);
@@ -85,7 +118,7 @@ describe("E2E test API", () => {
   it("should return 404 when user not found for verify-email", async () => {
     mockFindFirst.mockResolvedValueOnce(null);
     const req = makeRequest(
-      { action: "verify-email", email: "unknown@example.com" },
+      { action: "verify-email", email: "e2e-unknown@example.com" },
       "test-secret",
     );
     const res = await POST(req as any);
@@ -113,7 +146,7 @@ describe("E2E test API", () => {
   it("should delete user by email fallback", async () => {
     mockFindFirst.mockResolvedValueOnce({ id: "user-2" });
     const req = makeRequest(
-      { action: "delete-user", email: "test@example.com" },
+      { action: "delete-user", email: "e2e-test@example.com" },
       "test-secret",
     );
     const res = await POST(req as any);
