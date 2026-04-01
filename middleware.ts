@@ -30,15 +30,17 @@ function isPublicPath(pathname: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip geo-check for public pages and static assets
+  const correlationId =
+    request.headers.get("x-correlation-id") ?? crypto.randomUUID();
+
   if (isPublicPath(pathname)) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("x-correlation-id", correlationId);
+    return response;
   }
 
-  // Geo-blocking for authenticated routes
   const allowed = getAllowedCountries();
   if (allowed) {
-    // request.geo is injected by Vercel Edge Runtime (not in Next.js types)
     const country = (request as NextRequest & { geo?: { country?: string } })
       .geo?.country;
     if (country && !allowed.includes(country)) {
@@ -46,7 +48,16 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next({
+    request: {
+      headers: new Headers([
+        ...request.headers.entries(),
+        ["x-correlation-id", correlationId],
+      ]),
+    },
+  });
+  response.headers.set("x-correlation-id", correlationId);
+  return response;
 }
 
 export const config = {

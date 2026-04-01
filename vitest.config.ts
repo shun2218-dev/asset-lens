@@ -66,7 +66,12 @@ export default defineConfig({
         test: {
           name: "unit",
           include: ["**/*.test.ts", "**/*.test.tsx"],
-          exclude: ["**/*.stories.tsx", "node_modules/**", "e2e/**"],
+          exclude: [
+            "**/*.stories.tsx",
+            "node_modules/**",
+            "e2e/**",
+            ".next/**",
+          ],
           environment: "jsdom",
         },
         resolve: {

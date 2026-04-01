@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { log, requestContext } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 /**
@@ -42,9 +43,11 @@ export function createSafeAction<TInput, TOutput = void>(
   },
 ): (input: TInput) => Promise<SafeActionResult<TOutput>> {
   return async (input: TInput): Promise<SafeActionResult<TOutput>> => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const reqHeaders = await headers();
+    const correlationId =
+      reqHeaders?.get?.("x-correlation-id") ?? crypto.randomUUID();
+
+    const session = await auth.api.getSession({ headers: reqHeaders });
 
     if (!session) {
       return { success: false, error: "Please sign in to continue" };
@@ -55,21 +58,36 @@ export function createSafeAction<TInput, TOutput = void>(
       options.rateLimit ?? "write",
     );
     if (!allowed) {
+      log.warn("Rate limit exceeded", { userId: session.user.id });
       return {
         success: false,
         error: "Too many requests. Please try again later.",
       };
     }
 
-    try {
-      const data = await handler(input, session.user.id);
-      return { success: true, data };
-    } catch (error) {
-      console.error(`[SafeAction] ${options.errorMessage}:`, error);
-      const message =
-        error instanceof Error ? error.message : options.errorMessage;
-      return { success: false, error: message };
-    }
+    return requestContext.run(
+      { correlationId, userId: session.user.id },
+      async () => {
+        const start = Date.now();
+        try {
+          const data = await handler(input, session.user.id);
+          log.info("Action completed", {
+            action: options.errorMessage,
+            duration: Date.now() - start,
+          });
+          return { success: true, data };
+        } catch (error) {
+          log.error(options.errorMessage, {
+            action: options.errorMessage,
+            duration: Date.now() - start,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          const message =
+            error instanceof Error ? error.message : options.errorMessage;
+          return { success: false, error: message };
+        }
+      },
+    );
   };
 }
 
@@ -94,9 +112,11 @@ export function createSafeQuery<TOutput>(
   },
 ): () => Promise<SafeActionResult<TOutput>> {
   return async (): Promise<SafeActionResult<TOutput>> => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const reqHeaders = await headers();
+    const correlationId =
+      reqHeaders?.get?.("x-correlation-id") ?? crypto.randomUUID();
+
+    const session = await auth.api.getSession({ headers: reqHeaders });
 
     if (!session) {
       return { success: false, error: "Please sign in to continue" };
@@ -107,20 +127,35 @@ export function createSafeQuery<TOutput>(
       options.rateLimit ?? "read",
     );
     if (!allowed) {
+      log.warn("Rate limit exceeded", { userId: session.user.id });
       return {
         success: false,
         error: "Too many requests. Please try again later.",
       };
     }
 
-    try {
-      const data = await handler(session.user.id);
-      return { success: true, data };
-    } catch (error) {
-      console.error(`[SafeAction] ${options.errorMessage}:`, error);
-      const message =
-        error instanceof Error ? error.message : options.errorMessage;
-      return { success: false, error: message };
-    }
+    return requestContext.run(
+      { correlationId, userId: session.user.id },
+      async () => {
+        const start = Date.now();
+        try {
+          const data = await handler(session.user.id);
+          log.info("Query completed", {
+            action: options.errorMessage,
+            duration: Date.now() - start,
+          });
+          return { success: true, data };
+        } catch (error) {
+          log.error(options.errorMessage, {
+            action: options.errorMessage,
+            duration: Date.now() - start,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          const message =
+            error instanceof Error ? error.message : options.errorMessage;
+          return { success: false, error: message };
+        }
+      },
+    );
   };
 }
