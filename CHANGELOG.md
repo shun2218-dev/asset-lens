@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.23.0] - 2026-04-01
+
+### Added
+- Landing page redesign: gradient hero, dashboard preview mockup, 3-step how-it-works section, social proof, bottom CTA (#68)
+- E2E tests for landing page: hero, features, social proof, how-it-works sections
+- Suspense streaming for dashboard and transaction pages with centralized skeleton components (#127)
+- Mobile viewport testing: Playwright projects for Pixel 5 and iPhone 13
+
+### Changed
+- Analysis actions (`getSummary`, `getSummaryWithComparison`, `getStoreRanking`) migrated to `createSafeAction` pattern (#142)
+- Feature cards expanded from 3 to 6 with per-feature color accents
+- Self-review skill strengthened: suggestions must be implemented, tracked as Issues, or rejected with rationale
+
+### Fixed
+- WCAG 2.5.5 touch target compliance: all interactive elements now meet 44px minimum on mobile (#124)
+- Header login button, avatar, form inputs, tabs, auth buttons, bottom nav links all increased to minimum 44px
+- Input and TabsList use responsive `h-11 md:h-9` for mobile-first sizing
+
 ## [2.22.0] - 2026-04-01
 
 ### Added
