@@ -1,6 +1,7 @@
 import { HelpCircle, MessageSquare } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import { ContactForm } from "@/components/features/contact/contact-form";
 
 export const metadata: Metadata = {
@@ -10,8 +11,16 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
   return (
     <div className="container mx-auto max-w-3xl px-4 py-16 md:py-24">
+      {recaptchaSiteKey && (
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
+          strategy="lazyOnload"
+        />
+      )}
       <h1 className="text-3xl font-bold tracking-tight mb-8">お問い合わせ</h1>
 
       <div className="space-y-8">

@@ -34,11 +34,12 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // Next.js requires 'unsafe-inline' for styles and 'unsafe-eval' for dev mode
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://lh3.googleusercontent.com",
-      "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com wss://ws-us3.pusher.com",
+      "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com wss://ws-us3.pusher.com https://www.google.com/recaptcha/",
+      "frame-src 'self' https://www.google.com/recaptcha/",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
