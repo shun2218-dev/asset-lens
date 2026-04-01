@@ -1,7 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { z } from "zod";
 import { resend } from "@/lib/mail/client";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -59,10 +61,19 @@ async function verifyRecaptcha(token?: string): Promise<boolean> {
 }
 
 export async function sendContactMessage(input: ContactInput) {
-  // Validate
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  const { allowed } = await checkRateLimit(ip, "contact");
+  if (!allowed) {
+    return {
+      success: false,
+      error: "Too many requests. Please try again later.",
+    };
   }
 
   // Verify reCAPTCHA

@@ -2,15 +2,20 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { parseReceipt } from "@/lib/analysis/reciept-parser";
 import { auth } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
-    // 1. 認証
     const session = await auth.api.getSession({
       headers: await headers(),
     });
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { allowed } = await checkRateLimit(session.user.id, "ai");
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     // 2. iOSからはJSON { image: "base64..." } が送られてくる
