@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * Discriminated union for action results.
@@ -36,8 +37,8 @@ type AuthenticatedHandler<TInput, TOutput> = (
 export function createSafeAction<TInput, TOutput = void>(
   handler: AuthenticatedHandler<TInput, TOutput>,
   options: {
-    /** User-facing error message when the handler throws */
     errorMessage: string;
+    rateLimit?: "write" | "read" | "ai";
   },
 ): (input: TInput) => Promise<SafeActionResult<TOutput>> {
   return async (input: TInput): Promise<SafeActionResult<TOutput>> => {
@@ -47,6 +48,17 @@ export function createSafeAction<TInput, TOutput = void>(
 
     if (!session) {
       return { success: false, error: "Please sign in to continue" };
+    }
+
+    const { allowed } = await checkRateLimit(
+      session.user.id,
+      options.rateLimit ?? "write",
+    );
+    if (!allowed) {
+      return {
+        success: false,
+        error: "Too many requests. Please try again later.",
+      };
     }
 
     try {
@@ -78,6 +90,7 @@ export function createSafeQuery<TOutput>(
   handler: (userId: string) => Promise<TOutput>,
   options: {
     errorMessage: string;
+    rateLimit?: "write" | "read" | "ai";
   },
 ): () => Promise<SafeActionResult<TOutput>> {
   return async (): Promise<SafeActionResult<TOutput>> => {
@@ -87,6 +100,17 @@ export function createSafeQuery<TOutput>(
 
     if (!session) {
       return { success: false, error: "Please sign in to continue" };
+    }
+
+    const { allowed } = await checkRateLimit(
+      session.user.id,
+      options.rateLimit ?? "read",
+    );
+    if (!allowed) {
+      return {
+        success: false,
+        error: "Too many requests. Please try again later.",
+      };
     }
 
     try {
