@@ -60,9 +60,8 @@ describe("getTransaction", () => {
     },
   ];
 
-  it("should return transactions with pagination metadata", async () => {
+  it("should return transactions with pagination metadata using input object", async () => {
     // Mock Data Query Chain
-    // select -> from -> leftJoin -> where -> orderBy -> limit -> offset
     const offsetMock = vi.fn().mockResolvedValue(mockData);
     const limitMock = vi.fn().mockReturnValue({ offset: offsetMock });
     const orderByMock = vi.fn().mockReturnValue({ limit: limitMock });
@@ -71,11 +70,7 @@ describe("getTransaction", () => {
     const fromDataMock = vi.fn().mockReturnValue({ leftJoin: leftJoinMock });
 
     // Mock Count Query Chain
-    // select({ count }) -> from -> where
-    // This is tricky because db.select is called twice.
-    // First call is for data (args provided), second for count (args provided).
-
-    const whereCountMock = vi.fn().mockResolvedValue([{ count: 25 }]); // Total 25 items
+    const whereCountMock = vi.fn().mockResolvedValue([{ count: 25 }]);
     const fromCountMock = vi.fn().mockReturnValue({ where: whereCountMock });
 
     (db.select as any).mockImplementation((args: any) => {
@@ -85,17 +80,19 @@ describe("getTransaction", () => {
       return { from: fromDataMock };
     });
 
-    const result = await getTransaction(1);
+    const result = await getTransaction({ page: 1 });
 
-    expect(result.data).toHaveLength(1);
-    expect(result.data[0].category).toBe("food-slug"); // Should use joined category slug
-    expect(result.metadata.totalCount).toBe(25);
-    expect(result.metadata.totalPages).toBe(3); // 25 / 10 = 2.5 -> 3
-    expect(result.metadata.hasNextPage).toBe(true);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.data).toHaveLength(1);
+      expect(result.data.data[0].category).toBe("food-slug");
+      expect(result.data.metadata.totalCount).toBe(25);
+      expect(result.data.metadata.totalPages).toBe(3);
+      expect(result.data.metadata.hasNextPage).toBe(true);
+    }
   });
 
   it("should handle empty data", async () => {
-    // Empty data response
     const offsetMock = vi.fn().mockResolvedValue([]);
     const limitMock = vi.fn().mockReturnValue({ offset: offsetMock });
     const orderByMock = vi.fn().mockReturnValue({ limit: limitMock });
@@ -103,7 +100,6 @@ describe("getTransaction", () => {
     const leftJoinMock = vi.fn().mockReturnValue({ where: whereDataMock });
     const fromDataMock = vi.fn().mockReturnValue({ leftJoin: leftJoinMock });
 
-    // Zero count
     const whereCountMock = vi.fn().mockResolvedValue([{ count: 0 }]);
     const fromCountMock = vi.fn().mockReturnValue({ where: whereCountMock });
 
@@ -114,14 +110,16 @@ describe("getTransaction", () => {
       return { from: fromDataMock };
     });
 
-    const result = await getTransaction(1);
+    const result = await getTransaction({ page: 1 });
 
-    expect(result.data).toEqual([]);
-    expect(result.metadata.totalCount).toBe(0);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.data).toEqual([]);
+      expect(result.data.metadata.totalCount).toBe(0);
+    }
   });
 
-  it("should accept filter and sort parameters", async () => {
-    // Setup mocks for both data and count queries
+  it("should accept filter and sort parameters via input object", async () => {
     const offsetMock = vi.fn().mockResolvedValue(mockData);
     const limitMock = vi.fn().mockReturnValue({ offset: offsetMock });
     const orderByMock = vi.fn().mockReturnValue({ limit: limitMock });
@@ -139,29 +137,47 @@ describe("getTransaction", () => {
       return { from: fromDataMock };
     });
 
-    const filters = {
-      categoryId: "cat-1",
-      searchQuery: "Test",
-    };
-    const sort = {
-      sortBy: "date" as const,
-      sortOrder: "asc" as const,
-    };
+    const result = await getTransaction({
+      page: 1,
+      filters: {
+        categoryId: "cat-1",
+        searchQuery: "Test",
+      },
+      sort: {
+        sortBy: "date",
+        sortOrder: "asc",
+      },
+    });
 
-    const result = await getTransaction(1, undefined, filters, sort);
-
-    expect(result.data).toHaveLength(1);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.data).toHaveLength(1);
+    }
     expect(db.select).toHaveBeenCalled();
   });
 
-  it("should return empty structure on error", async () => {
+  it("should return error result when DB throws", async () => {
     (db.select as any).mockImplementation(() => {
       throw new Error("DB Connection Error");
     });
 
-    const result = await getTransaction(1);
+    const result = await getTransaction({ page: 1 });
 
-    expect(result.data).toEqual([]);
-    expect(result.metadata.totalCount).toBe(0);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("DB Connection Error");
+    }
+  });
+
+  it("should return auth error when session is null", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth.api.getSession).mockResolvedValueOnce(null as any);
+
+    const result = await getTransaction({ page: 1 });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("Please sign in to continue");
+    }
   });
 });

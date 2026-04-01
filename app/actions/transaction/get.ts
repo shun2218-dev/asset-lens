@@ -13,33 +13,34 @@ import {
   or,
   type SQL,
 } from "drizzle-orm";
-import { headers } from "next/headers";
 import { db } from "@/db";
-import { category, transaction } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import type { TransactionFilterParams, TransactionSortParams } from "@/types";
+import { category, type SelectTransaction, transaction } from "@/db/schema";
+import { createSafeAction } from "@/lib/actions/safe-action";
+import type { TransactionMetadata, TransactionQueryInput } from "@/types";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
 
-export async function getTransaction(
-  page: number = 1,
-  month?: string,
-  filters?: TransactionFilterParams,
-  sort?: TransactionSortParams,
-) {
-  // ページ番号が1未満にならないように補正
-  const safePage = Math.max(1, page);
-  const offset = (safePage - 1) * PAGE_SIZE;
+type TransactionWithCategory = Omit<SelectTransaction, "category"> & {
+  category: string;
+};
 
-  try {
-    const conditions: SQL[] = [];
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+type TransactionQueryResult = {
+  data: TransactionWithCategory[];
+  metadata: TransactionMetadata;
+};
 
-    if (session) {
-      conditions.push(eq(transaction.userId, session.user.id));
-    }
+export const getTransaction = createSafeAction<
+  TransactionQueryInput,
+  TransactionQueryResult
+>(
+  async (input, userId) => {
+    const { page = 1, month, filters, sort } = input;
+
+    // ページ番号が1未満にならないように補正
+    const safePage = Math.max(1, page);
+    const offset = (safePage - 1) * PAGE_SIZE;
+
+    const conditions: SQL[] = [eq(transaction.userId, userId)];
 
     // month引数がある場合、その月の1日〜翌月1日の範囲条件を作成 ("2025-01" -> 2025-01-01 00:00:00)
     if (month && !filters?.dateFrom && !filters?.dateTo) {
@@ -150,17 +151,6 @@ export async function getTransaction(
         hasPrevPage: safePage > 1,
       },
     };
-  } catch (error) {
-    console.error("Failed to fetch transaction:", error);
-    return {
-      data: [],
-      metadata: {
-        totalCount: 0,
-        totalPages: 0,
-        currentPage: 1,
-        hasNextPage: false,
-        hasPrevPage: false,
-      },
-    };
-  }
-}
+  },
+  { errorMessage: "Failed to fetch transactions" },
+);

@@ -47,3 +47,10 @@ export type TransactionSortParams = {
   sortBy?: TransactionSortField;
   sortOrder?: TransactionSortOrder;
 };
+
+export type TransactionQueryInput = {
+  page?: number;
+  month?: string;
+  filters?: TransactionFilterParams;
+  sort?: TransactionSortParams;
+};
