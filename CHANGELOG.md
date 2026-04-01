@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.25.0] - 2026-04-01
+
+### Added
+- Dependabot configuration for automated npm and GitHub Actions dependency updates (#151)
+- Content Security Policy and security headers via `next.config.ts` (#149)
+- Custom Drizzle query `PerformanceLogger` with slow query detection (>500ms) (#146)
+
+### Security
+- Strict CSP: allowlist for Vercel, Google Fonts, blob storage
+- HTTP Strict Transport Security (HSTS) with 2-year max-age
+- X-Frame-Options: DENY, X-Content-Type-Options: nosniff
+- Permissions-Policy: camera, microphone, geolocation disabled
+
+### Changed
+- Confirmed existing `unstable_cache` + `updateTag` implementation covers API response caching (#144)
+- Dependabot groups: next-ecosystem, ui-components, testing, linting, drizzle
+
 ## [2.24.0] - 2026-04-01
 
 ### Added
