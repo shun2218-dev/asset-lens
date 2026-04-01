@@ -84,12 +84,22 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
   - `test:` for adding/updating tests
   - `perf:` for performance improvements
 
+> **🧪 MANDATORY: Tests for every change**
+> - Every new or modified **server action** MUST have a corresponding `.test.ts` file
+> - Every new or modified **utility/lib function** MUST have unit tests
+> - Every new or modified **UI component** should have Storybook stories
+> - Test files must be created/updated **in the same commit or before** the PR
+> - Run new tests immediately after writing them to confirm they pass
+> - **NEVER skip tests** — untested code will not be merged
+
 ## 5. Quality Checklist (MANDATORY)
 Before creating a PR, ensure:
+- [ ] Unit tests for all new/modified server actions and utilities
 - [ ] Storybook stories for all new/modified UI components
-- [ ] Unit tests for all new/modified server actions
 - [ ] E2E tests for new user-facing features
-- [ ] All tests pass (unit + E2E)
+- [ ] All tests pass (unit + E2E + lint)
+- [ ] No TypeScript errors (`npx tsc --noEmit`)
+- [ ] No lint errors (`npx biome check`)
 
 ### Test Execution Strategy
 Husky hooks handle fast feedback automatically:
