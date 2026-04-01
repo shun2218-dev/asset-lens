@@ -58,19 +58,19 @@ describe("middleware", () => {
     expect(result).toEqual({ type: "next" });
   });
 
-  it("should allow JP access to authenticated routes", () => {
+  it("should allow whitelisted country access to authenticated routes", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
     const result = middleware(createRequest("/dashboard", "JP"));
     expect(result).toEqual({ type: "next" });
   });
 
-  it("should block non-JP access to /dashboard", () => {
+  it("should block non-whitelisted country from /dashboard", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
     const result = middleware(createRequest("/dashboard", "CN"));
     expect(result).toBeInstanceOf(NextResponse);
   });
 
-  it("should block non-JP access to /transaction", () => {
+  it("should block non-whitelisted country from /transaction", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
     const result = middleware(createRequest("/transaction", "RU"));
     expect(result).toBeInstanceOf(NextResponse);

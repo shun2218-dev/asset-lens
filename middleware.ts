@@ -1,13 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-/**
- * Allowed countries for authenticated routes.
- * Configurable via ALLOWED_COUNTRIES env var (comma-separated ISO 3166-1 alpha-2).
- * Defaults to JP only. Set to "*" to allow all countries.
- */
 function getAllowedCountries(): string[] | null {
   const env = process.env.ALLOWED_COUNTRIES;
-  if (!env || env === "*") return null; // null = allow all
+  if (!env || env === "*") return null;
   return env.split(",").map((c) => c.trim().toUpperCase());
 }
 
