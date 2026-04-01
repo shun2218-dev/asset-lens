@@ -1,6 +1,7 @@
-import { Mail } from "lucide-react";
+import { HelpCircle, MessageSquare } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContactForm } from "@/components/features/contact/contact-form";
 
 export const metadata: Metadata = {
   title: "お問い合わせ",
@@ -14,37 +15,51 @@ export default function ContactPage() {
       <h1 className="text-3xl font-bold tracking-tight mb-8">お問い合わせ</h1>
 
       <div className="space-y-8">
+        {/* Contact Form */}
         <section className="rounded-lg border bg-card p-6 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-primary/10 rounded-full shrink-0">
-              <Mail className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-3 mb-5">
+            <div className="p-2.5 bg-primary/10 rounded-full shrink-0">
+              <MessageSquare className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold mb-2">
-                メールでのお問い合わせ
+              <h2 className="text-lg font-semibold">
+                フォームからお問い合わせ
               </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                ご質問、ご意見、不具合の報告など、お気軽にお問い合わせください。
+              <p className="text-sm text-muted-foreground">
                 通常2〜3営業日以内にご返信いたします。
               </p>
-              <a
-                href="mailto:support@asset-lens.app"
-                className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
-              >
-                <Mail className="h-4 w-4" />
-                support@asset-lens.app
-              </a>
             </div>
           </div>
+          <ContactForm />
         </section>
 
+        {/* FAQ */}
         <section className="rounded-lg border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">よくある質問</h2>
-          <div className="space-y-4">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="p-2.5 bg-primary/10 rounded-full shrink-0">
+              <HelpCircle className="h-5 w-5 text-primary" />
+            </div>
+            <h2 className="text-lg font-semibold">よくある質問</h2>
+          </div>
+          <div className="space-y-5">
+            <div>
+              <h3 className="font-medium mb-1">無料で使えますか？</h3>
+              <p className="text-sm text-muted-foreground">
+                はい、AssetLensは無料でご利用いただけます。すべての機能を追加料金なしでお使いいただけます。
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-1">
+                データはどこに保存されますか？
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                データは安全なクラウドデータベースに暗号化して保存されます。お客様のデータは第三者と共有されることはありません。
+              </p>
+            </div>
             <div>
               <h3 className="font-medium mb-1">アカウントを削除したいです</h3>
               <p className="text-sm text-muted-foreground">
-                設定画面の「アカウント削除」ボタンから削除できます。削除後のデータ復元はできません。
+                設定画面の「アカウント削除」ボタンから削除できます。削除後のデータ復元はできませんのでご注意ください。
               </p>
             </div>
             <div>
@@ -52,7 +67,7 @@ export default function ContactPage() {
                 データのエクスポートはできますか？
               </h3>
               <p className="text-sm text-muted-foreground">
-                現在开発中の機能です。今後のアップデートでCSV/PDFエクスポートに対応予定です。
+                はい、CSVエクスポートに対応しています。設定画面からダウンロードできます。
               </p>
             </div>
             <div>
@@ -62,19 +77,6 @@ export default function ContactPage() {
               </p>
             </div>
           </div>
-        </section>
-
-        <section className="rounded-lg border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">バグの報告</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            不具合を見つけた場合は、以下の情報を添えてご報告いただけると迅速に対応できます。
-          </p>
-          <ul className="list-disc pl-6 space-y-1 text-sm text-muted-foreground mt-3">
-            <li>発生した操作の手順</li>
-            <li>期待される動作と実際の動作</li>
-            <li>ブラウザの種類とバージョン</li>
-            <li>スクリーンショット（可能であれば）</li>
-          </ul>
         </section>
       </div>
 
