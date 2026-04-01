@@ -1,25 +1,39 @@
+import crypto from "crypto";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 
-/**
- * Test-only API endpoint for E2E fixture operations.
- * Guarded by E2E_SECRET — returns 404 when not configured.
- */
+const NOT_FOUND = NextResponse.json({ error: "Not found" }, { status: 404 });
+
+/** Internal test helper — disabled in production. */
 export async function POST(request: NextRequest) {
-  const secret = process.env.E2E_SECRET;
-  if (!secret) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (process.env.VERCEL_ENV === "production") {
+    return NOT_FOUND;
   }
 
-  const authHeader = request.headers.get("x-e2e-secret");
-  if (authHeader !== secret) {
+  const secret = process.env.E2E_SECRET;
+  if (!secret) {
+    return NOT_FOUND;
+  }
+
+  const authHeader = request.headers.get("x-e2e-secret") ?? "";
+  const isValid =
+    authHeader.length === secret.length &&
+    crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(secret));
+  if (!isValid) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const body = await request.json();
   const { action, email, userId } = body;
+
+  if (email && !email.startsWith("e2e-")) {
+    return NextResponse.json(
+      { error: "Only e2e-prefixed emails are allowed" },
+      { status: 400 },
+    );
+  }
 
   switch (action) {
     case "verify-email": {

@@ -19,7 +19,7 @@ export const test = base.extend<{ authUser: AuthUser }>({
     let userId = "";
 
     try {
-      // 1. Create user via Better Auth sign-up API
+      // 1. Create test user
       await page.request.post("/api/auth/sign-up/email", {
         data: {
           email: userEmail,
@@ -29,7 +29,7 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { Origin: "http://localhost:3000" },
       });
 
-      // 2. Verify email via test API (replaces direct DB access)
+      // 2. Verify email
       const verifyRes = await page.request.post("/api/e2e", {
         data: {
           action: "verify-email",
@@ -42,7 +42,7 @@ export const test = base.extend<{ authUser: AuthUser }>({
         userId = verifyData.userId;
       }
 
-      // 3. Sign in via Better Auth API (shares cookies with page)
+      // 3. Sign in
       await page.request.post("/api/auth/sign-in/email", {
         data: {
           email: userEmail,
@@ -51,14 +51,14 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { Origin: "http://localhost:3000" },
       });
 
-      // 4. Provide fixture value to test
+      // 4. Yield fixture
       await use({
         id: userId,
         email: userEmail,
         name: userName,
       });
     } finally {
-      // 5. Cleanup: delete test user via test API
+      // 5. Cleanup
       await page.request.post("/api/e2e", {
         data: {
           action: "delete-user",
