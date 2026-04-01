@@ -136,6 +136,10 @@
   }
 }
 
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
 /* Micro-animation keyframes */
 @keyframes fade-in-up {
   from {

@@ -40,6 +40,29 @@ export default function ContactPage() {
             </div>
           </div>
           <ContactForm />
+          {recaptchaSiteKey && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              This site is protected by reCAPTCHA and the Google{" "}
+              <a
+                href="https://policies.google.com/privacy"
+                className="underline hover:text-foreground"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://policies.google.com/terms"
+                className="underline hover:text-foreground"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </a>{" "}
+              apply.
+            </p>
+          )}
         </section>
 
         {/* FAQ */}
