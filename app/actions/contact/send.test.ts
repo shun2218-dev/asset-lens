@@ -10,6 +10,22 @@ vi.mock("@/lib/mail/client", () => ({
   },
 }));
 
+// Mock next/headers
+vi.mock("next/headers", () => ({
+  headers: vi
+    .fn()
+    .mockResolvedValue(new Map([["x-forwarded-for", "127.0.0.1"]])),
+}));
+
+// Mock rate-limit (always allow in tests)
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi.fn().mockResolvedValue({
+    allowed: true,
+    remaining: 4,
+    resetAt: new Date(),
+  }),
+}));
+
 // Mock fetch for reCAPTCHA verification
 vi.stubGlobal(
   "fetch",

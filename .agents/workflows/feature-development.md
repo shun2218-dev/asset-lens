@@ -12,6 +12,7 @@ description: How to implement a new feature from planning to merge
 > - **Issue closing**: Feature PRs (→ `develop`) should reference Issues (e.g. `Relates to #<number>`) for traceability. **Release PRs (`release/vX.Y.Z` → `main`)** must include `Closes #<number>` for all Issues resolved in that release — GitHub auto-closes Issues only on merge to the default branch (`main`).
 > - **Language**: All Issues, PRs, commit messages, and CHANGELOG entries MUST be written in **English**. UI text may be in Japanese. Code comments must be in English.
 > - **Code comments**: Write only comments a human developer would write. No AI-style verbose explanations, no issue/ticket numbers in code comments (e.g. `/* #63: ... */`), no narrating what the code obviously does.
+> - **Security in comments & PRs**: NEVER describe security mechanisms, bypass conditions, header names, environment variable checks, or implementation details in code comments, PR descriptions, or commit messages. All of these are publicly visible on GitHub. Keep security-related descriptions abstract (e.g. "defense-in-depth guards added" instead of listing specific checks).
 
 > **🛑 BEFORE EVERY `git add` / `git commit`:**
 > 1. Run `git branch --show-current` to confirm you are NOT on `develop` or `main`

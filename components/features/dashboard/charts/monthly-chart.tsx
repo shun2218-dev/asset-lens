@@ -63,12 +63,12 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
           strokeOpacity={0.4}
         />
         <Tooltip
-          formatter={(value: number | string | undefined, name?: string) => {
+          formatter={(value, name) => {
             if (typeof value === "number") {
               if (name === "貯蓄率") return `${value.toFixed(1)}%`;
               return `¥${value.toLocaleString()}`;
             }
-            return value;
+            return String(value);
           }}
           cursor={{ fill: "transparent" }}
         />
