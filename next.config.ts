@@ -1,3 +1,4 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const securityHeaders = [
@@ -38,7 +39,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://lh3.googleusercontent.com",
-      "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com wss://ws-us3.pusher.com https://www.google.com/recaptcha/",
+      "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com wss://ws-us3.pusher.com https://www.google.com/recaptcha/ https://*.ingest.sentry.io",
       "frame-src 'self' https://www.google.com/recaptcha/",
       "frame-ancestors 'none'",
       "base-uri 'self'",
@@ -78,4 +79,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+});
