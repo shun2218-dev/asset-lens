@@ -14,7 +14,7 @@ const FOOTER_PAGES = [
   {
     path: "/contact",
     heading: "お問い合わせ",
-    sections: ["メールでのお問い合わせ", "よくある質問", "バグの報告"],
+    sections: ["フォームからお問い合わせ", "よくある質問"],
   },
 ] as const;
 
