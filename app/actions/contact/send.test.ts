@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sendContactMessage } from "./send";
 
 // Mock resend
@@ -19,6 +19,13 @@ vi.stubGlobal(
 );
 
 describe("sendContactMessage", () => {
+  beforeEach(() => {
+    delete process.env.RECAPTCHA_SECRET_KEY;
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
   it("should send a contact message successfully", async () => {
     const result = await sendContactMessage({
       name: "Test User",
@@ -99,15 +106,6 @@ describe("sendContactMessage", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("Bot verification failed");
-
-    // Cleanup
-    vi.unstubAllEnvs();
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        json: () => Promise.resolve({ success: true, score: 0.9 }),
-      }),
-    );
   });
 
   it("should handle email send failure gracefully", async () => {
