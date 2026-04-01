@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.24.0] - 2026-04-01
+
+### Added
+- Dynamic sitemap for public pages (`app/sitemap.ts`) (#175)
+- Dynamic OG image using Next.js ImageResponse API with Edge Runtime (#175)
+- Page-level metadata for landing, login, and profile pages (#175)
+- Granular dashboard Suspense boundaries: overview, charts, widgets stream independently (#189)
+- Section-specific skeleton components for each dashboard boundary
+- `TransactionQueryInput` type for typed query objects
+
+### Changed
+- `getTransaction` migrated to `createSafeAction` with input object pattern (#188)
+- 4 positional parameters replaced with single `TransactionQueryInput` object
+- Dashboard architecture split from monolithic `DashboardContent` into 3 async server components
+- Auth handling moved from manual session check to `createSafeAction` wrapper
+
+### Improved
+- Time to First Byte for dashboard summary cards (no longer blocked by chart/widget data)
+- React request-level deduplication for shared `getSummaryWithComparison` calls
+
 ## [2.23.0] - 2026-04-01
 
 ### Added
