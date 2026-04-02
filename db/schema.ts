@@ -257,6 +257,7 @@ export const userRelations = relations(user, ({ many }) => ({
   subscriptions: many(subscription),
   stores: many(store),
   transactionTemplates: many(transactionTemplate),
+  dismissedDuplicates: many(dismissedDuplicate),
 }));
 
 export const storeRelations = relations(store, ({ one }) => ({
@@ -372,6 +373,49 @@ export const transactionTemplateRelations = relations(
   ({ one }) => ({
     user: one(user, {
       fields: [transactionTemplate.userId],
+      references: [user.id],
+    }),
+  }),
+);
+
+export const dismissedDuplicate = pgTable(
+  "dismissed_duplicate",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    transactionId1: uuid("transaction_id_1")
+      .notNull()
+      .references(() => transaction.id, { onDelete: "cascade" }),
+    transactionId2: uuid("transaction_id_2")
+      .notNull()
+      .references(() => transaction.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("dismissed_dup_userId_idx").on(table.userId),
+    index("dismissed_dup_pair_idx").on(
+      table.transactionId1,
+      table.transactionId2,
+    ),
+  ],
+);
+
+export type SelectDismissedDuplicate = InferSelectModel<
+  typeof dismissedDuplicate
+>;
+export type InsertDismissedDuplicate = InferInsertModel<
+  typeof dismissedDuplicate
+>;
+
+export const dismissedDuplicateRelations = relations(
+  dismissedDuplicate,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [dismissedDuplicate.userId],
       references: [user.id],
     }),
   }),

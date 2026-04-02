@@ -1,4 +1,5 @@
 import { getCategories } from "@/app/actions/category/get";
+import { getDuplicates } from "@/app/actions/duplicate";
 import { getStores } from "@/app/actions/store/get";
 import { getTemplates } from "@/app/actions/template";
 import { getTransaction } from "@/app/actions/transaction/get";
@@ -15,14 +16,14 @@ interface TransactionContentProps {
 export async function TransactionContent({
   currentMonth,
 }: TransactionContentProps) {
-  const [transactionsResult, categories, stores, templates] = await Promise.all(
-    [
+  const [transactionsResult, categories, stores, templates, duplicatesResult] =
+    await Promise.all([
       getTransaction({ page: 1, month: currentMonth }),
       getCategories(),
       getStores(),
       getTemplates(),
-    ],
-  );
+      getDuplicates(),
+    ]);
 
   const { data: transactions, metadata } = transactionsResult.success
     ? transactionsResult.data
@@ -45,6 +46,7 @@ export async function TransactionContent({
       categories={categories}
       stores={stores}
       templates={templates}
+      duplicates={duplicatesResult.success ? duplicatesResult.data : []}
     />
   );
 }

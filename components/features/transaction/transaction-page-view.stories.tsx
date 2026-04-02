@@ -109,6 +109,7 @@ export const Default: Story = {
     categories: mockCategories,
     stores: [],
     templates: [],
+    duplicates: [],
   },
 };
 
@@ -126,5 +127,6 @@ export const Empty: Story = {
     categories: mockCategories,
     stores: [],
     templates: [],
+    duplicates: [],
   },
 };
