@@ -1,6 +1,7 @@
 "use client";
 
-import { Loader2, Receipt } from "lucide-react";
+import { Loader2, Receipt, SearchX } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
@@ -49,7 +50,15 @@ export function TransactionList({
   const [transactions, setTransactions] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [isPending, startTransition] = useTransition();
-  const [filters, setFilters] = useState<TransactionFilterParams>({});
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Initialize search from URL
+  const initialSearch = searchParams.get("q") || undefined;
+  const [filters, setFilters] = useState<TransactionFilterParams>({
+    searchQuery: initialSearch,
+  });
   const [sort, setSort] = useState<TransactionSortParams>({});
 
   // 月が変わったらデータを初期化（リセット）
@@ -100,7 +109,16 @@ export function TransactionList({
   // フィルタ変更時
   const handleFiltersChange = (newFilters: TransactionFilterParams) => {
     setFilters(newFilters);
-    fetchData(1, newFilters, sort); // Reset to page 1
+    fetchData(1, newFilters, sort);
+
+    // Sync search query to URL
+    const params = new URLSearchParams(searchParams.toString());
+    if (newFilters.searchQuery) {
+      params.set("q", newFilters.searchQuery);
+    } else {
+      params.delete("q");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   // ソート変更時
@@ -114,6 +132,9 @@ export function TransactionList({
     setFilters({});
     setSort({});
     fetchData(1, {}, {});
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("q");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (
@@ -177,10 +198,16 @@ export function TransactionList({
               <TableCell colSpan={6} className="text-center h-40">
                 <div className="flex flex-col items-center gap-2 py-4">
                   <div className="p-3 bg-muted/50 rounded-full">
-                    <Receipt className="h-6 w-6 text-muted-foreground/60" />
+                    {filters.searchQuery ? (
+                      <SearchX className="h-6 w-6 text-muted-foreground/60" />
+                    ) : (
+                      <Receipt className="h-6 w-6 text-muted-foreground/60" />
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    まだ取引がありません。左のフォームから記録しましょう
+                    {filters.searchQuery
+                      ? `「${filters.searchQuery}」に一致する取引が見つかりません`
+                      : "まだ取引がありません。左のフォームから記録しましょう"}
                   </p>
                 </div>
               </TableCell>
