@@ -1,11 +1,12 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon, Camera, Loader2 } from "lucide-react";
+import { CalendarIcon, Camera, Loader2, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createStore } from "@/app/actions/store/create";
 import { CategorySelect } from "@/components/features/category/category-select";
 import { StoreSelect } from "@/components/features/store/store-select";
+import { CategorySuggestionBadges } from "@/components/features/suggestion/category-suggestion-badges";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { SelectCategory, SelectStore } from "@/db/schema";
+import { useDescriptionSuggestions } from "@/hooks/use-description-suggestions";
 import { useTransactionForm } from "@/hooks/use-transaction-form";
 import { useSession } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
@@ -72,6 +74,13 @@ export function TransactionForm({
   });
 
   const isExpense = form.watch("isExpense");
+  const {
+    categories: suggestedCategories,
+    storeName: suggestedStore,
+    isLoading: isSuggesting,
+    fetchSuggestions,
+    clearSuggestions,
+  } = useDescriptionSuggestions();
 
   // Fix: Hydration mismatch prevention
   const [mounted, setMounted] = useState(false);
@@ -291,8 +300,40 @@ export function TransactionForm({
                     isExpense ? "コンビニ、スーパーなど" : "給料、賞与など"
                   }
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    fetchSuggestions(e.target.value);
+                  }}
                 />
               </FormControl>
+              {suggestedCategories.length > 0 && (
+                <CategorySuggestionBadges
+                  suggestions={suggestedCategories}
+                  categories={categories}
+                  currentValue={form.getValues("category")}
+                  onSelect={(slug) => {
+                    form.setValue("category", slug, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }}
+                />
+              )}
+              {suggestedStore && !form.getValues("storeName") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    form.setValue("storeName", suggestedStore, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Sparkles className="h-3 w-3 text-amber-500" />
+                  店舗: {suggestedStore} を設定
+                </button>
+              )}
               <FormMessage />
             </FormItem>
           )}
