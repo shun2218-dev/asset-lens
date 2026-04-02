@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 interface TransactionsPage {
-  searchParams: { month?: string };
+  searchParams: { month?: string; q?: string };
 }
 
 export default async function TransactionPage({
@@ -19,10 +19,14 @@ export default async function TransactionPage({
 }: TransactionsPage) {
   const params = await searchParams;
   const currentMonth = params.month || format(new Date(), "yyyy-MM");
+  const searchQuery = params.q || undefined;
 
   return (
     <Suspense fallback={<TransactionSkeleton />}>
-      <TransactionContent currentMonth={currentMonth} />
+      <TransactionContent
+        currentMonth={currentMonth}
+        searchQuery={searchQuery}
+      />
     </Suspense>
   );
 }
