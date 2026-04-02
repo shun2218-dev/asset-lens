@@ -10,6 +10,19 @@ vi.mock("@/lib/mail/client", () => ({
   },
 }));
 
+// Mock database
+vi.mock("@/db", () => ({
+  db: {
+    insert: vi.fn().mockReturnValue({
+      values: vi.fn().mockResolvedValue(undefined),
+    }),
+  },
+}));
+
+vi.mock("@/db/schema", () => ({
+  contactInquiry: {},
+}));
+
 // Mock next/headers
 vi.mock("next/headers", () => ({
   headers: vi
@@ -124,11 +137,28 @@ describe("sendContactMessage", () => {
     expect(result.error).toBe("Bot verification failed");
   });
 
-  it("should handle email send failure gracefully", async () => {
+  it("should handle email send failure gracefully (DB still succeeds)", async () => {
     const { resend } = await import("@/lib/mail/client");
     (resend.emails.send as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
       new Error("Send Error"),
     );
+
+    const result = await sendContactMessage({
+      name: "Test User",
+      email: "test@example.com",
+      category: "feature",
+      message: "This is a test message for feature request",
+    });
+
+    // Email failure is non-fatal — DB insert still succeeded
+    expect(result.success).toBe(true);
+  });
+
+  it("should fail when DB insert fails", async () => {
+    const { db } = await import("@/db");
+    (db.insert as ReturnType<typeof vi.fn>).mockReturnValueOnce({
+      values: vi.fn().mockRejectedValueOnce(new Error("DB Error")),
+    });
 
     const result = await sendContactMessage({
       name: "Test User",
