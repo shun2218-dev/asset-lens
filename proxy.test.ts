@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { middleware } from "./middleware";
+import { proxy } from "./proxy";
 
 // Mock NextResponse
 vi.mock("next/server", async () => {
@@ -45,80 +45,80 @@ function createRequest(pathname: string, country?: string): NextRequest {
   } as unknown as NextRequest;
 }
 
-describe("middleware", () => {
+describe("proxy", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
   it("should allow public paths from any country", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/", "CN"));
+    const result = proxy(createRequest("/", "CN"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow /login from any country", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/login", "RU"));
+    const result = proxy(createRequest("/login", "RU"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow /contact from any country", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/contact", "KP"));
+    const result = proxy(createRequest("/contact", "KP"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow /api/auth paths from any country", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/api/auth/callback", "CN"));
+    const result = proxy(createRequest("/api/auth/callback", "CN"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow whitelisted country access to authenticated routes", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/dashboard", "JP"));
+    const result = proxy(createRequest("/dashboard", "JP"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should block non-whitelisted country from /dashboard", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/dashboard", "CN"));
+    const result = proxy(createRequest("/dashboard", "CN"));
     expect(result).toBeInstanceOf(NextResponse);
   });
 
   it("should block non-whitelisted country from /transaction", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/transaction", "RU"));
+    const result = proxy(createRequest("/transaction", "RU"));
     expect(result).toBeInstanceOf(NextResponse);
   });
 
   it("should allow all countries when ALLOWED_COUNTRIES is *", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "*");
-    const result = middleware(createRequest("/dashboard", "CN"));
+    const result = proxy(createRequest("/dashboard", "CN"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow all countries when ALLOWED_COUNTRIES is not set", () => {
     // No env set = allow all
-    const result = middleware(createRequest("/dashboard", "CN"));
+    const result = proxy(createRequest("/dashboard", "CN"));
     expect(result).toMatchObject({ type: "next" });
   });
 
   it("should allow multiple countries from env", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP,US,GB");
-    const resultJP = middleware(createRequest("/dashboard", "JP"));
+    const resultJP = proxy(createRequest("/dashboard", "JP"));
     expect(resultJP).toMatchObject({ type: "next" });
 
-    const resultUS = middleware(createRequest("/dashboard", "US"));
+    const resultUS = proxy(createRequest("/dashboard", "US"));
     expect(resultUS).toMatchObject({ type: "next" });
 
-    const resultCN = middleware(createRequest("/dashboard", "CN"));
+    const resultCN = proxy(createRequest("/dashboard", "CN"));
     expect(resultCN).toBeInstanceOf(NextResponse);
   });
 
   it("should allow when no geo data is available", () => {
     vi.stubEnv("ALLOWED_COUNTRIES", "JP");
-    const result = middleware(createRequest("/dashboard"));
+    const result = proxy(createRequest("/dashboard"));
     expect(result).toMatchObject({ type: "next" });
   });
 });
