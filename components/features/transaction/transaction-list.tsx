@@ -1,8 +1,8 @@
 "use client";
 
 import { Loader2, Receipt, SearchX } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
 import { TransactionFilters } from "@/components/features/transaction/transaction-filters";
@@ -51,8 +51,8 @@ export function TransactionList({
   const [metadata, setMetadata] = useState(initialMetadata);
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
+  const isClientFetched = useRef(false);
 
   // Initialize search from URL
   const initialSearch = searchParams.get("q") || undefined;
@@ -61,10 +61,13 @@ export function TransactionList({
   });
   const [sort, setSort] = useState<TransactionSortParams>({});
 
-  // 月が変わったらデータを初期化（リセット）
+  // Sync server data only when month changes (not during client-side filtering)
   useEffect(() => {
-    setTransactions(initialData);
-    setMetadata(initialMetadata);
+    if (!isClientFetched.current) {
+      setTransactions(initialData);
+      setMetadata(initialMetadata);
+    }
+    isClientFetched.current = false;
   }, [initialMetadata, initialData]);
 
   const optimisticDelete: OptimisticDeleteFn = useCallback(
@@ -93,6 +96,7 @@ export function TransactionList({
           sort: currentSort,
         });
         if (result.success) {
+          isClientFetched.current = true;
           setTransactions(result.data.data);
           setMetadata(result.data.metadata);
         }
@@ -111,14 +115,14 @@ export function TransactionList({
     setFilters(newFilters);
     fetchData(1, newFilters, sort);
 
-    // Sync search query to URL
+    // Update URL without triggering server component re-render
     const params = new URLSearchParams(searchParams.toString());
     if (newFilters.searchQuery) {
       params.set("q", newFilters.searchQuery);
     } else {
       params.delete("q");
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   };
 
   // ソート変更時
@@ -134,7 +138,7 @@ export function TransactionList({
     fetchData(1, {}, {});
     const params = new URLSearchParams(searchParams.toString());
     params.delete("q");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   };
 
   return (
