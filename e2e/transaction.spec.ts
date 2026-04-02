@@ -8,27 +8,30 @@ test.describe("Transaction", () => {
     page,
     authUser,
   }) => {
-    // 1. Auth Setup handled by fixture
+    // Navigate to Transaction page (form is here, not on dashboard)
+    await page.goto("/transaction");
+    await expect(page).toHaveURL(/\/transaction/);
 
-    // 2. Navigate to Dashboard
-    await page.goto("/dashboard");
-    await expect(page).toHaveURL(/\/dashboard/);
+    // Wait for form to load
+    await page
+      .getByLabel("金額")
+      .first()
+      .waitFor({ state: "visible", timeout: 15000 });
 
-    // 3. Fill Transaction Form
-    // Amount
-    await page.getByLabel("金額").fill("1200");
+    // Fill Transaction Form — scope combobox to the "通常入力" tab panel
+    await page.getByLabel("金額").first().fill("1200");
 
-    // Category (CategorySelect)
-    await page.getByRole("combobox").click();
+    // Category (the form has combobox, but filter section also has one — use first)
+    const formPanel = page.getByLabel("通常入力");
+    await formPanel.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();
 
     // Description
     await page.getByLabel("用途・メモ").fill("E2E Test Lunch");
 
-    // 4. Submit
+    // Submit
     await page.getByRole("button", { name: "登録する" }).click();
 
-    // 5. Verification
     // Success toast
     await expect(page.getByText("登録しました")).toBeVisible();
 
@@ -37,18 +40,17 @@ test.describe("Transaction", () => {
       .locator("tr")
       .filter({ hasText: "E2E Test Lunch" });
 
-    // Verify visibility and amount
     await expect(transactionRow).toBeVisible();
     await expect(transactionRow).toContainText("1,200");
 
-    // 6. DB Verification
+    // DB Verification
     const tx = await db.query.transaction.findFirst({
       where: eq(schema.transaction.description, "E2E Test Lunch"),
     });
     expect(tx).toBeDefined();
     expect(tx?.amount).toBe(1200);
 
-    // 7. Edit Transaction
+    // Edit Transaction
     await transactionRow
       .getByRole("button", { name: "メニューを開く" })
       .click();
@@ -71,7 +73,7 @@ test.describe("Transaction", () => {
     await expect(updatedRow).toBeVisible();
     await expect(updatedRow).toContainText("1,500");
 
-    // 8. Delete Transaction
+    // Delete Transaction
     await updatedRow.getByRole("button", { name: "メニューを開く" }).click();
     await page.getByRole("menuitem", { name: "削除" }).click();
 

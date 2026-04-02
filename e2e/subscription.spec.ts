@@ -12,7 +12,7 @@ test.describe("Subscription", () => {
 
     // 2. Navigate to Settings -> Subscription Tab
     await page.goto("/settings");
-    await page.getByRole("tab", { name: "サブスクリプション" }).click();
+    await page.getByRole("tab", { name: "サブスク" }).click();
 
     // 3. Fill Subscription Form
     await page.getByLabel("サービス名").fill("E2E Streaming Service");
