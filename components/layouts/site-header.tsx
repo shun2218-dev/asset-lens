@@ -1,6 +1,6 @@
 "use client";
 
-import { LogIn, LogOut, Settings, User, Wallet } from "lucide-react";
+import { Inbox, LogIn, LogOut, Settings, User, Wallet } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -132,6 +132,12 @@ export function SiteHeader() {
                   <Link href="/profile" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     プロフィール
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/inquiries" className="cursor-pointer">
+                    <Inbox className="mr-2 h-4 w-4" />
+                    お問い合わせ管理
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
