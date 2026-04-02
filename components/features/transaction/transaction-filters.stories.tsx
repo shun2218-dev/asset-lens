@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { TransactionFilters } from "./transaction-filters";
 
 const meta: Meta<typeof TransactionFilters> = {
@@ -75,12 +75,13 @@ export const TypeSearchQuery: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
-    const searchInput = canvas.getByPlaceholderText("内容で検索...");
+    const searchInput = canvas.getByPlaceholderText("内容・店舗名で検索...");
     await userEvent.type(searchInput, "lunch");
 
-    // TransactionFilters is a controlled component — value comes from props.
-    // We verify that onFiltersChange was called with the search query.
-    await expect(args.onFiltersChange).toHaveBeenCalled();
+    // Debounced at 300ms — wait for the callback to fire
+    await waitFor(() => expect(args.onFiltersChange).toHaveBeenCalled(), {
+      timeout: 1000,
+    });
   },
 };
 

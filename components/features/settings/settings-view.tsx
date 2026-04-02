@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, FileText, Shield, Store } from "lucide-react";
+import { AlertTriangle, FileText, Shield, Store, Zap } from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { BudgetSettings } from "@/components/features/budget/budget-settings";
@@ -10,6 +10,7 @@ import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
 import { StoreNameMigrationTool } from "@/components/features/settings/store-name-migration-tool";
 import { SubscriptionList } from "@/components/features/subscription/subscription-list";
+import { TemplateManager } from "@/components/features/template/template-manager";
 import {
   Card,
   CardContent,
@@ -19,7 +20,12 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { SelectBudget, SelectCategory, subscription } from "@/db/schema";
+import type {
+  SelectBudget,
+  SelectCategory,
+  SelectTransactionTemplate,
+  subscription,
+} from "@/db/schema";
 
 type SelectSubscription = typeof subscription.$inferSelect;
 
@@ -38,6 +44,7 @@ interface SettingsViewProps {
   subscriptions: SelectSubscription[];
   budgets: BudgetWithCategory[];
   categories: SelectCategory[];
+  templates: SelectTransactionTemplate[];
 }
 
 export function SettingsView({
@@ -45,6 +52,7 @@ export function SettingsView({
   subscriptions,
   budgets,
   categories,
+  templates,
 }: SettingsViewProps) {
   return (
     <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen">
@@ -59,10 +67,11 @@ export function SettingsView({
 
       <Tabs defaultValue="account" className="space-y-6">
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-5 lg:w-175">
+          <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-6 lg:w-210">
             <TabsTrigger value="account">アカウント</TabsTrigger>
             <TabsTrigger value="category">カテゴリ</TabsTrigger>
             <TabsTrigger value="budget">予算</TabsTrigger>
+            <TabsTrigger value="template">テンプレート</TabsTrigger>
             <TabsTrigger value="data">データ管理</TabsTrigger>
             <TabsTrigger value="subscription">サブスク</TabsTrigger>
           </TabsList>
@@ -116,6 +125,24 @@ export function SettingsView({
         {/* --- タブ: 予算管理 --- */}
         <TabsContent value="budget" className="space-y-6">
           <BudgetSettings budgets={budgets} categories={categories} />
+        </TabsContent>
+
+        {/* --- タブ: テンプレート管理 --- */}
+        <TabsContent value="template" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                取引テンプレート
+              </CardTitle>
+              <CardDescription>
+                よく使う取引をテンプレートとして保存しておくと、ワンタップで入力できます。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TemplateManager templates={templates} categories={categories} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* --- タブ: データ管理 --- */}

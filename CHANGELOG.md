@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.28.0] - 2026-04-02
+
+### Added
+- Transaction search with server-side partial matching (ILIKE) and 300ms debounce (#234)
+- Search query synchronization with URL `?q=` parameter for persistence and shareability
+- Transaction duplicate detection: same amount + 24h window + Levenshtein distance ≤ 2 (#147)
+- Duplicate merge (keep left/right) and dismiss functionality with `dismissed_duplicate` table
+- Transaction templates with CRUD operations and quick-add from saved templates (#132)
+- Auto-suggest categories and store names in transaction form (#109)
+- E2E tests for transaction search (5 tests: basic search, date+search combo, empty state, URL persistence, store name search)
+
+### Changed
+- Proxy convention: migrated from middleware.ts to proxy.ts (#227)
+
+### Fixed
+- Transaction search + date filter combination now works correctly — `router.replace` was replaced with `window.history.replaceState` to prevent server component re-render from overwriting client-side filtered data (#234)
+- Initial page load with `?q=` parameter now correctly filters server-rendered transaction list
+
+### Security
+- Honeypot trap: malicious vulnerability scanner requests (WordPress, phpMyAdmin, .env, .php, etc.) are redirected to YouTube Rickroll 🎣
+- 3-layer detection: exact paths, path prefixes (wildcard), and file extensions (.php, .asp, .aspx, .jsp, .cgi)
+- 71 unit tests covering all patterns with false positive safety verified for all legitimate app paths
+
 ## [2.27.0] - 2026-04-02
 
 ### Added

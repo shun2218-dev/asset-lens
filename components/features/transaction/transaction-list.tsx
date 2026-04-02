@@ -1,7 +1,8 @@
 "use client";
 
-import { Loader2, Receipt } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { Loader2, Receipt, SearchX } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
 import { TransactionFilters } from "@/components/features/transaction/transaction-filters";
@@ -49,13 +50,24 @@ export function TransactionList({
   const [transactions, setTransactions] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [isPending, startTransition] = useTransition();
-  const [filters, setFilters] = useState<TransactionFilterParams>({});
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const isClientFetched = useRef(false);
+
+  // Initialize search from URL
+  const initialSearch = searchParams.get("q") || undefined;
+  const [filters, setFilters] = useState<TransactionFilterParams>({
+    searchQuery: initialSearch,
+  });
   const [sort, setSort] = useState<TransactionSortParams>({});
 
-  // 月が変わったらデータを初期化（リセット）
+  // Sync server data only when month changes (not during client-side filtering)
   useEffect(() => {
-    setTransactions(initialData);
-    setMetadata(initialMetadata);
+    if (!isClientFetched.current) {
+      setTransactions(initialData);
+      setMetadata(initialMetadata);
+    }
+    isClientFetched.current = false;
   }, [initialMetadata, initialData]);
 
   const optimisticDelete: OptimisticDeleteFn = useCallback(
@@ -84,6 +96,7 @@ export function TransactionList({
           sort: currentSort,
         });
         if (result.success) {
+          isClientFetched.current = true;
           setTransactions(result.data.data);
           setMetadata(result.data.metadata);
         }
@@ -100,7 +113,16 @@ export function TransactionList({
   // フィルタ変更時
   const handleFiltersChange = (newFilters: TransactionFilterParams) => {
     setFilters(newFilters);
-    fetchData(1, newFilters, sort); // Reset to page 1
+    fetchData(1, newFilters, sort);
+
+    // Update URL without triggering server component re-render
+    const params = new URLSearchParams(searchParams.toString());
+    if (newFilters.searchQuery) {
+      params.set("q", newFilters.searchQuery);
+    } else {
+      params.delete("q");
+    }
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   };
 
   // ソート変更時
@@ -114,6 +136,9 @@ export function TransactionList({
     setFilters({});
     setSort({});
     fetchData(1, {}, {});
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("q");
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   };
 
   return (
@@ -177,10 +202,16 @@ export function TransactionList({
               <TableCell colSpan={6} className="text-center h-40">
                 <div className="flex flex-col items-center gap-2 py-4">
                   <div className="p-3 bg-muted/50 rounded-full">
-                    <Receipt className="h-6 w-6 text-muted-foreground/60" />
+                    {filters.searchQuery ? (
+                      <SearchX className="h-6 w-6 text-muted-foreground/60" />
+                    ) : (
+                      <Receipt className="h-6 w-6 text-muted-foreground/60" />
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    まだ取引がありません。左のフォームから記録しましょう
+                    {filters.searchQuery
+                      ? `「${filters.searchQuery}」に一致する取引が見つかりません`
+                      : "まだ取引がありません。左のフォームから記録しましょう"}
                   </p>
                 </div>
               </TableCell>

@@ -1,10 +1,13 @@
 import { getCategories } from "@/app/actions/category/get";
+import { getDuplicates } from "@/app/actions/duplicate";
 import { getStores } from "@/app/actions/store/get";
+import { getTemplates } from "@/app/actions/template";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { TransactionPageView } from "@/components/features/transaction/transaction-page-view";
 
 interface TransactionContentProps {
   currentMonth: string;
+  searchQuery?: string;
 }
 
 /**
@@ -13,12 +16,20 @@ interface TransactionContentProps {
  */
 export async function TransactionContent({
   currentMonth,
+  searchQuery,
 }: TransactionContentProps) {
-  const [transactionsResult, categories, stores] = await Promise.all([
-    getTransaction({ page: 1, month: currentMonth }),
-    getCategories(),
-    getStores(),
-  ]);
+  const [transactionsResult, categories, stores, templates, duplicatesResult] =
+    await Promise.all([
+      getTransaction({
+        page: 1,
+        month: currentMonth,
+        filters: searchQuery ? { searchQuery } : undefined,
+      }),
+      getCategories(),
+      getStores(),
+      getTemplates(),
+      getDuplicates(),
+    ]);
 
   const { data: transactions, metadata } = transactionsResult.success
     ? transactionsResult.data
@@ -40,6 +51,8 @@ export async function TransactionContent({
       currentMonth={currentMonth}
       categories={categories}
       stores={stores}
+      templates={templates}
+      duplicates={duplicatesResult.success ? duplicatesResult.data : []}
     />
   );
 }

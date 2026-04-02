@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, RotateCcw, Search } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -40,17 +41,34 @@ export function TransactionFilters({
     !!filters.dateTo ||
     !!filters.searchQuery;
 
+  const [searchText, setSearchText] = useState(filters.searchQuery || "");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchText(value);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        onFiltersChange({ ...filters, searchQuery: value || undefined });
+      }, 300);
+    },
+    [filters, onFiltersChange],
+  );
+
+  // Sync local state when filters are reset externally
+  useEffect(() => {
+    setSearchText(filters.searchQuery || "");
+  }, [filters.searchQuery]);
+
   return (
     <div className="space-y-3">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="内容で検索..."
-          value={filters.searchQuery || ""}
-          onChange={(e) =>
-            onFiltersChange({ ...filters, searchQuery: e.target.value })
-          }
+          placeholder="内容・店舗名で検索..."
+          value={searchText}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="pl-9"
         />
       </div>

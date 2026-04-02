@@ -108,6 +108,8 @@ export const Default: Story = {
     currentMonth: "2024-01",
     categories: mockCategories,
     stores: [],
+    templates: [],
+    duplicates: [],
   },
 };
 
@@ -124,5 +126,7 @@ export const Empty: Story = {
     currentMonth: "2024-01",
     categories: mockCategories,
     stores: [],
+    templates: [],
+    duplicates: [],
   },
 };
