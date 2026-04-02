@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
+import type { DuplicateCandidate } from "@/app/actions/duplicate";
+import { DuplicateBanner } from "@/components/features/duplicate/duplicate-banner";
 import { TemplateQuickAdd } from "@/components/features/template/template-quick-add";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
@@ -33,6 +35,7 @@ interface TransactionPageViewProps {
   categories: SelectCategory[];
   stores: SelectStore[];
   templates: SelectTransactionTemplate[];
+  duplicates: DuplicateCandidate[];
 }
 
 export function TransactionPageView({
@@ -42,6 +45,7 @@ export function TransactionPageView({
   categories,
   stores,
   templates,
+  duplicates,
 }: TransactionPageViewProps) {
   const [templateData, setTemplateData] = useState<{
     amount: number;
@@ -72,6 +76,10 @@ export function TransactionPageView({
           収支の記録と履歴の確認・管理
         </p>
       </div>
+
+      {duplicates.length > 0 && (
+        <DuplicateBanner initialDuplicates={duplicates} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* 左側: 入力フォーム (1カラム) */}
