@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.29.0] - 2026-04-03
+
+### Added
+- Contact inquiry management dashboard with admin-only access (#241)
+- `contact_inquiry` database table for persistent storage of contact form submissions
+- Admin guard using `ADMIN_EMAILS` environment variable for access control
+- Server actions: paginated inquiry list, detail view, status update with admin notes
+- Admin UI: filterable table, status badges (new/in_progress/resolved/closed), detail sidebar
+- Navigation: admin link in user dropdown menu
+- Dual-write contact form: DB insert (primary) + email notification (non-fatal fallback)
+
+### Fixed
+- Stabilized all 31 E2E tests after dashboard/transaction UI restructuring (#240)
+- Transaction tests: updated navigation from `/dashboard` to `/transaction`
+- Budget tests: full rewrite for new BudgetSettings component
+- Landing page tests: fixed strict mode violations with `.first()` selectors
+- Accessibility tests: disabled Radix UI `aria-valid-attr-value` false positive
+- Search tests: added `networkidle` + explicit `waitFor` for serial execution reliability
+- Quick Entry test: switched from `Meta+n` shortcut to header button click
+
 ## [2.28.0] - 2026-04-02
 
 ### Added

@@ -14,13 +14,20 @@ test.describe("Transaction with Store Name", () => {
       name: "既存テスト店舗",
     });
 
-    // Navigate to Dashboard
-    await page.goto("/dashboard");
-    await expect(page).toHaveURL(/\/dashboard/);
+    // Navigate to Transaction page (form is here, not /dashboard)
+    await page.goto("/transaction");
+    await expect(page).toHaveURL(/\/transaction/);
 
-    // Fill form
-    await page.getByLabel("金額").fill("980");
-    await page.getByRole("combobox").first().click();
+    // Wait for form to load
+    await page
+      .getByLabel("金額")
+      .first()
+      .waitFor({ state: "visible", timeout: 15000 });
+
+    // Fill form — scope combobox to 通常入力 tab panel
+    await page.getByLabel("金額").first().fill("980");
+    const formPanel = page.getByLabel("通常入力");
+    await formPanel.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();
 
     // Open store select and choose existing store
@@ -35,9 +42,7 @@ test.describe("Transaction with Store Name", () => {
 
     // Verify selection
     await expect(
-      page
-        .getByLabel("通常入力")
-        .getByRole("button", { name: /既存テスト店舗/ }),
+      formPanel.getByRole("button", { name: /既存テスト店舗/ }),
     ).toBeVisible({ timeout: 5000 });
 
     // Submit
@@ -55,14 +60,7 @@ test.describe("Transaction with Store Name", () => {
     expect(tx).toBeDefined();
     expect(tx?.storeName).toBe("既存テスト店舗");
 
-    // Check row appears in dashboard
-    await expect(
-      page.locator("tr").filter({ hasText: "E2E Existing Store Test" }),
-    ).toBeVisible({ timeout: 10000 });
-
-    // Check row appears in transaction page
-    await page.goto("/transaction");
-    await page.waitForLoadState("networkidle");
+    // Check row appears in transaction list
     await expect(
       page.locator("tr").filter({ hasText: "E2E Existing Store Test" }),
     ).toBeVisible({ timeout: 10000 });
@@ -89,7 +87,6 @@ test.describe("Transaction with Store Name", () => {
       .where(eq(schema.transaction.userId, authUser.id));
 
     // Insert exactly 15 transactions (2 pages: 10 + 5)
-    // Use a unique future date to avoid interference with other tests
     const testMonth = "2099-06";
     const sameDate = new Date(Date.UTC(2099, 5, 15));
     const values = Array.from({ length: 15 }, (_, i) => ({
@@ -120,11 +117,10 @@ test.describe("Transaction with Store Name", () => {
       if (match) allDescriptions.push(match[0]);
     }
 
-    // Page 2: click Next
-    const nextLink = page.getByRole("link", { name: "Next" });
-    await nextLink.click();
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(500);
+    // Page 2: click Next button (not link — PaginationControl uses Button)
+    const nextBtn = page.getByRole("button", { name: "Go to next page" });
+    await nextBtn.click();
+    await page.waitForTimeout(1000);
 
     rows = await page.locator("tr").filter({ hasText: "E2E-Page" }).all();
     expect(rows.length).toBe(5);

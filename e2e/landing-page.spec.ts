@@ -10,9 +10,11 @@ test.describe("Landing Page", () => {
       page.getByRole("heading", { level: 1, name: /資産管理を/ }),
     ).toBeVisible();
 
-    // CTA button
+    // CTA button (may appear in hero + bottom CTA section, use first)
     await expect(
-      page.getByRole("link", { name: /無料で始める|ダッシュボードを開く/ }),
+      page
+        .getByRole("link", { name: /無料で始める|ダッシュボードを開く/ })
+        .first(),
     ).toBeVisible();
   });
 
@@ -23,9 +25,16 @@ test.describe("Landing Page", () => {
       page.getByRole("heading", { name: /3ステップで始められます/ }),
     ).toBeVisible();
 
-    await expect(page.getByText("アカウント作成")).toBeVisible();
-    await expect(page.getByText("取引を記録")).toBeVisible();
-    await expect(page.getByText("分析・改善")).toBeVisible();
+    // Use heading role to avoid matching description text containing the same words
+    await expect(
+      page.getByRole("heading", { name: "アカウント作成" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "取引を記録" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "分析・改善" }),
+    ).toBeVisible();
   });
 
   test("renders 6 feature cards", async ({ page }) => {

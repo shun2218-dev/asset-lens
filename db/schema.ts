@@ -420,3 +420,30 @@ export const dismissedDuplicateRelations = relations(
     }),
   }),
 );
+
+export const contactInquiry = pgTable(
+  "contact_inquiry",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    category: text("category").notNull(),
+    message: text("message").notNull(),
+    status: text("status").default("new").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("contact_inquiry_status_idx").on(table.status),
+    index("contact_inquiry_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export type SelectContactInquiry = InferSelectModel<typeof contactInquiry>;
+export type InsertContactInquiry = InferInsertModel<typeof contactInquiry>;
