@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useCallback, useState } from "react";
+import { TemplateQuickAdd } from "@/components/features/template/template-quick-add";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
 import { TransactionList } from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +22,7 @@ import type {
   SelectCategory,
   SelectStore,
   SelectTransaction,
+  SelectTransactionTemplate,
 } from "@/db/schema";
 import type { TransactionMetadata } from "@/types";
 
@@ -29,6 +32,7 @@ interface TransactionPageViewProps {
   currentMonth: string;
   categories: SelectCategory[];
   stores: SelectStore[];
+  templates: SelectTransactionTemplate[];
 }
 
 export function TransactionPageView({
@@ -37,7 +41,29 @@ export function TransactionPageView({
   currentMonth,
   categories,
   stores,
+  templates,
 }: TransactionPageViewProps) {
+  const [templateData, setTemplateData] = useState<{
+    amount: number;
+    description: string;
+    storeName?: string;
+    category: string;
+    isExpense: boolean;
+  } | null>(null);
+
+  const handleTemplateSelect = useCallback(
+    (template: SelectTransactionTemplate) => {
+      setTemplateData({
+        amount: template.amount,
+        description: template.description ?? "",
+        storeName: template.storeName ?? undefined,
+        category: template.category,
+        isExpense: template.isExpense,
+      });
+    },
+    [],
+  );
+
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10 pb-24 md:pb-10 space-y-8 min-h-screen">
       <div>
@@ -52,7 +78,13 @@ export function TransactionPageView({
         <div className="md:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>新規入力</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>新規入力</CardTitle>
+                <TemplateQuickAdd
+                  templates={templates}
+                  onSelect={handleTemplateSelect}
+                />
+              </div>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="single" className="w-full">
@@ -61,7 +93,26 @@ export function TransactionPageView({
                   <TabsTrigger value="bulk">一括入力</TabsTrigger>
                 </TabsList>
                 <TabsContent value="single">
-                  <TransactionForm categories={categories} stores={stores} />
+                  <TransactionForm
+                    categories={categories}
+                    stores={stores}
+                    initialData={
+                      templateData
+                        ? {
+                            userId: "",
+                            amount: templateData.amount,
+                            description: templateData.description,
+                            storeName: templateData.storeName,
+                            category: templateData.category,
+                            date: new Date(),
+                            isExpense: templateData.isExpense,
+                          }
+                        : undefined
+                    }
+                    key={
+                      templateData ? JSON.stringify(templateData) : "default"
+                    }
+                  />
                 </TabsContent>
                 <TabsContent value="bulk">
                   <BulkTransactionForm
