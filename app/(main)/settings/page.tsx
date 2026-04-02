@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getBudgets } from "@/app/actions/budget/get";
+import { getTemplates } from "@/app/actions/template";
 
 export const metadata: Metadata = {
   title: "設定",
@@ -13,12 +14,14 @@ import { SettingsView } from "@/components/features/settings/settings-view";
 import { requireAuth } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
-  const [session, subscriptions, budgets, categories] = await Promise.all([
-    requireAuth(),
-    getSubscription(),
-    getBudgets(),
-    getCategories(),
-  ]);
+  const [session, subscriptions, budgets, categories, templates] =
+    await Promise.all([
+      requireAuth(),
+      getSubscription(),
+      getBudgets(),
+      getCategories(),
+      getTemplates(),
+    ]);
 
   return (
     <SettingsView
@@ -26,6 +29,7 @@ export default async function SettingsPage() {
       subscriptions={subscriptions}
       budgets={budgets}
       categories={categories}
+      templates={templates}
     />
   );
 }

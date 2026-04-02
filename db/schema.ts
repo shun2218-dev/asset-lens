@@ -256,6 +256,7 @@ export const userRelations = relations(user, ({ many }) => ({
   transactions: many(transaction),
   subscriptions: many(subscription),
   stores: many(store),
+  transactionTemplates: many(transactionTemplate),
 }));
 
 export const storeRelations = relations(store, ({ one }) => ({
@@ -333,3 +334,45 @@ export const budgetRelations = relations(budget, ({ one }) => ({
     references: [category.id],
   }),
 }));
+
+export const transactionTemplate = pgTable(
+  "transaction_template",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    amount: integer("amount").notNull(),
+    description: text("description").default(""),
+    storeName: text("store_name"),
+    category: text("category").notNull(),
+    isExpense: boolean("is_expense").default(true).notNull(),
+    usageCount: integer("usage_count").default(0).notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("template_userId_idx").on(table.userId)],
+);
+
+export type SelectTransactionTemplate = InferSelectModel<
+  typeof transactionTemplate
+>;
+export type InsertTransactionTemplate = InferInsertModel<
+  typeof transactionTemplate
+>;
+
+export const transactionTemplateRelations = relations(
+  transactionTemplate,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [transactionTemplate.userId],
+      references: [user.id],
+    }),
+  }),
+);

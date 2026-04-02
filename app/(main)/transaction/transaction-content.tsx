@@ -1,5 +1,6 @@
 import { getCategories } from "@/app/actions/category/get";
 import { getStores } from "@/app/actions/store/get";
+import { getTemplates } from "@/app/actions/template";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { TransactionPageView } from "@/components/features/transaction/transaction-page-view";
 
@@ -14,11 +15,14 @@ interface TransactionContentProps {
 export async function TransactionContent({
   currentMonth,
 }: TransactionContentProps) {
-  const [transactionsResult, categories, stores] = await Promise.all([
-    getTransaction({ page: 1, month: currentMonth }),
-    getCategories(),
-    getStores(),
-  ]);
+  const [transactionsResult, categories, stores, templates] = await Promise.all(
+    [
+      getTransaction({ page: 1, month: currentMonth }),
+      getCategories(),
+      getStores(),
+      getTemplates(),
+    ],
+  );
 
   const { data: transactions, metadata } = transactionsResult.success
     ? transactionsResult.data
@@ -40,6 +44,7 @@ export async function TransactionContent({
       currentMonth={currentMonth}
       categories={categories}
       stores={stores}
+      templates={templates}
     />
   );
 }
