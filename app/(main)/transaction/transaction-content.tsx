@@ -7,6 +7,7 @@ import { TransactionPageView } from "@/components/features/transaction/transacti
 
 interface TransactionContentProps {
   currentMonth: string;
+  searchQuery?: string;
 }
 
 /**
@@ -15,10 +16,15 @@ interface TransactionContentProps {
  */
 export async function TransactionContent({
   currentMonth,
+  searchQuery,
 }: TransactionContentProps) {
   const [transactionsResult, categories, stores, templates, duplicatesResult] =
     await Promise.all([
-      getTransaction({ page: 1, month: currentMonth }),
+      getTransaction({
+        page: 1,
+        month: currentMonth,
+        filters: searchQuery ? { searchQuery } : undefined,
+      }),
       getCategories(),
       getStores(),
       getTemplates(),
