@@ -46,9 +46,12 @@ test.describe("Transaction Search", () => {
       { amount: 800, description: "E2E検索テストランチ" },
       { amount: 500, description: "E2E検索テスト電車代" },
     ]);
-
     // 2. Navigate to transaction page
     await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
+    await page
+      .getByPlaceholder("内容・店舗名で検索...")
+      .waitFor({ state: "visible", timeout: 15000 });
     await expect(page).toHaveURL(/\/transaction/);
 
     // Verify all 3 are visible
@@ -155,9 +158,11 @@ test.describe("Transaction Search", () => {
     authUser,
   }) => {
     await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("存在しないテストデータ99999");
     await page.waitForTimeout(1500);
 
@@ -173,9 +178,11 @@ test.describe("Transaction Search", () => {
     ]);
 
     await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("URL永続化");
     await page.waitForTimeout(1500);
 
@@ -199,9 +206,11 @@ test.describe("Transaction Search", () => {
     ]);
 
     await page.goto("/transaction");
+    await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("セブン");
     await page.waitForTimeout(1500);
 
