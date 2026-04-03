@@ -7,7 +7,8 @@ const SPLASH_SESSION_KEY = "asset-lens-splash-shown";
 
 /**
  * Full-screen splash overlay shown once per browser session.
- * Loaded via dynamic import with ssr:false to avoid hydration mismatch.
+ * Starts in 'visible' phase so SSR and client render identically,
+ * then useEffect checks sessionStorage to keep or dismiss.
  */
 export function SplashScreen() {
   const [phase, setPhase] = useState<"visible" | "exiting" | "done">("visible");
