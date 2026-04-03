@@ -238,31 +238,6 @@ html[data-splash-done] [data-splash] {
   transform: scale(0.98);
 }
 
-/* View Transition API — cross-fade on navigation */
-::view-transition-old(*) {
-  animation: vt-exit 200ms ease-in both;
-}
-::view-transition-new(*) {
-  animation: vt-enter 250ms ease-out 50ms both;
-}
-
-@keyframes vt-exit {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-@keyframes vt-enter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* Splash screen animations */
 @keyframes splash-pulse {
   0%,
@@ -312,10 +287,5 @@ html[data-splash-done] [data-splash] {
   [data-slot="button"]:hover,
   [data-slot="button"]:active {
     transform: none;
-  }
-
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none;
   }
 }
