@@ -238,32 +238,28 @@ html[data-splash-done] [data-splash] {
   transform: scale(0.98);
 }
 
-/* View Transition API — slide+fade on navigation */
+/* View Transition API — cross-fade on navigation */
 ::view-transition-old(*) {
-  animation: vt-exit 250ms ease-in both;
+  animation: vt-exit 200ms ease-in both;
 }
 ::view-transition-new(*) {
-  animation: vt-enter 250ms ease-out both;
+  animation: vt-enter 250ms ease-out 50ms both;
 }
 
 @keyframes vt-exit {
   from {
     opacity: 1;
-    transform: translateY(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px);
   }
 }
 @keyframes vt-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
