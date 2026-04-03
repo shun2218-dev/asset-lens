@@ -238,28 +238,32 @@ html[data-splash-done] [data-splash] {
   transform: scale(0.98);
 }
 
-/* View Transition API — cross-fade on route navigation */
-::view-transition-old(root) {
-  animation: vt-fade-out 200ms ease-in forwards;
+/* View Transition API — slide+fade on navigation */
+::view-transition-old(*) {
+  animation: vt-exit 250ms ease-in both;
 }
-::view-transition-new(root) {
-  animation: vt-fade-in 200ms ease-out forwards;
+::view-transition-new(*) {
+  animation: vt-enter 250ms ease-out both;
 }
 
-@keyframes vt-fade-out {
+@keyframes vt-exit {
   from {
     opacity: 1;
+    transform: translateY(0);
   }
   to {
     opacity: 0;
+    transform: translateY(-8px);
   }
 }
-@keyframes vt-fade-in {
+@keyframes vt-enter {
   from {
     opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -314,8 +318,8 @@ html[data-splash-done] [data-splash] {
     transform: none;
   }
 
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none;
   }
 }

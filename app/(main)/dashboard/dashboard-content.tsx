@@ -1,4 +1,4 @@
-import { Suspense, ViewTransition } from "react";
+import { Suspense } from "react";
 import {
   DashboardChartsSkeleton,
   DashboardOverviewSkeleton,
@@ -15,24 +15,19 @@ interface DashboardContentProps {
 /**
  * Dashboard with granular Suspense boundaries.
  * Each section (overview, charts, widgets) loads independently.
+ * ViewTransition is handled by the root layout wrapper.
  */
 export function DashboardContent({ currentMonth }: DashboardContentProps) {
   return (
     <div className="space-y-6">
       <Suspense fallback={<DashboardOverviewSkeleton />}>
-        <ViewTransition>
-          <DashboardOverviewContent currentMonth={currentMonth} />
-        </ViewTransition>
+        <DashboardOverviewContent currentMonth={currentMonth} />
       </Suspense>
       <Suspense fallback={<DashboardChartsSkeleton />}>
-        <ViewTransition>
-          <DashboardChartsContent currentMonth={currentMonth} />
-        </ViewTransition>
+        <DashboardChartsContent currentMonth={currentMonth} />
       </Suspense>
       <Suspense fallback={<DashboardWidgetsSkeleton />}>
-        <ViewTransition>
-          <DashboardWidgetsContent currentMonth={currentMonth} />
-        </ViewTransition>
+        <DashboardWidgetsContent currentMonth={currentMonth} />
       </Suspense>
     </div>
   );
