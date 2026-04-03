@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ViewTransition } from "react";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { KeyboardShortcutProvider } from "@/components/features/shortcuts/keyboard-shortcut-provider";
+import { SplashScreen } from "@/components/features/splash/splash-screen";
 import { BottomNav } from "@/components/layouts/bottom-nav";
 import { SiteFooter } from "@/components/layouts/site-footer";
 import { SiteHeader } from "@/components/layouts/site-header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-
-const SplashScreen = dynamic(
-  () =>
-    import("@/components/features/splash/splash-screen").then(
-      (m) => m.SplashScreen,
-    ),
-  { ssr: false },
-);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
