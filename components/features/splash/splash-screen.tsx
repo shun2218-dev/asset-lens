@@ -1,20 +1,34 @@
 "use client";
 
 import { Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SPLASH_SESSION_KEY = "asset-lens-splash-shown";
 
+/**
+ * Full-screen splash overlay shown once per browser session.
+ *
+ * Renders the overlay on first paint (SSR-safe) to prevent
+ * a flash of page content before the splash appears.
+ * On the client, useEffect checks sessionStorage and either
+ * schedules the exit animation or removes it immediately.
+ */
 export function SplashScreen() {
-  const [phase, setPhase] = useState<"visible" | "exiting" | "done">("done");
+  const [phase, setPhase] = useState<"visible" | "exiting" | "done">("visible");
+  const resolved = useRef(false);
 
   useEffect(() => {
-    // Only show once per browser session
-    if (sessionStorage.getItem(SPLASH_SESSION_KEY)) return;
+    if (resolved.current) return;
+    resolved.current = true;
+
+    // If already shown this session, remove immediately without animation
+    if (sessionStorage.getItem(SPLASH_SESSION_KEY)) {
+      setPhase("done");
+      return;
+    }
 
     sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
-    setPhase("visible");
-
+    // Stay visible, then schedule exit
     const exitTimer = setTimeout(() => setPhase("exiting"), 1500);
     const doneTimer = setTimeout(() => setPhase("done"), 2000);
 
