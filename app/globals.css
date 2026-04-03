@@ -140,6 +140,11 @@
   visibility: hidden;
 }
 
+/* Pre-hydration splash hide: set by inline script before React loads */
+html[data-splash-done] [data-splash] {
+  display: none !important;
+}
+
 /* Micro-animation keyframes */
 @keyframes fade-in-up {
   from {

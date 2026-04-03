@@ -1,6 +1,7 @@
 "use client";
 
 import { Wallet } from "lucide-react";
+import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
 const SPLASH_SESSION_KEY = "asset-lens-splash-shown";
@@ -9,6 +10,10 @@ const SPLASH_SESSION_KEY = "asset-lens-splash-shown";
  * Full-screen splash overlay shown once per browser session.
  * Starts in 'visible' phase so SSR and client render identically,
  * then useEffect checks sessionStorage to keep or dismiss.
+ *
+ * A beforeInteractive script sets data-splash-done on <html>
+ * before paint, and CSS hides [data-splash] when that attribute
+ * is present — preventing any flash on repeat visits.
  */
 export function SplashScreen() {
   const [phase, setPhase] = useState<"visible" | "exiting" | "done">("visible");
@@ -37,69 +42,76 @@ export function SplashScreen() {
   if (phase === "done") return null;
 
   return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background:
-          "linear-gradient(135deg, hsl(220 25% 10%) 0%, hsl(240 20% 18%) 50%, hsl(260 25% 14%) 100%)",
-        animation:
-          phase === "exiting"
-            ? "splash-slide-up 500ms ease-in forwards"
-            : undefined,
-        pointerEvents: "none",
-      }}
-    >
-      {/* Logo */}
+    <>
+      <Script
+        id="splash-guard"
+        strategy="beforeInteractive"
+      >{`if(sessionStorage.getItem("${SPLASH_SESSION_KEY}")){document.documentElement.dataset.splashDone=""}`}</Script>
       <div
+        data-splash
+        aria-hidden="true"
         style={{
-          animation: "splash-pulse 1.4s ease-in-out infinite",
+          position: "fixed",
+          inset: 0,
+          zIndex: 9999,
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          width: 96,
-          height: 96,
-          borderRadius: "50%",
           background:
-            "linear-gradient(135deg, hsl(250 60% 55%) 0%, hsl(220 70% 50%) 100%)",
-          boxShadow: "0 0 60px hsl(240 60% 50% / 0.35)",
+            "linear-gradient(135deg, hsl(220 25% 10%) 0%, hsl(240 20% 18%) 50%, hsl(260 25% 14%) 100%)",
+          animation:
+            phase === "exiting"
+              ? "splash-slide-up 500ms ease-in forwards"
+              : undefined,
+          pointerEvents: "none",
         }}
       >
-        <Wallet size={48} color="white" strokeWidth={1.8} />
+        {/* Logo */}
+        <div
+          style={{
+            animation: "splash-pulse 1.4s ease-in-out infinite",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 96,
+            height: 96,
+            borderRadius: "50%",
+            background:
+              "linear-gradient(135deg, hsl(250 60% 55%) 0%, hsl(220 70% 50%) 100%)",
+            boxShadow: "0 0 60px hsl(240 60% 50% / 0.35)",
+          }}
+        >
+          <Wallet size={48} color="white" strokeWidth={1.8} />
+        </div>
+
+        {/* App name */}
+        <h1
+          style={{
+            marginTop: 28,
+            fontSize: 32,
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            color: "white",
+            animation: "splash-text-in 600ms ease-out 200ms both",
+          }}
+        >
+          AssetLens
+        </h1>
+
+        {/* Tagline */}
+        <p
+          style={{
+            marginTop: 8,
+            fontSize: 14,
+            fontWeight: 400,
+            color: "hsl(220 15% 65%)",
+            animation: "splash-text-in 600ms ease-out 400ms both",
+          }}
+        >
+          スマート家計管理
+        </p>
       </div>
-
-      {/* App name */}
-      <h1
-        style={{
-          marginTop: 28,
-          fontSize: 32,
-          fontWeight: 700,
-          letterSpacing: "-0.02em",
-          color: "white",
-          animation: "splash-text-in 600ms ease-out 200ms both",
-        }}
-      >
-        AssetLens
-      </h1>
-
-      {/* Tagline */}
-      <p
-        style={{
-          marginTop: 8,
-          fontSize: 14,
-          fontWeight: 400,
-          color: "hsl(220 15% 65%)",
-          animation: "splash-text-in 600ms ease-out 400ms both",
-        }}
-      >
-        スマート家計管理
-      </p>
-    </div>
+    </>
   );
 }
