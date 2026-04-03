@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 import {
   DashboardChartsSkeleton,
   DashboardOverviewSkeleton,
@@ -20,13 +20,19 @@ export function DashboardContent({ currentMonth }: DashboardContentProps) {
   return (
     <div className="space-y-6">
       <Suspense fallback={<DashboardOverviewSkeleton />}>
-        <DashboardOverviewContent currentMonth={currentMonth} />
+        <ViewTransition>
+          <DashboardOverviewContent currentMonth={currentMonth} />
+        </ViewTransition>
       </Suspense>
       <Suspense fallback={<DashboardChartsSkeleton />}>
-        <DashboardChartsContent currentMonth={currentMonth} />
+        <ViewTransition>
+          <DashboardChartsContent currentMonth={currentMonth} />
+        </ViewTransition>
       </Suspense>
       <Suspense fallback={<DashboardWidgetsSkeleton />}>
-        <DashboardWidgetsContent currentMonth={currentMonth} />
+        <ViewTransition>
+          <DashboardWidgetsContent currentMonth={currentMonth} />
+        </ViewTransition>
       </Suspense>
     </div>
   );
