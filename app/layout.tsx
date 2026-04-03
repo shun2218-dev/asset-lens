@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ViewTransition } from "react";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { KeyboardShortcutProvider } from "@/components/features/shortcuts/keyboard-shortcut-provider";
+import { SplashScreen } from "@/components/features/splash/splash-screen";
 import { BottomNav } from "@/components/layouts/bottom-nav";
 import { SiteFooter } from "@/components/layouts/site-footer";
 import { SiteHeader } from "@/components/layouts/site-header";
@@ -77,9 +79,12 @@ export default function RootLayout({
           <a href="#main-content" className="skip-to-content">
             メインコンテンツへスキップ
           </a>
+          <SplashScreen />
           <KeyboardShortcutProvider>
             <SiteHeader />
-            <main id="main-content">{children}</main>
+            <main id="main-content">
+              <ViewTransition>{children}</ViewTransition>
+            </main>
             <Toaster />
             <BottomNav />
             <SiteFooter />
