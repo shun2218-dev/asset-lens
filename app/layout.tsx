@@ -83,7 +83,7 @@ export default function RootLayout({
           <KeyboardShortcutProvider>
             <SiteHeader />
             <main id="main-content">
-              <ViewTransition>{children}</ViewTransition>
+              <ViewTransition name="page-content">{children}</ViewTransition>
             </main>
             <Toaster />
             <BottomNav />
