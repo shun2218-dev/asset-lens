@@ -1,3 +1,5 @@
+import { getCategoryTrends } from "@/app/actions/analysis/get-category-trends";
+import { getDailyExpenses } from "@/app/actions/analysis/get-daily-expenses";
 import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
 import type { DashboardSummaryResult } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getSummaryWithComparison } from "@/app/actions/analysis/get-summary-with-comparison";
@@ -19,13 +21,21 @@ interface Props {
 }
 
 export async function DashboardWidgetsContent({ currentMonth }: Props) {
-  const [summaryResult, recentResult, rankingResult, budgets] =
-    await Promise.all([
-      getSummaryWithComparison(currentMonth),
-      getTransaction({ page: 1, month: currentMonth }),
-      getStoreRanking(currentMonth),
-      getBudgets(),
-    ]);
+  const [
+    summaryResult,
+    recentResult,
+    rankingResult,
+    budgets,
+    trendsResult,
+    dailyResult,
+  ] = await Promise.all([
+    getSummaryWithComparison(currentMonth),
+    getTransaction({ page: 1, month: currentMonth }),
+    getStoreRanking(currentMonth),
+    getBudgets(),
+    getCategoryTrends(currentMonth),
+    getDailyExpenses(currentMonth),
+  ]);
 
   const data = summaryResult.success
     ? summaryResult.data
@@ -34,6 +44,8 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
   const { data: recentTransactions } = recentResult.success
     ? recentResult.data
     : { data: [] };
+  const categoryTrends = trendsResult.success ? trendsResult.data : [];
+  const dailyExpenses = dailyResult.success ? dailyResult.data : [];
 
   return (
     <DashboardWidgets
@@ -43,6 +55,8 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
       categoryExpenses={data.categoryExpenses}
       totalExpense={data.summary.totalExpense}
       currentMonth={data.currentMonth}
+      categoryTrends={categoryTrends}
+      dailyExpenses={dailyExpenses}
     />
   );
 }
