@@ -191,7 +191,7 @@ export function TransactionForm({
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-full pl-3 text-left font-normal",
+                          "w-full pl-3 text-left font-normal h-11 md:h-9",
                           !field.value && "text-muted-foreground",
                         )}
                       >

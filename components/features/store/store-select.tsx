@@ -79,7 +79,7 @@ export function StoreSelect({
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-between font-normal",
+            "w-full justify-between font-normal h-11 md:h-9",
             !value && "text-muted-foreground",
           )}
         >
