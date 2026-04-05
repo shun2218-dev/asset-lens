@@ -27,7 +27,7 @@ const navItems = [
   { href: "/dashboard", label: "ホーム", icon: LayoutDashboard },
   { href: "/transaction", label: "取引", icon: ArrowLeftRight },
   { href: "/settings", label: "設定", icon: Settings },
-  { href: "/profile", label: "プロフィール", icon: User },
+  { href: "/profile", label: "マイページ", icon: User },
 ] as const;
 
 export function BottomNav() {
@@ -67,7 +67,7 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center gap-0.5 w-16 min-h-[44px] py-1 text-xs transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 w-16 min-h-[44px] py-1 text-[10px] transition-colors ${
                   isActive
                     ? "text-primary font-medium"
                     : "text-muted-foreground"
@@ -95,7 +95,7 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-xs transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-[10px] transition-colors ${
                   isActive
                     ? "text-primary font-medium"
                     : "text-muted-foreground"
