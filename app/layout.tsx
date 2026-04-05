@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ViewTransition } from "react";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { PullToRefreshProvider } from "@/components/features/pull-to-refresh/pull-to-refresh-provider";
 import { KeyboardShortcutProvider } from "@/components/features/shortcuts/keyboard-shortcut-provider";
 import { SplashScreen } from "@/components/features/splash/splash-screen";
 import { BottomNav } from "@/components/layouts/bottom-nav";
@@ -54,9 +55,17 @@ export const metadata: Metadata = {
     description:
       "収支を記録・分析して家計を最適化するパーソナルファイナンスアプリ。",
   },
-  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
+    apple: "/icons/icon-192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "AssetLens",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 
@@ -83,7 +92,9 @@ export default function RootLayout({
           <KeyboardShortcutProvider>
             <SiteHeader />
             <main id="main-content">
-              <ViewTransition name="page-content">{children}</ViewTransition>
+              <PullToRefreshProvider>
+                <ViewTransition name="page-content">{children}</ViewTransition>
+              </PullToRefreshProvider>
             </main>
             <Toaster />
             <BottomNav />

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BudgetRing } from "@/components/features/dashboard/widgets/budget-ring";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SelectBudget, SelectCategory } from "@/db/schema";
@@ -87,13 +88,18 @@ export function BudgetProgress({
         <CardTitle className="text-base">📊 予算進捗</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Overall Budget */}
+        {/* Overall Budget with Ring */}
         {overallBudget && (
-          <ProgressBar
-            label="全体予算"
-            spent={totalExpense}
-            limit={overallBudget.amount}
-          />
+          <div className="flex items-center gap-6">
+            <BudgetRing spent={totalExpense} limit={overallBudget.amount} />
+            <div className="flex-1">
+              <ProgressBar
+                label="全体予算"
+                spent={totalExpense}
+                limit={overallBudget.amount}
+              />
+            </div>
+          </div>
         )}
 
         {/* Category Budgets */}
