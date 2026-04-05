@@ -124,7 +124,7 @@ export function TransactionForm({
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full h-11 md:h-9"
               disabled={isScanning}
               onClick={triggerFileInput}
             >
