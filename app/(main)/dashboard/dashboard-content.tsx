@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { DashboardSwipeWrapper } from "@/components/features/dashboard/dashboard-swipe-wrapper";
 import {
   DashboardChartsSkeleton,
   DashboardOverviewSkeleton,
@@ -19,16 +20,18 @@ interface DashboardContentProps {
  */
 export function DashboardContent({ currentMonth }: DashboardContentProps) {
   return (
-    <div className="space-y-6">
-      <Suspense fallback={<DashboardOverviewSkeleton />}>
-        <DashboardOverviewContent currentMonth={currentMonth} />
-      </Suspense>
-      <Suspense fallback={<DashboardChartsSkeleton />}>
-        <DashboardChartsContent currentMonth={currentMonth} />
-      </Suspense>
-      <Suspense fallback={<DashboardWidgetsSkeleton />}>
-        <DashboardWidgetsContent currentMonth={currentMonth} />
-      </Suspense>
-    </div>
+    <DashboardSwipeWrapper currentMonth={currentMonth}>
+      <div className="space-y-6">
+        <Suspense fallback={<DashboardOverviewSkeleton />}>
+          <DashboardOverviewContent currentMonth={currentMonth} />
+        </Suspense>
+        <Suspense fallback={<DashboardChartsSkeleton />}>
+          <DashboardChartsContent currentMonth={currentMonth} />
+        </Suspense>
+        <Suspense fallback={<DashboardWidgetsSkeleton />}>
+          <DashboardWidgetsContent currentMonth={currentMonth} />
+        </Suspense>
+      </div>
+    </DashboardSwipeWrapper>
   );
 }
