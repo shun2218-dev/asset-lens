@@ -127,7 +127,7 @@ export function SettingsView({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                 <div className="space-y-0.5">
                   <h3 className="font-medium text-destructive">
                     アカウント削除
