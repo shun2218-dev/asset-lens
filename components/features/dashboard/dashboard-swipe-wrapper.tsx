@@ -4,6 +4,7 @@ import { addMonths, format, isAfter, isSameMonth, parse } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
+import { OnboardingTour } from "@/components/features/onboarding/onboarding-tour";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 interface DashboardSwipeWrapperProps {
@@ -43,6 +44,7 @@ export function DashboardSwipeWrapper({
 
   return (
     <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <OnboardingTour />
       {children}
     </div>
   );
