@@ -52,7 +52,7 @@ export function ExpenseHeatmap({
     "bg-muted/50", // 0: no spending
     "bg-emerald-200 dark:bg-emerald-900", // 1: light
     "bg-emerald-400 dark:bg-emerald-700", // 2: medium
-    "bg-emerald-600 dark:bg-emerald-500", // 3: heavy
+    "bg-emerald-700 dark:bg-emerald-500", // 3: heavy
     "bg-emerald-800 dark:bg-emerald-300", // 4: max
   ];
 
@@ -146,7 +146,7 @@ export function ExpenseHeatmap({
                     onMouseLeave={() => setHoveredDay(null)}
                   >
                     <span
-                      className={`${intensity >= 3 ? "text-white dark:text-black" : "text-foreground/70"}`}
+                      className={`${intensity >= 3 ? "text-white" : "text-foreground/70"}`}
                     >
                       {cell.day}
                     </span>

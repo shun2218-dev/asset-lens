@@ -38,15 +38,15 @@ export function CategoryTrends({ trends }: CategoryTrendsProps) {
               {trend.changePercent !== null && (
                 <div className="flex items-center gap-1 mt-0.5">
                   {trend.changePercent >= 0 ? (
-                    <TrendingUp className="h-3 w-3 text-red-500" />
+                    <TrendingUp className="h-3 w-3 text-red-600" />
                   ) : (
-                    <TrendingDown className="h-3 w-3 text-emerald-500" />
+                    <TrendingDown className="h-3 w-3 text-emerald-700" />
                   )}
                   <span
                     className={`text-xs font-medium ${
                       trend.changePercent >= 0
-                        ? "text-red-500"
-                        : "text-emerald-500"
+                        ? "text-red-600"
+                        : "text-emerald-700"
                     }`}
                   >
                     {trend.changePercent >= 0 ? "+" : ""}
