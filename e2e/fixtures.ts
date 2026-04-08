@@ -51,6 +51,13 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { Origin: "http://localhost:3000" },
       });
 
+      // 3.5. Suppress onboarding tour for stability
+      await page.addInitScript(() => {
+        if (!window.sessionStorage.getItem("e2e-show-tour")) {
+          window.localStorage.setItem("assetlens-tour-completed", "true");
+        }
+      });
+
       // 4. Yield fixture
       await use({
         id: userId,
