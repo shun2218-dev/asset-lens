@@ -20,7 +20,7 @@ export const test = base.extend<{ authUser: AuthUser }>({
 
     try {
       // 1. Create test user
-      await page.request.post("/api/auth/sign-up/email", {
+      const signUpRes = await page.request.post("/api/auth/sign-up/email", {
         data: {
           email: userEmail,
           password: userPassword,
@@ -28,6 +28,8 @@ export const test = base.extend<{ authUser: AuthUser }>({
         },
         headers: { Origin: "http://localhost:3000" },
       });
+      if (!signUpRes.ok())
+        console.log("SignUp failed:", await signUpRes.text());
 
       // 2. Verify email
       const verifyRes = await page.request.post("/api/e2e", {
@@ -38,18 +40,22 @@ export const test = base.extend<{ authUser: AuthUser }>({
         headers: { "x-e2e-secret": E2E_SECRET },
       });
       const verifyData = await verifyRes.json();
+      if (!verifyRes.ok()) console.log("Verify failed:", verifyData);
+
       if (verifyData.userId) {
         userId = verifyData.userId;
       }
 
       // 3. Sign in
-      await page.request.post("/api/auth/sign-in/email", {
+      const signInRes = await page.request.post("/api/auth/sign-in/email", {
         data: {
           email: userEmail,
           password: userPassword,
         },
         headers: { Origin: "http://localhost:3000" },
       });
+      if (!signInRes.ok())
+        console.log("SignIn failed:", await signInRes.text());
 
       // 3.5. Suppress onboarding tour for stability
       await page.addInitScript(() => {
