@@ -127,8 +127,9 @@ test.describe("Transaction Search", () => {
     await page.waitForTimeout(300);
     // Select day 1 — use the named calendar grid
     await page
-      .getByRole("grid", { name: /April 2026/ })
-      .getByRole("button", { name: /April 1st/ })
+      .getByRole("dialog")
+      .getByText("1", { exact: true })
+      .first()
       .click();
     await page.waitForTimeout(1000);
 

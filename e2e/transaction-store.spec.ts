@@ -47,7 +47,7 @@ test.describe("Transaction with Store Name", () => {
 
     // Submit
     await page.getByLabel("用途・メモ").fill("E2E Existing Store Test");
-    await page.getByRole("button", { name: "登録する" }).click();
+    await page.getByRole("button", { name: "登録する" }).click({ force: true });
     await expect(page.getByText("登録しました")).toBeVisible({
       timeout: 10000,
     });

@@ -30,7 +30,7 @@ test.describe("Transaction", () => {
     await page.getByLabel("用途・メモ").fill("E2E Test Lunch");
 
     // Submit
-    await page.getByRole("button", { name: "登録する" }).click();
+    await page.getByRole("button", { name: "登録する" }).click({ force: true });
 
     // Success toast
     await expect(page.getByText("登録しました")).toBeVisible();

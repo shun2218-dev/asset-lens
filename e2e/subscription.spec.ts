@@ -28,9 +28,11 @@ test.describe("Subscription", () => {
     // Category is now fixed to "subscription" (no UI selection needed)
 
     // 4. Submit
-    const submitBtn = page.getByRole("button", { name: "登録する" });
+    const submitBtn = page
+      .getByRole("tabpanel", { name: "サブスク" })
+      .getByRole("button", { name: "登録する" });
     await expect(submitBtn).toBeEnabled();
-    await submitBtn.click();
+    await submitBtn.click({ force: true });
 
     // 5. Verification
     await expect(

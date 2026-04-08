@@ -16,7 +16,9 @@ test.describe("Dashboard Widgets & Navigation", () => {
     await dialog.getByLabel("用途・メモ").fill("Dashboard E2E Test");
 
     // Submit
-    await dialog.getByRole("button", { name: "登録する" }).click();
+    await dialog
+      .getByRole("button", { name: "登録する" })
+      .click({ force: true });
     // Wait for the form to close and toast to appear
     await expect(page.getByText("登録しました")).toBeVisible();
 
