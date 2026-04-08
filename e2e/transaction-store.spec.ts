@@ -25,7 +25,10 @@ test.describe("Transaction with Store Name", () => {
       .waitFor({ state: "visible", timeout: 15000 });
 
     // Fill form — scope combobox to 通常入力 tab panel
-    await page.getByLabel("金額").first().fill("980");
+    const amountInput = page.getByLabel("金額").first();
+    await amountInput.clear();
+    await amountInput.fill("980");
+    await amountInput.blur();
     const formPanel = page.getByLabel("通常入力");
     await formPanel.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();

@@ -19,7 +19,10 @@ test.describe("Transaction", () => {
       .waitFor({ state: "visible", timeout: 15000 });
 
     // Fill Transaction Form — scope combobox to the "通常入力" tab panel
-    await page.getByLabel("金額").first().fill("1200");
+    const amountInput = page.getByLabel("金額").first();
+    await amountInput.clear();
+    await amountInput.fill("1200");
+    await amountInput.blur();
 
     // Category (the form has combobox, but filter section also has one — use first)
     const formPanel = page.getByLabel("通常入力");
@@ -59,7 +62,10 @@ test.describe("Transaction", () => {
     // Verify Dialog
     const editDialog = page.getByRole("dialog", { name: "履歴の編集" });
     await expect(editDialog).toBeVisible();
-    await editDialog.getByLabel("金額").fill("1500");
+    const editAmount = editDialog.getByLabel("金額");
+    await editAmount.clear();
+    await editAmount.fill("1500");
+    await editAmount.blur();
     await editDialog.getByLabel("用途・メモ").fill("E2E Test Lunch Updated");
     await editDialog.getByRole("button", { name: "更新する" }).click();
 

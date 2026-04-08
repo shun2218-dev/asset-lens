@@ -15,8 +15,15 @@ test.describe("Subscription", () => {
     await page.getByRole("tab", { name: "サブスク" }).click();
 
     // 3. Fill Subscription Form
-    await page.getByLabel("サービス名").fill("E2E Streaming Service");
-    await page.getByLabel("金額 (円)").fill("980");
+    const serviceName = page.getByLabel("サービス名");
+    await serviceName.clear();
+    await serviceName.fill("E2E Streaming Service");
+    await serviceName.blur();
+
+    const amountInput = page.getByLabel("金額 (円)");
+    await amountInput.clear();
+    await amountInput.fill("980");
+    await amountInput.blur();
 
     // Cycle defaults to Monthly
 

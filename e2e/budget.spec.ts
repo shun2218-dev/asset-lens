@@ -40,7 +40,9 @@ test.describe("Budget Management", () => {
     await page.getByRole("option", { name: "食費" }).click();
 
     // Set amount
+    await page.getByPlaceholder("金額").clear();
     await page.getByPlaceholder("金額").fill("50000");
+    await page.getByPlaceholder("金額").blur();
     await page.getByRole("button", { name: "追加" }).click();
 
     // Verify category budget appears
@@ -56,7 +58,9 @@ test.describe("Budget Management", () => {
     // First set a budget
     await page.goto("/settings");
     await page.getByRole("tab", { name: "予算" }).click();
+    await page.getByPlaceholder("金額").clear();
     await page.getByPlaceholder("金額").fill("200000");
+    await page.getByPlaceholder("金額").blur();
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByText("¥200,000")).toBeVisible();
 
@@ -98,7 +102,10 @@ test.describe("Budget Management", () => {
     await page.getByRole("button", { name: "Edit budget" }).click();
 
     // Change the amount
-    await page.locator("input[type='number']").first().fill("300000");
+    const editInput = page.locator("input[type='number']").first();
+    await editInput.clear();
+    await editInput.fill("300000");
+    await editInput.blur();
     await page.getByRole("button", { name: "保存" }).click();
 
     // Verify update
@@ -148,7 +155,10 @@ test.describe("Quick Entry Dialog", () => {
     await expect(dialog).toBeVisible({ timeout: 5000 });
 
     // Fill the form inside the dialog (scoped — no combobox conflict)
-    await dialog.getByLabel("金額").fill("500");
+    const amountInput = dialog.getByLabel("金額");
+    await amountInput.clear();
+    await amountInput.fill("500");
+    await amountInput.blur();
     await dialog.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();
     await dialog.getByLabel("用途・メモ").fill("Quick Entry Test");
