@@ -58,6 +58,7 @@ export const Default: Story = {
   args: {
     session: mockSession,
     subscriptions: mockSubscriptions,
+    stores: [],
     templates: [],
   },
 };
@@ -66,6 +67,7 @@ export const Empty: Story = {
   args: {
     session: mockSession,
     subscriptions: [],
+    stores: [],
     templates: [],
   },
 };

@@ -17,6 +17,7 @@ import { DeleteAccountButton } from "@/components/features/settings/delete-accou
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
 import { StoreNameMigrationTool } from "@/components/features/settings/store-name-migration-tool";
+import { StoreManager } from "@/components/features/store/store-manager";
 import { SubscriptionList } from "@/components/features/subscription/subscription-list";
 import { TemplateManager } from "@/components/features/template/template-manager";
 import {
@@ -31,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   SelectBudget,
   SelectCategory,
+  SelectStore,
   SelectTransactionTemplate,
   subscription,
 } from "@/db/schema";
@@ -52,6 +54,7 @@ interface SettingsViewProps {
   subscriptions: SelectSubscription[];
   budgets: BudgetWithCategory[];
   categories: SelectCategory[];
+  stores: SelectStore[];
   templates: SelectTransactionTemplate[];
 }
 
@@ -61,6 +64,7 @@ export function SettingsView({
   subscriptions,
   budgets,
   categories,
+  stores,
   templates,
 }: SettingsViewProps) {
   return (
@@ -172,6 +176,9 @@ export function SettingsView({
 
         {/* --- タブ: データ管理 --- */}
         <TabsContent value="data" className="space-y-6">
+          {/* 店舗・サービス管理 */}
+          <StoreManager stores={stores} />
+
           {/* データ入出力 */}
           <Card>
             <CardHeader>
