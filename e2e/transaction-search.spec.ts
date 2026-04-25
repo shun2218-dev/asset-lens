@@ -50,7 +50,7 @@ test.describe("Transaction Search", () => {
     await page.goto("/transaction");
     await page.waitForLoadState("networkidle");
     await page
-      .getByPlaceholder("内容・店舗名で検索...")
+      .getByPlaceholder("内容・店舗名・カテゴリで検索...")
       .waitFor({ state: "visible", timeout: 15000 });
     await expect(page).toHaveURL(/\/transaction/);
 
@@ -66,7 +66,9 @@ test.describe("Transaction Search", () => {
     ).toBeVisible();
 
     // 3. Search for "牛乳"
-    const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    const searchInput = page.getByPlaceholder(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await searchInput.fill("牛乳");
 
     // 4. Only matching transaction visible (wait for debounced filter)
@@ -142,7 +144,9 @@ test.describe("Transaction Search", () => {
     ).toBeVisible({ timeout: 10000 });
 
     // Search for "牛乳" WITH date filter active
-    const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    const searchInput = page.getByPlaceholder(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await searchInput.fill("牛乳");
 
     // THE CRITICAL ASSERTION: wait for filter debounce
@@ -164,7 +168,9 @@ test.describe("Transaction Search", () => {
     await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
-    const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    const searchInput = page.getByPlaceholder(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("存在しないテストデータ99999");
 
@@ -185,7 +191,9 @@ test.describe("Transaction Search", () => {
     await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
-    const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    const searchInput = page.getByPlaceholder(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("URL永続化");
 
@@ -211,7 +219,9 @@ test.describe("Transaction Search", () => {
     await page.waitForLoadState("networkidle");
     await expect(page).toHaveURL(/\/transaction/);
 
-    const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
+    const searchInput = page.getByPlaceholder(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("セブン");
 

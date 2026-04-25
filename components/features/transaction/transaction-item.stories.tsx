@@ -95,3 +95,25 @@ export const Income: Story = {
     stores: [],
   },
 };
+
+/** Demonstrates search match highlighting */
+export const WithSearchHighlight: Story = {
+  args: {
+    data: {
+      id: "tx-3",
+      userId: "user-1",
+      amount: 1000,
+      description: "Lunch at cafe",
+      storeName: "コンビニ",
+      date: new Date("2024-01-01"),
+      isExpense: true,
+      category: "food",
+      categoryId: "cat-1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    categories: mockCategories,
+    stores: [],
+    searchQuery: "Lunch",
+  },
+};
