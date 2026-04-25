@@ -7,6 +7,7 @@ import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-p
 import { CategoryTrends } from "@/components/features/dashboard/widgets/category-trends";
 import { ExpenseHeatmap } from "@/components/features/dashboard/widgets/expense-heatmap";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
+import { RecurringPatterns } from "@/components/features/dashboard/widgets/recurring-patterns";
 import { SpendingForecast } from "@/components/features/dashboard/widgets/spending-forecast";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import type {
@@ -58,6 +59,9 @@ export function DashboardWidgets({
         />
         {forecast && <SpendingForecast forecast={forecast} />}
       </div>
+
+      {/* Recurring patterns */}
+      <RecurringPatterns />
 
       {/* Heatmap + Trends row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
