@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.31.0] - 2026-04-26
+
+### Added
+- Dashboard empty state fallback: auto-navigate to latest month with data when current month is empty (#217)
+- CSV/PDF export for monthly financial reports with download dialog (#129)
+- Budget threshold alerts: banner warnings and toast notifications when spending exceeds limits (#148)
+- Transaction bulk actions: multi-select with bulk delete and category change (#47)
+- Category icon and color customization schema with default icon/color assignments (#143)
+- Store management CRUD: edit and delete stores from settings page
+- Transaction search enhancement: category name search with match highlighting (#134)
+- Financial calendar view: monthly grid with daily income/expense totals and day-click filtering (#153)
+- `getMonthlyDailySummary` server action for daily transaction aggregation
+- `FinancialCalendar` component with month navigation and selected-date state
+- `TransactionList` forwardRef + `useImperativeHandle` for programmatic date filtering
+- `HighlightMatch` component for search keyword highlighting
+- Mandatory test impact analysis rule for development workflow
+- Unit tests: `getMonthlyDailySummary` (5 tests), `search-highlight` (7 tests)
+- Storybook stories: `StoreManager`, `TransactionItem.WithSearchHighlight`, `FallbackBanner`
+
+### Fixed
+- Settings page mobile overflow on data management and subscription tabs
+- E2E transaction search selectors updated for new placeholder text
+- WCAG color contrast: green-700, red-700, blue-700 for small text elements
+- Dependabot updates: react-hook-form, dotenv, biome, lint-staged
+
+### Changed
+- Search input placeholder updated to include category support
+- `minisearch` client-side dependency removed in favor of server-side search
+- Test count increased from 426 to 434
+
 ## [2.30.0] - 2026-04-25
 
 ### Added
