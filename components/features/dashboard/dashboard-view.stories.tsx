@@ -178,3 +178,47 @@ export const Empty: Story = {
     },
   },
 };
+
+export const FallbackBanner: Story = {
+  args: {
+    overview: {
+      summary: {
+        totalIncome: 480000,
+        totalExpense: 95000,
+        balance: 385000,
+      },
+      previousSummary: {
+        totalIncome: 450000,
+        totalExpense: 88000,
+        balance: 362000,
+      },
+      currentMonth: "2024-03",
+      isFallback: true,
+      requestedMonth: "2024-04",
+    },
+    charts: {
+      monthlyStats: [
+        { month: "2024-01", income: 450000, expense: 200000 },
+        { month: "2024-02", income: 450000, expense: 88000 },
+        { month: "2024-03", income: 480000, expense: 95000 },
+      ],
+      categoryStats: [
+        { category: "food", amount: 45000 },
+        { category: "transport", amount: 12000 },
+      ],
+      categories: mockCategories,
+    },
+    widgets: {
+      recentTransactions: mockRecentTransactions,
+      storeRanking: [
+        { storeName: "スーパーA", totalAmount: 18000 },
+        { storeName: "コンビニB", totalAmount: 12000 },
+      ],
+      budgets: [],
+      categoryExpenses: [
+        { categoryId: "1", amount: 45000 },
+        { categoryId: "3", amount: 12000 },
+      ],
+    },
+  },
+};

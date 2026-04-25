@@ -9,6 +9,8 @@ const EMPTY_DASHBOARD: DashboardSummaryResult = {
   categoryStats: [],
   monthlyStats: [],
   categoryExpenses: [],
+  isFallback: false,
+  requestedMonth: "",
 };
 
 interface Props {
@@ -26,6 +28,8 @@ export async function DashboardOverviewContent({ currentMonth }: Props) {
       summary={data.summary}
       previousSummary={data.previousSummary}
       currentMonth={data.currentMonth}
+      isFallback={data.isFallback}
+      requestedMonth={data.requestedMonth}
     />
   );
 }

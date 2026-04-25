@@ -1,7 +1,14 @@
 "use client";
 
-import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
+import { parse } from "date-fns";
+import {
+  BarChart3,
+  CalendarClock,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { SummaryStats } from "@/types";
@@ -33,17 +40,29 @@ function MoMBadge({
   );
 }
 
+function formatMonthLabel(month: string): string {
+  const date = parse(month, "yyyy-MM", new Date());
+  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+}
+
 type DashboardOverviewProps = {
   summary: SummaryStats;
   previousSummary: SummaryStats;
   currentMonth: string;
+  isFallback: boolean;
+  requestedMonth: string;
 };
 
 export function DashboardOverview({
   summary,
   previousSummary,
   currentMonth,
+  isFallback,
+  requestedMonth,
 }: DashboardOverviewProps) {
+  const hasNoDataEver =
+    !isFallback && summary.totalIncome === 0 && summary.totalExpense === 0;
+
   return (
     <>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -51,7 +70,22 @@ export function DashboardOverview({
         <MonthSelector currentMonth={currentMonth} />
       </div>
 
-      {summary.totalIncome === 0 && summary.totalExpense === 0 ? (
+      {isFallback && (
+        <Alert
+          variant="default"
+          className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950"
+        >
+          <CalendarClock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertTitle className="text-blue-800 dark:text-blue-300">
+            {formatMonthLabel(requestedMonth)}のデータはまだありません
+          </AlertTitle>
+          <AlertDescription className="text-blue-700 dark:text-blue-400">
+            {formatMonthLabel(currentMonth)}のデータを表示しています。
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {hasNoDataEver ? (
         <EmptyState
           icon={BarChart3}
           title="まずは最初の取引を記録しましょう"
