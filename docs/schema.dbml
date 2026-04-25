@@ -27,7 +27,7 @@ table budget {
   updated_at "timestamp (0) with time zone" [not null, default: `now()`]
 
   indexes {
-    (user_id, category_id) [name: 'budget_userId_categoryId_idx']
+    (user_id, category_id) [name: 'budget_userId_categoryId_unique', unique]
   }
 }
 
@@ -38,13 +38,13 @@ table category {
   type text [not null, default: 'expense']
   icon text
   color text
-  userId text
+  user_id text
   sort_order integer [default: 0]
   created_at "timestamp (0) with time zone" [not null, default: `now()`]
   updated_at "timestamp (0) with time zone" [not null, default: `now()`]
 
   indexes {
-    userId [name: 'category_userId_idx']
+    user_id [name: 'category_userId_idx']
   }
 }
 
@@ -171,6 +171,7 @@ table transaction {
     user_id [name: 'transactions_userId_idx']
     (user_id, date) [name: 'transactions_userId_date_idx']
     (user_id, store_name) [name: 'transactions_userId_storeName_idx']
+    category_id [name: 'transactions_categoryId_idx']
   }
 }
 
@@ -179,7 +180,7 @@ table transaction_tag {
   tag_id uuid [not null]
 
   indexes {
-    transaction_id [name: 'transaction_tag_txn_idx']
+    (transaction_id, tag_id) [pk]
     tag_id [name: 'transaction_tag_tag_idx']
   }
 }
