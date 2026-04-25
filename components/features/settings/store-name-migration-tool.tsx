@@ -188,11 +188,11 @@ export function StoreNameMigrationTool() {
   return (
     <div className="space-y-4">
       {/* ヘッダー: 統計 + アクション */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {rows.length}件の対象データ（{selectedCount}件選択中）
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={toggleAll}>
             <CheckCheck className="mr-1 h-3 w-3" />
             {rows.every((r) => r.selected) ? "全解除" : "全選択"}

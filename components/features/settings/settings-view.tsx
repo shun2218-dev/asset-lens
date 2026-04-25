@@ -64,7 +64,7 @@ export function SettingsView({
   templates,
 }: SettingsViewProps) {
   return (
-    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen">
+    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen overflow-x-hidden">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold">設定</h1>
         <p className="text-muted-foreground">
@@ -75,8 +75,8 @@ export function SettingsView({
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-6 lg:w-210">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+          <TabsList className="inline-flex w-max sm:grid sm:w-full sm:grid-cols-6">
             <TabsTrigger value="account">アカウント</TabsTrigger>
             <TabsTrigger value="category">カテゴリ</TabsTrigger>
             <TabsTrigger value="budget">予算</TabsTrigger>
@@ -198,8 +198,8 @@ export function SettingsView({
                 <Store className="h-5 w-5" />
                 店舗名の一括設定
               </CardTitle>
-              <CardDescription>
-                用途欄から店舗名を抽出して設定します。半角スペースの前を店舗名、後を用途として分割します。プレビューを確認してから適用してください。
+              <CardDescription className="text-xs sm:text-sm">
+                用途欄から店舗名を抽出して設定します。プレビューを確認してから適用してください。
               </CardDescription>
             </CardHeader>
             <CardContent>
