@@ -8,6 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
+import { ExportDropdown } from "@/components/features/export/export-dropdown";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -67,7 +68,10 @@ export function DashboardOverview({
     <>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold">ダッシュボード</h1>
-        <MonthSelector currentMonth={currentMonth} />
+        <div className="flex items-center gap-2">
+          <MonthSelector currentMonth={currentMonth} />
+          <ExportDropdown currentMonth={currentMonth} />
+        </div>
       </div>
 
       {isFallback && (
