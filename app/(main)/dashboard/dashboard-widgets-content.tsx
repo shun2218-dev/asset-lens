@@ -1,5 +1,6 @@
 import { getCategoryTrends } from "@/app/actions/analysis/get-category-trends";
 import { getDailyExpenses } from "@/app/actions/analysis/get-daily-expenses";
+import { getSpendingForecast } from "@/app/actions/analysis/get-spending-forecast";
 import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
 import type { DashboardSummaryResult } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getSummaryWithComparison } from "@/app/actions/analysis/get-summary-with-comparison";
@@ -30,6 +31,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
     budgets,
     trendsResult,
     dailyResult,
+    forecastResult,
   ] = await Promise.all([
     getSummaryWithComparison(currentMonth),
     getTransaction({ page: 1, month: currentMonth }),
@@ -37,6 +39,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
     getBudgets(),
     getCategoryTrends(currentMonth),
     getDailyExpenses(currentMonth),
+    getSpendingForecast(currentMonth),
   ]);
 
   const data = summaryResult.success
@@ -48,6 +51,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
     : { data: [] };
   const categoryTrends = trendsResult.success ? trendsResult.data : [];
   const dailyExpenses = dailyResult.success ? dailyResult.data : [];
+  const forecast = forecastResult.success ? forecastResult.data : null;
 
   return (
     <DashboardWidgets
@@ -59,6 +63,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
       currentMonth={data.currentMonth}
       categoryTrends={categoryTrends}
       dailyExpenses={dailyExpenses}
+      forecast={forecast}
     />
   );
 }
