@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type {
   SelectCategory,
@@ -13,6 +14,8 @@ export interface TransactionItemProps {
   categories: SelectCategory[];
   stores: SelectStore[];
   onOptimisticDelete?: OptimisticDeleteFn;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 export function TransactionItem({
@@ -20,9 +23,18 @@ export function TransactionItem({
   categories,
   stores,
   onOptimisticDelete,
+  isSelected = false,
+  onToggleSelect,
 }: TransactionItemProps) {
   return (
-    <TableRow key={data.id}>
+    <TableRow key={data.id} className={isSelected ? "bg-muted/50" : undefined}>
+      <TableCell>
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelect?.(data.id)}
+          aria-label={`${data.description}を選択`}
+        />
+      </TableCell>
       <TableCell>{format(data.date, "MM/dd")}</TableCell>
       <TableCell>{data.description}</TableCell>
       <TableCell className="text-muted-foreground">
