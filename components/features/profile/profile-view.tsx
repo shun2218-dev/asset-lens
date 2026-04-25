@@ -23,7 +23,7 @@ interface ProfileViewProps {
 
 export function ProfileView({ session }: ProfileViewProps) {
   return (
-    <main className="container max-w-5xl px-4 py-10 space-y-8 mx-auto min-h-screen">
+    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen">
       <div>
         <h1 className="text-3xl font-bold">プロフィール</h1>
         <p className="text-muted-foreground">基本情報の確認と変更</p>

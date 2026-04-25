@@ -1,10 +1,18 @@
 "use client";
 
-import { AlertTriangle, FileText, Shield, Store, Zap } from "lucide-react";
+import {
+  AlertTriangle,
+  BookOpen,
+  FileText,
+  Shield,
+  Store,
+  Zap,
+} from "lucide-react";
 import { PasskeySettings } from "@/components/features/auth/passkey-settings";
 import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { BudgetSettings } from "@/components/features/budget/budget-settings";
 import { CategoryManager } from "@/components/features/category/category-manager";
+import { ReplayTourButton } from "@/components/features/onboarding/replay-tour-button";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
@@ -48,6 +56,7 @@ interface SettingsViewProps {
 }
 
 export function SettingsView({
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: used for future profile display
   session,
   subscriptions,
   budgets,
@@ -90,6 +99,22 @@ export function SettingsView({
             <PasswordSettings />
           </section>
 
+          {/* 使い方ガイド */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                使い方ガイド
+              </CardTitle>
+              <CardDescription>
+                アプリの機能や操作方法を確認できます
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ReplayTourButton />
+            </CardContent>
+          </Card>
+
           {/* Danger Zone */}
           <Card className="border-destructive/50">
             <CardHeader>
@@ -102,7 +127,7 @@ export function SettingsView({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                 <div className="space-y-0.5">
                   <h3 className="font-medium text-destructive">
                     アカウント削除

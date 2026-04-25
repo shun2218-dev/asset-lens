@@ -46,7 +46,12 @@ export function QuickEntryDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5" id="quick-entry-button">
+        <Button
+          size="sm"
+          className="gap-1.5"
+          id="quick-entry-button"
+          aria-label="記録する"
+        >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">記録する</span>
         </Button>

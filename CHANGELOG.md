@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.30.0] - 2026-04-25
+
+### Added
+- Dashboard analysis widgets: expense heatmap, category trends chart, budget ring (#245)
+- Onboarding tour for first-time users with step-by-step dashboard walkthrough (#49)
+- Replay tour button in settings page for revisiting the onboarding experience
+- Splash screen with AssetLens branding on initial app load
+- View Transition API integration for smooth theme switching animations
+- PWA manifest with app icons for home screen installation (#245)
+- Pull-to-refresh gesture support for mobile dashboard
+- Swipe navigation between monthly dashboard views
+- Storybook stories for all new widgets: BudgetRing, ExpenseHeatmap, CategoryTrends, OnboardingTour
+
+### Fixed
+- Stabilized all 170 E2E tests across 5 browsers (chromium, firefox, webkit, Mobile Chrome, Mobile Safari)
+- Replace `clear()+fill()` with `click()+fill()` for number inputs to fix React Hook Form onChange on mobile
+- Add `toBeEnabled()` polling before all form submit clicks to prevent async validation race conditions
+- Replace all `waitForTimeout()` with polling assertions for search debounce synchronization
+- Add Enter key fallback for Radix Tabs on webkit/Mobile Safari where click-only focuses without selecting
+- Use `evaluate` click for account deletion on webkit to bypass scroll+click geometry issues
+- Scope DB verification queries by `userId` to prevent cross-test data contamination
+- Set Playwright trace to `retain-on-failure` for faster execution while preserving debug capability
+
 ## [2.29.0] - 2026-04-03
 
 ### Added

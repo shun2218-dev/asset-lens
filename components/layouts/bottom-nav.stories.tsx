@@ -16,7 +16,7 @@ function BottomNavPreview({ activeIndex = 0 }: { activeIndex?: number }) {
     { label: "ホーム", icon: LayoutDashboard },
     { label: "取引", icon: ArrowLeftRight },
     { label: "設定", icon: Settings },
-    { label: "自分", icon: User },
+    { label: "マイページ", icon: User },
   ];
 
   return (
@@ -25,7 +25,7 @@ function BottomNavPreview({ activeIndex = 0 }: { activeIndex?: number }) {
         {items.slice(0, 2).map((item, i) => (
           <div
             key={item.label}
-            className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-xs ${
+            className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-[10px] ${
               activeIndex === i
                 ? "text-primary font-medium"
                 : "text-muted-foreground"
@@ -47,7 +47,7 @@ function BottomNavPreview({ activeIndex = 0 }: { activeIndex?: number }) {
         {items.slice(2).map((item, i) => (
           <div
             key={item.label}
-            className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-xs ${
+            className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 text-[10px] ${
               activeIndex === i + 2
                 ? "text-primary font-medium"
                 : "text-muted-foreground"
@@ -102,4 +102,8 @@ export const TransactionActive: Story = {
 
 export const SettingsActive: Story = {
   args: { activeIndex: 2 },
+};
+
+export const ProfileActive: Story = {
+  args: { activeIndex: 3 },
 };
