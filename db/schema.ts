@@ -6,8 +6,10 @@ import {
   index,
   integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -20,7 +22,7 @@ export const category = pgTable(
     type: text("type").default("expense").notNull(),
     icon: text("icon"), // Lucide icon name (e.g., "utensils", "car")
     color: text("color"), // Hex color (e.g., "#ef4444")
-    userId: text("userId").references(() => user.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
     sortOrder: integer("sort_order").default(0),
     createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
       .defaultNow()
@@ -63,6 +65,7 @@ export const transaction = pgTable(
       table.userId,
       table.storeName,
     ),
+    index("transactions_categoryId_idx").on(table.categoryId),
   ],
 );
 
@@ -321,7 +324,10 @@ export const budget = pgTable(
       .notNull(),
   },
   (table) => [
-    index("budget_userId_categoryId_idx").on(table.userId, table.categoryId),
+    uniqueIndex("budget_userId_categoryId_unique").on(
+      table.userId,
+      table.categoryId,
+    ),
   ],
 );
 
@@ -481,7 +487,7 @@ export const transactionTag = pgTable(
       .references(() => tag.id, { onDelete: "cascade" }),
   },
   (table) => [
-    index("transaction_tag_txn_idx").on(table.transactionId),
+    primaryKey({ columns: [table.transactionId, table.tagId] }),
     index("transaction_tag_tag_idx").on(table.tagId),
   ],
 );

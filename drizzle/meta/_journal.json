@@ -127,6 +127,13 @@
       "when": 1777132472074,
       "tag": "0017_breezy_gauntlet",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1777134514522,
+      "tag": "0018_military_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

@@ -51,7 +51,7 @@ erDiagram
         text type
         text icon
         text color
-        text userId
+        text user_id
         integer sort_order
         timestamp created_at
         timestamp updated_at
