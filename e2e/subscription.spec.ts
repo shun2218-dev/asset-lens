@@ -12,16 +12,20 @@ test.describe("Subscription", () => {
 
     // 2. Navigate to Settings -> Subscription Tab
     await page.goto("/settings");
-    await page.getByRole("tab", { name: "サブスク" }).click();
+    const subTab = page.getByRole("tab", { name: "サブスク" });
+    await subTab.click();
+    const subTabVisible = await page
+      .getByLabel("サービス名")
+      .isVisible()
+      .catch(() => false);
+    if (!subTabVisible) {
+      await subTab.press("Enter");
+    }
+    await expect(page.getByLabel("サービス名")).toBeVisible({ timeout: 10000 });
 
     // 3. Fill Subscription Form
-    const serviceName = page.getByLabel("サービス名");
-    await serviceName.clear();
-    await serviceName.fill("E2E Streaming Service");
-    await serviceName.blur();
-
+    await page.getByLabel("サービス名").fill("E2E Streaming Service");
     const amountInput = page.getByLabel("金額 (円)");
-    await amountInput.clear();
     await amountInput.fill("980");
     await amountInput.blur();
 
@@ -30,21 +34,24 @@ test.describe("Subscription", () => {
     // Date
     await page.getByText("日付を選択").click();
     // Pick the 15th
-    await page.getByRole("gridcell", { name: "15" }).first().click();
+    await page
+      .locator('[data-slot="calendar"] button[data-day]')
+      .first()
+      .click({ force: true });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300); // wait for popover animation to finish
 
     // Category is now fixed to "subscription" (no UI selection needed)
 
     // 4. Submit
-    const submitBtn = page
-      .getByRole("tabpanel", { name: "サブスク" })
-      .getByRole("button", { name: "登録する" });
-    await expect(submitBtn).toBeEnabled();
-    await submitBtn.click({ force: true });
+    const submitBtn = page.getByRole("button", { name: "登録する" });
+    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
+    await submitBtn.click({ position: { x: 5, y: 5 } });
 
     // 5. Verification
     await expect(
       page.getByText("サブスクリプションを追加しました"),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify list item appearance
     await expect(page.getByText("E2E Streaming Service")).toBeVisible();

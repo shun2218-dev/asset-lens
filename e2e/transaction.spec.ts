@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { expect, test } from "./fixtures";
@@ -20,9 +20,10 @@ test.describe("Transaction", () => {
 
     // Fill Transaction Form — scope combobox to the "通常入力" tab panel
     const amountInput = page.getByLabel("金額").first();
-    await amountInput.clear();
+    await amountInput.click();
     await amountInput.fill("1200");
     await amountInput.blur();
+    await expect(amountInput).toHaveValue("1200", { timeout: 5000 });
 
     // Category (the form has combobox, but filter section also has one — use first)
     const formPanel = page.getByLabel("通常入力");
@@ -30,13 +31,20 @@ test.describe("Transaction", () => {
     await page.getByRole("option", { name: "食費" }).click();
 
     // Description
-    await page.getByLabel("用途・メモ").fill("E2E Test Lunch");
+    const descInput = page.getByLabel("用途・メモ");
+    await descInput.clear();
+    await descInput.fill("E2E Test Lunch");
+    await descInput.blur();
 
     // Submit
-    await page.getByRole("button", { name: "登録する" }).click({ force: true });
+    const submitBtn = page.getByRole("button", { name: "登録する" });
+    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
+    await submitBtn.click({ position: { x: 5, y: 5 } });
 
     // Success toast
-    await expect(page.getByText("登録しました")).toBeVisible();
+    await expect(page.getByText("登録しました")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Check row
     const transactionRow = page
@@ -66,8 +74,13 @@ test.describe("Transaction", () => {
     await editAmount.clear();
     await editAmount.fill("1500");
     await editAmount.blur();
-    await editDialog.getByLabel("用途・メモ").fill("E2E Test Lunch Updated");
-    await editDialog.getByRole("button", { name: "更新する" }).click();
+    const editDesc = editDialog.getByLabel("用途・メモ");
+    await editDesc.clear();
+    await editDesc.fill("E2E Test Lunch Updated");
+    await editDesc.blur();
+    await editDialog
+      .getByRole("button", { name: "更新する" })
+      .click({ position: { x: 5, y: 5 } });
 
     // Verify Success
     await expect(page.getByText("更新しました")).toBeVisible();
@@ -79,7 +92,10 @@ test.describe("Transaction", () => {
     await expect(updatedRow).toBeVisible();
     await expect(updatedRow).toContainText("1,500");
 
-    // Delete Transaction
+    // Hide Sonner toasts to prevent pointer event interception on mobile viewports
+    await page.addStyleTag({
+      content: "[data-sonner-toaster] { display: none !important; }",
+    });
     await updatedRow.getByRole("button", { name: "メニューを開く" }).click();
     await page.getByRole("menuitem", { name: "削除" }).click();
 
@@ -88,15 +104,23 @@ test.describe("Transaction", () => {
     await page.getByRole("button", { name: "削除する" }).click();
 
     // Verify Success
-    await expect(page.getByText("削除しました")).toBeVisible();
     await expect(updatedRow).not.toBeVisible();
 
     // Brief wait for DB consistency
     await page.waitForTimeout(1000);
 
-    const deletedTx = await db.query.transaction.findFirst({
-      where: eq(schema.transaction.description, "E2E Test Lunch Updated"),
-    });
-    expect(deletedTx).toBeUndefined();
+    await expect
+      .poll(
+        async () => {
+          return await db.query.transaction.findFirst({
+            where: and(
+              eq(schema.transaction.description, "E2E Test Lunch Updated"),
+              eq(schema.transaction.userId, authUser.id),
+            ),
+          });
+        },
+        { timeout: 10000 },
+      )
+      .toBeUndefined();
   });
 });

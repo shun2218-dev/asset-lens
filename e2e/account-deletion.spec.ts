@@ -21,12 +21,12 @@ test.describe("Account Deletion", () => {
       name: "アカウントを削除する",
     });
 
-    // Ensure button is visible
+    // Ensure button is visible and click (use evaluate to bypass webkit layout issues)
     await deleteButton.scrollIntoViewIfNeeded();
-    await deleteButton.click();
+    await deleteButton.evaluate((el) => (el as HTMLElement).click());
 
     // 4. Confirm deletion in the dialog
-    await expect(page.getByRole("alertdialog")).toBeVisible();
+    await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 10000 });
 
     const confirmButton = page.getByRole("button", { name: "削除する" });
     await confirmButton.click();

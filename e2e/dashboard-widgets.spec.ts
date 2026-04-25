@@ -13,14 +13,19 @@ test.describe("Dashboard Widgets & Navigation", () => {
     await dialog.getByLabel("金額").fill("500");
     await dialog.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();
-    await dialog.getByLabel("用途・メモ").fill("Dashboard E2E Test");
+    const descInput = dialog.getByLabel("用途・メモ");
+    await descInput.clear();
+    await descInput.fill("Dashboard E2E Test");
+    await descInput.blur();
 
     // Submit
-    await dialog
-      .getByRole("button", { name: "登録する" })
-      .click({ force: true });
+    const submitBtn = dialog.getByRole("button", { name: "登録する" });
+    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
+    await submitBtn.click({ position: { x: 5, y: 5 } });
     // Wait for the form to close and toast to appear
-    await expect(page.getByText("登録しました")).toBeVisible();
+    await expect(page.getByText("登録しました")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Wait a bit for widgets to refresh
     await page.waitForTimeout(1000);
