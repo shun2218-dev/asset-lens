@@ -260,6 +260,7 @@ export const userRelations = relations(user, ({ many }) => ({
   stores: many(store),
   transactionTemplates: many(transactionTemplate),
   dismissedDuplicates: many(dismissedDuplicate),
+  tags: many(tag),
 }));
 
 export const storeRelations = relations(store, ({ one }) => ({
@@ -449,3 +450,57 @@ export const contactInquiry = pgTable(
 
 export type SelectContactInquiry = InferSelectModel<typeof contactInquiry>;
 export type InsertContactInquiry = InferInsertModel<typeof contactInquiry>;
+
+export const tag = pgTable(
+  "tag",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    color: text("color").default("#6366f1").notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("tag_userId_idx").on(table.userId)],
+);
+
+export type SelectTag = InferSelectModel<typeof tag>;
+export type InsertTag = InferInsertModel<typeof tag>;
+
+export const transactionTag = pgTable(
+  "transaction_tag",
+  {
+    transactionId: uuid("transaction_id")
+      .notNull()
+      .references(() => transaction.id, { onDelete: "cascade" }),
+    tagId: uuid("tag_id")
+      .notNull()
+      .references(() => tag.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("transaction_tag_txn_idx").on(table.transactionId),
+    index("transaction_tag_tag_idx").on(table.tagId),
+  ],
+);
+
+export const tagRelations = relations(tag, ({ one, many }) => ({
+  user: one(user, {
+    fields: [tag.userId],
+    references: [user.id],
+  }),
+  transactionTags: many(transactionTag),
+}));
+
+export const transactionTagRelations = relations(transactionTag, ({ one }) => ({
+  transaction: one(transaction, {
+    fields: [transactionTag.transactionId],
+    references: [transaction.id],
+  }),
+  tag: one(tag, {
+    fields: [transactionTag.tagId],
+    references: [tag.id],
+  }),
+}));
