@@ -68,32 +68,30 @@ test.describe("Transaction Search", () => {
     // 3. Search for "牛乳"
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
     await searchInput.fill("牛乳");
-    await page.waitForTimeout(1500);
 
-    // 4. Only matching transaction visible
+    // 4. Only matching transaction visible (wait for debounced filter)
+    await expect(
+      page.locator("tr").filter({ hasText: "E2E検索テストランチ" }),
+    ).not.toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator("tr").filter({ hasText: "E2E検索テスト電車代" }),
+    ).not.toBeVisible({ timeout: 10000 });
     await expect(
       page.locator("tr").filter({ hasText: "E2E検索テスト牛乳" }),
     ).toBeVisible();
-    await expect(
-      page.locator("tr").filter({ hasText: "E2E検索テストランチ" }),
-    ).not.toBeVisible();
-    await expect(
-      page.locator("tr").filter({ hasText: "E2E検索テスト電車代" }),
-    ).not.toBeVisible();
 
     // 5. Clear search — all reappear
-    await searchInput.clear();
-    await page.waitForTimeout(1500);
+    await searchInput.fill("");
 
     await expect(
       page.locator("tr").filter({ hasText: "E2E検索テスト牛乳" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     await expect(
       page.locator("tr").filter({ hasText: "E2E検索テストランチ" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     await expect(
       page.locator("tr").filter({ hasText: "E2E検索テスト電車代" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Cleanup
     await cleanupTransactions(authUser.id);
@@ -123,32 +121,37 @@ test.describe("Transaction Search", () => {
     ).toBeVisible();
 
     // Apply date filter: click 開始日
-    await page.getByRole("button", { name: "開始日" }).click();
-    await page.waitForTimeout(300);
-    // Select day 1 — use the named calendar grid
+    await page.getByRole("button", { name: "開始日" }).scrollIntoViewIfNeeded();
     await page
-      .getByRole("grid", { name: /April 2026/ })
-      .getByRole("button", { name: /April 1st/ })
-      .click();
-    await page.waitForTimeout(1000);
+      .getByRole("button", { name: "開始日" })
+      .evaluate((b) => (b as HTMLElement).click());
 
+    // Explicitly wait for the calendar Popover to become visible in the DOM
+    await page.waitForSelector('[data-slot="calendar"]', {
+      state: "visible",
+      timeout: 10000,
+    });
+
+    await page
+      .locator('[data-slot="calendar"] button[data-day]')
+      .first()
+      .evaluate((b) => (b as HTMLElement).click());
     // Verify still visible after date filter
     await expect(
       page.locator("tr").filter({ hasText: "E2E日付検索テスト牛乳" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Search for "牛乳" WITH date filter active
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
     await searchInput.fill("牛乳");
-    await page.waitForTimeout(1500);
 
-    // THE CRITICAL ASSERTION:
-    await expect(
-      page.locator("tr").filter({ hasText: "E2E日付検索テスト牛乳" }),
-    ).toBeVisible({ timeout: 5000 });
+    // THE CRITICAL ASSERTION: wait for filter debounce
     await expect(
       page.locator("tr").filter({ hasText: "E2E日付検索テストパン" }),
-    ).not.toBeVisible();
+    ).not.toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator("tr").filter({ hasText: "E2E日付検索テスト牛乳" }),
+    ).toBeVisible();
 
     await cleanupTransactions(authUser.id);
   });
@@ -164,9 +167,10 @@ test.describe("Transaction Search", () => {
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("存在しないテストデータ99999");
-    await page.waitForTimeout(1500);
 
-    await expect(page.getByText(/一致する取引が見つかりません/)).toBeVisible();
+    await expect(page.getByText(/一致する取引が見つかりません/)).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should persist search query in URL and reset", async ({
@@ -184,17 +188,15 @@ test.describe("Transaction Search", () => {
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("URL永続化");
-    await page.waitForTimeout(1500);
 
-    // URL has q parameter
-    expect(page.url()).toContain("q=");
+    // URL has q parameter (wait for debounced router push)
+    await expect(page).toHaveURL(/q=/, { timeout: 10000 });
 
     // Reset
     await page.getByRole("button", { name: /リセット/ }).click();
-    await page.waitForTimeout(500);
 
-    // q removed
-    expect(page.url()).not.toContain("q=");
+    // q removed (wait for router to update)
+    await expect(page).not.toHaveURL(/q=/, { timeout: 10000 });
 
     await cleanupTransactions(authUser.id);
   });
@@ -212,15 +214,14 @@ test.describe("Transaction Search", () => {
     const searchInput = page.getByPlaceholder("内容・店舗名で検索...");
     await searchInput.waitFor({ state: "visible", timeout: 15000 });
     await searchInput.fill("セブン");
-    await page.waitForTimeout(1500);
 
-    // Only the セブンイレブン transaction should be visible
+    // Only the セブンイレブン transaction should be visible (wait for debounce)
+    await expect(
+      page.locator("tr").filter({ hasText: "ローソン" }),
+    ).not.toBeVisible({ timeout: 10000 });
     await expect(
       page.locator("tr").filter({ hasText: "セブンイレブン" }),
     ).toBeVisible();
-    await expect(
-      page.locator("tr").filter({ hasText: "ローソン" }),
-    ).not.toBeVisible();
 
     await cleanupTransactions(authUser.id);
   });

@@ -73,8 +73,9 @@ export function TransactionFilters({
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {/* Category filter */}
+      {/* Filters: SP = category full-width row + date row, PC = all in one row */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Category filter: full width on SP, fixed on PC */}
         <Select
           value={filters.categoryId || "all"}
           onValueChange={(v) =>
@@ -84,7 +85,10 @@ export function TransactionFilters({
             })
           }
         >
-          <SelectTrigger className="w-[160px]" aria-label="Filter by category">
+          <SelectTrigger
+            className="w-full sm:w-[180px]"
+            aria-label="Filter by category"
+          >
             <SelectValue placeholder="カテゴリ" />
           </SelectTrigger>
           <SelectContent>
@@ -97,57 +101,60 @@ export function TransactionFilters({
           </SelectContent>
         </Select>
 
-        {/* Date from */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[140px] justify-start text-left font-normal",
-                !filters.dateFrom && "text-muted-foreground",
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateFrom ? format(filters.dateFrom, "MM/dd") : "開始日"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={filters.dateFrom}
-              onSelect={(date) =>
-                onFiltersChange({ ...filters, dateFrom: date ?? undefined })
-              }
-            />
-          </PopoverContent>
-        </Popover>
+        {/* Date range: always stays on one line together */}
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "flex-1 justify-start text-left font-normal h-11 md:h-9",
+                  !filters.dateFrom && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                {filters.dateFrom
+                  ? format(filters.dateFrom, "MM/dd")
+                  : "開始日"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={filters.dateFrom}
+                onSelect={(date) =>
+                  onFiltersChange({ ...filters, dateFrom: date ?? undefined })
+                }
+              />
+            </PopoverContent>
+          </Popover>
 
-        <span className="flex items-center text-muted-foreground">〜</span>
+          <span className="text-muted-foreground shrink-0">〜</span>
 
-        {/* Date to */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[140px] justify-start text-left font-normal",
-                !filters.dateTo && "text-muted-foreground",
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateTo ? format(filters.dateTo, "MM/dd") : "終了日"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={filters.dateTo}
-              onSelect={(date) =>
-                onFiltersChange({ ...filters, dateTo: date ?? undefined })
-              }
-            />
-          </PopoverContent>
-        </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "flex-1 justify-start text-left font-normal h-11 md:h-9",
+                  !filters.dateTo && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                {filters.dateTo ? format(filters.dateTo, "MM/dd") : "終了日"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={filters.dateTo}
+                onSelect={(date) =>
+                  onFiltersChange({ ...filters, dateTo: date ?? undefined })
+                }
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
         {/* Reset */}
         {hasActiveFilters && (

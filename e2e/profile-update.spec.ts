@@ -20,7 +20,10 @@ test.describe("Profile Update", () => {
 
     // 4. Update Name
     const newName = "Updated E2E User";
+    await page.getByLabel("名前").clear();
     await page.getByLabel("名前").fill(newName);
+    await page.getByLabel("名前").blur();
+
     // The previous test logic used .getByRole('button', { name: '更新する' })
     await page.getByRole("button", { name: "更新する" }).click();
 

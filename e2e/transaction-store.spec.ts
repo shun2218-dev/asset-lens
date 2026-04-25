@@ -25,7 +25,11 @@ test.describe("Transaction with Store Name", () => {
       .waitFor({ state: "visible", timeout: 15000 });
 
     // Fill form — scope combobox to 通常入力 tab panel
-    await page.getByLabel("金額").first().fill("980");
+    const amountInput = page.getByLabel("金額").first();
+    await amountInput.click();
+    await amountInput.fill("980");
+    await amountInput.blur();
+    await expect(amountInput).toHaveValue("980", { timeout: 5000 });
     const formPanel = page.getByLabel("通常入力");
     await formPanel.getByRole("combobox").click();
     await page.getByRole("option", { name: "食費" }).click();
@@ -46,8 +50,18 @@ test.describe("Transaction with Store Name", () => {
     ).toBeVisible({ timeout: 5000 });
 
     // Submit
-    await page.getByLabel("用途・メモ").fill("E2E Existing Store Test");
-    await page.getByRole("button", { name: "登録する" }).click();
+    const descInput = page.getByLabel("用途・メモ");
+    await descInput.clear();
+    await descInput.fill("E2E Existing Store Test");
+    await descInput.blur();
+    // Wait for the Radix Popover to fully finish its exit animation which locks pointer-events on the body
+    await expect(page.locator("[data-slot='popover-content']")).toBeHidden({
+      timeout: 5000,
+    });
+
+    const submitBtn = page.getByRole("button", { name: "登録する" });
+    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
+    await submitBtn.click({ position: { x: 5, y: 5 } });
     await expect(page.getByText("登録しました")).toBeVisible({
       timeout: 10000,
     });

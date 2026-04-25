@@ -12,6 +12,7 @@ export const auth = betterAuth({
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
       : process.env.BETTER_AUTH_URL,
+  trustedOrigins: ["http://localhost:3000"],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
@@ -29,4 +30,12 @@ export const auth = betterAuth({
       expiresIn: SECURITY_CONFIG.otp.expiresIn,
     }),
   ],
+  rateLimit: {
+    window: 60,
+    max: 1000,
+    customRules: {
+      "/sign-up/email": { window: 60, max: 1000 },
+      "/sign-in/email": { window: 60, max: 1000 },
+    },
+  },
 });

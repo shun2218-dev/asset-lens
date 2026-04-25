@@ -86,9 +86,10 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
   - `perf:` for performance improvements
 
 > **🧪 MANDATORY: Tests for every change**
-> - Every new or modified **server action** MUST have a corresponding `.test.ts` file
-> - Every new or modified **utility/lib function** MUST have unit tests
-> - Every new or modified **UI component** should have Storybook stories
+> - Every new or modified **Server Action** MUST have a corresponding `.test.ts` file
+> - Every new or modified **Utility/Lib function** MUST have unit tests
+> - Every new or modified **UI Component** should have Storybook stories
+> - Every new or modified **User-facing Feature or Page** MUST be covered by E2E tests (Playwright)
 > - Test files must be created/updated **in the same commit or before** the PR
 > - Run new tests immediately after writing them to confirm they pass
 > - **NEVER skip tests** — untested code will not be merged
@@ -97,7 +98,7 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 Before creating a PR, ensure:
 - [ ] Unit tests for all new/modified server actions and utilities
 - [ ] Storybook stories for all new/modified UI components
-- [ ] E2E tests for new user-facing features
+- [ ] E2E tests added/updated for new/modified user-facing features and flows
 - [ ] All tests pass (unit + E2E + lint)
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No lint errors (`npx biome check`)
