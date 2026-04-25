@@ -1,12 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { DuplicateCandidate } from "@/app/actions/duplicate";
 import { DuplicateBanner } from "@/components/features/duplicate/duplicate-banner";
 import { TemplateQuickAdd } from "@/components/features/template/template-quick-add";
+import { FinancialCalendar } from "@/components/features/transaction/financial-calendar";
 import { TransactionForm } from "@/components/features/transaction/transaction-form";
-import { TransactionList } from "@/components/features/transaction/transaction-list";
+import {
+  TransactionList,
+  type TransactionListHandle,
+} from "@/components/features/transaction/transaction-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,6 +59,10 @@ export function TransactionPageView({
     isExpense: boolean;
   } | null>(null);
 
+  // Calendar day selection
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const listRef = useRef<TransactionListHandle>(null);
+
   const handleTemplateSelect = useCallback(
     (template: SelectTransactionTemplate) => {
       setTemplateData({
@@ -66,6 +74,20 @@ export function TransactionPageView({
       });
     },
     [],
+  );
+
+  const handleDayClick = useCallback(
+    (date: Date) => {
+      if (selectedDate && date.getTime() === selectedDate.getTime()) {
+        // Deselect: clear filter
+        setSelectedDate(null);
+        listRef.current?.setDateFilter(undefined, undefined);
+      } else {
+        setSelectedDate(date);
+        listRef.current?.setDateFilter(date, date);
+      }
+    },
+    [selectedDate],
   );
 
   return (
@@ -83,7 +105,15 @@ export function TransactionPageView({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* 左側: 入力フォーム (1カラム) */}
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 space-y-6">
+          {/* カレンダー */}
+          <FinancialCalendar
+            currentMonth={currentMonth}
+            onDayClick={handleDayClick}
+            selectedDate={selectedDate}
+          />
+
+          {/* 入力フォーム */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -136,6 +166,7 @@ export function TransactionPageView({
         {/* 右側: 取引一覧 (2カラム) */}
         <div className="md:col-span-2">
           <TransactionList
+            ref={listRef}
             initialData={transactions}
             initialMetadata={metadata}
             currentMonth={currentMonth}
