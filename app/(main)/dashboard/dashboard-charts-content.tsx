@@ -10,6 +10,8 @@ const EMPTY_DASHBOARD: DashboardSummaryResult = {
   categoryStats: [],
   monthlyStats: [],
   categoryExpenses: [],
+  isFallback: false,
+  requestedMonth: "",
 };
 
 interface Props {

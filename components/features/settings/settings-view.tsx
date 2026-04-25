@@ -17,6 +17,7 @@ import { DeleteAccountButton } from "@/components/features/settings/delete-accou
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
 import { StoreNameMigrationTool } from "@/components/features/settings/store-name-migration-tool";
+import { StoreManager } from "@/components/features/store/store-manager";
 import { SubscriptionList } from "@/components/features/subscription/subscription-list";
 import { TemplateManager } from "@/components/features/template/template-manager";
 import {
@@ -31,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   SelectBudget,
   SelectCategory,
+  SelectStore,
   SelectTransactionTemplate,
   subscription,
 } from "@/db/schema";
@@ -52,6 +54,7 @@ interface SettingsViewProps {
   subscriptions: SelectSubscription[];
   budgets: BudgetWithCategory[];
   categories: SelectCategory[];
+  stores: SelectStore[];
   templates: SelectTransactionTemplate[];
 }
 
@@ -61,10 +64,11 @@ export function SettingsView({
   subscriptions,
   budgets,
   categories,
+  stores,
   templates,
 }: SettingsViewProps) {
   return (
-    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen">
+    <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen overflow-x-hidden">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold">設定</h1>
         <p className="text-muted-foreground">
@@ -75,8 +79,8 @@ export function SettingsView({
       <Separator />
 
       <Tabs defaultValue="account" className="space-y-6">
-        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-6 lg:w-210">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+          <TabsList className="inline-flex w-max sm:grid sm:w-full sm:grid-cols-6">
             <TabsTrigger value="account">アカウント</TabsTrigger>
             <TabsTrigger value="category">カテゴリ</TabsTrigger>
             <TabsTrigger value="budget">予算</TabsTrigger>
@@ -172,6 +176,9 @@ export function SettingsView({
 
         {/* --- タブ: データ管理 --- */}
         <TabsContent value="data" className="space-y-6">
+          {/* 店舗・サービス管理 */}
+          <StoreManager stores={stores} />
+
           {/* データ入出力 */}
           <Card>
             <CardHeader>
@@ -198,8 +205,8 @@ export function SettingsView({
                 <Store className="h-5 w-5" />
                 店舗名の一括設定
               </CardTitle>
-              <CardDescription>
-                用途欄から店舗名を抽出して設定します。半角スペースの前を店舗名、後を用途として分割します。プレビューを確認してから適用してください。
+              <CardDescription className="text-xs sm:text-sm">
+                用途欄から店舗名を抽出して設定します。プレビューを確認してから適用してください。
               </CardDescription>
             </CardHeader>
             <CardContent>

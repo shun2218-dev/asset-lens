@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getBudgets } from "@/app/actions/budget/get";
+import { getStores } from "@/app/actions/store/get";
 import { getTemplates } from "@/app/actions/template";
 
 export const metadata: Metadata = {
@@ -14,12 +15,13 @@ import { SettingsView } from "@/components/features/settings/settings-view";
 import { requireAuth } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
-  const [session, subscriptions, budgets, categories, templates] =
+  const [session, subscriptions, budgets, categories, stores, templates] =
     await Promise.all([
       requireAuth(),
       getSubscription(),
       getBudgets(),
       getCategories(),
+      getStores(),
       getTemplates(),
     ]);
 
@@ -29,6 +31,7 @@ export default async function SettingsPage() {
       subscriptions={subscriptions}
       budgets={budgets}
       categories={categories}
+      stores={stores}
       templates={templates}
     />
   );

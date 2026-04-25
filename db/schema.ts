@@ -18,6 +18,8 @@ export const category = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     type: text("type").default("expense").notNull(),
+    icon: text("icon"), // Lucide icon name (e.g., "utensils", "car")
+    color: text("color"), // Hex color (e.g., "#ef4444")
     userId: text("userId").references(() => user.id, { onDelete: "cascade" }),
     sortOrder: integer("sort_order").default(0),
     createdAt: timestamp("created_at", { precision: 0, withTimezone: true })

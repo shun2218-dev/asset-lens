@@ -101,7 +101,7 @@ export function SubscriptionList({ subscriptions }: SubscriptionListProps) {
                 {subscriptions.map((sub) => (
                   <div
                     key={sub.id}
-                    className={`flex items-center justify-between p-4 border rounded-lg bg-card shadow-sm transition-colors ${
+                    className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg bg-card shadow-sm transition-colors ${
                       editTarget?.id === sub.id ? "ring-2 ring-primary" : ""
                     }`}
                   >

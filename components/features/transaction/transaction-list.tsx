@@ -2,12 +2,22 @@
 
 import { Loader2, Receipt, SearchX } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
+import { BulkActionBar } from "@/components/features/transaction/bulk-action-bar";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
 import { TransactionFilters } from "@/components/features/transaction/transaction-filters";
 import { TransactionItem } from "@/components/features/transaction/transaction-item";
 import { TransactionSortHeader } from "@/components/features/transaction/transaction-sort-header";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -38,14 +48,24 @@ interface TransactionListProps {
 
 export type OptimisticDeleteFn = (id: string) => { restore: () => void };
 
-export function TransactionList({
-  initialData,
-  initialMetadata,
-  currentMonth,
-  categories,
-  stores,
-  showFilters = false,
-}: TransactionListProps) {
+export interface TransactionListHandle {
+  setDateFilter: (from?: Date, to?: Date) => void;
+}
+
+export const TransactionList = forwardRef<
+  TransactionListHandle,
+  TransactionListProps
+>(function TransactionList(
+  {
+    initialData,
+    initialMetadata,
+    currentMonth,
+    categories,
+    stores,
+    showFilters = false,
+  },
+  ref,
+) {
   // 状態管理
   const [transactions, setTransactions] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
@@ -53,6 +73,9 @@ export function TransactionList({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const isClientFetched = useRef(false);
+
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Initialize search from URL
   const initialSearch = searchParams.get("q") || undefined;
@@ -70,6 +93,12 @@ export function TransactionList({
     isClientFetched.current = false;
   }, [initialMetadata, initialData]);
 
+  // Clear selection when transactions change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally clears selection on data change
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [transactions]);
+
   const optimisticDelete: OptimisticDeleteFn = useCallback(
     (id: string) => {
       const prev = transactions;
@@ -80,6 +109,32 @@ export function TransactionList({
     },
     [transactions],
   );
+
+  // Selection handlers
+  const toggleSelection = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === transactions.length) {
+        return new Set();
+      }
+      return new Set(transactions.map((t) => t.id));
+    });
+  }, [transactions]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
 
   // データを取得する共通関数
   const fetchData = useCallback(
@@ -103,6 +158,19 @@ export function TransactionList({
       });
     },
     [currentMonth],
+  );
+
+  // Expose setDateFilter to parent via ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      setDateFilter: (from?: Date, to?: Date) => {
+        const newFilters = { ...filters, dateFrom: from, dateTo: to };
+        setFilters(newFilters);
+        fetchData(1, newFilters, sort);
+      },
+    }),
+    [filters, sort, fetchData],
   );
 
   // ページ変更時の処理
@@ -141,6 +209,15 @@ export function TransactionList({
     window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   };
 
+  // After bulk action, refetch current page
+  const handleBulkComplete = () => {
+    clearSelection();
+    fetchData(metadata.currentPage, filters, sort);
+  };
+
+  const isAllSelected =
+    transactions.length > 0 && selectedIds.size === transactions.length;
+
   return (
     <div className="relative space-y-4">
       {showFilters && (
@@ -152,6 +229,13 @@ export function TransactionList({
         />
       )}
 
+      <BulkActionBar
+        selectedIds={Array.from(selectedIds)}
+        categories={categories}
+        onComplete={handleBulkComplete}
+        onClear={clearSelection}
+      />
+
       {isPending && (
         <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -161,6 +245,14 @@ export function TransactionList({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-10">
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={toggleSelectAll}
+                aria-label="全て選択"
+                id="select-all-checkbox"
+              />
+            </TableHead>
             <TransactionSortHeader
               label="日付"
               field="date"
@@ -195,11 +287,14 @@ export function TransactionList({
               categories={categories}
               stores={stores}
               onOptimisticDelete={optimisticDelete}
+              isSelected={selectedIds.has(t.id)}
+              onToggleSelect={toggleSelection}
+              searchQuery={filters.searchQuery}
             />
           ))}
           {transactions.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center h-40">
+              <TableCell colSpan={7} className="text-center h-40">
                 <div className="flex flex-col items-center gap-2 py-4">
                   <div className="p-3 bg-muted/50 rounded-full">
                     {filters.searchQuery ? (
@@ -227,4 +322,4 @@ export function TransactionList({
       />
     </div>
   );
-}
+});

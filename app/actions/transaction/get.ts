@@ -74,13 +74,14 @@ export const getTransaction = createSafeAction<
       conditions.push(eq(transaction.categoryId, filters.categoryId));
     }
 
-    // Filter: text search (description + storeName)
+    // Filter: text search (description + storeName + category name)
     if (filters?.searchQuery && filters.searchQuery.trim()) {
       const query = `%${filters.searchQuery.trim()}%`;
       conditions.push(
         or(
           ilike(transaction.description, query),
           ilike(transaction.storeName, query),
+          ilike(category.name, query),
         ) as SQL,
       );
     }

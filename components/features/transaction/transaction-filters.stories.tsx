@@ -26,6 +26,8 @@ const mockCategories = [
     slug: "food",
     name: "食費",
     type: "expense",
+    icon: null,
+    color: null,
     userId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -36,6 +38,8 @@ const mockCategories = [
     slug: "transport",
     name: "交通費",
     type: "expense",
+    icon: null,
+    color: null,
     userId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -75,7 +79,9 @@ export const TypeSearchQuery: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
-    const searchInput = canvas.getByPlaceholderText("内容・店舗名で検索...");
+    const searchInput = canvas.getByPlaceholderText(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await userEvent.type(searchInput, "lunch");
 
     // Debounced at 300ms — wait for the callback to fire

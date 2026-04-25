@@ -1,6 +1,6 @@
 {
   "name": "asset-lens",
-  "version": "2.30.0",
+  "version": "2.31.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -45,6 +45,8 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "input-otp": "^1.4.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
     "next": "16.2.2",
     "next-themes": "^0.4.6",
