@@ -47,6 +47,8 @@ const mockBudgets = [
       name: "食費",
       slug: "food",
       type: "expense" as const,
+      icon: null,
+      color: null,
       userId: "user1",
       createdAt: new Date(),
       updatedAt: new Date(),
