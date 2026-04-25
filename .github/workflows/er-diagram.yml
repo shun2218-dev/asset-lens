@@ -1,0 +1,42 @@
+name: Update ER Diagram
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "db/schema.ts"
+
+jobs:
+  update-er-diagram:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Generate DBML and ER Diagram
+        run: npm run generate:dbml
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet docs/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit updated diagrams
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/schema.dbml docs/er-diagram.md
+          git commit -m "docs: auto-update ER diagram [skip ci]"
+          git push

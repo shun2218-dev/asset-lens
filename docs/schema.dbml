@@ -1,0 +1,252 @@
+table account {
+  id text [pk, not null]
+  account_id text [not null]
+  provider_id text [not null]
+  user_id text [not null]
+  access_token text
+  refresh_token text
+  id_token text
+  access_token_expires_at "timestamp (0) with time zone"
+  refresh_token_expires_at "timestamp (0) with time zone"
+  scope text
+  password text
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null]
+
+  indexes {
+    user_id [name: 'account_userId_idx']
+  }
+}
+
+table budget {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  category_id uuid
+  amount integer [not null]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    (user_id, category_id) [name: 'budget_userId_categoryId_idx']
+  }
+}
+
+table category {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name text [not null]
+  slug text [not null]
+  type text [not null, default: 'expense']
+  icon text
+  color text
+  userId text
+  sort_order integer [default: 0]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    userId [name: 'category_userId_idx']
+  }
+}
+
+table contact_inquiry {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name text [not null]
+  email text [not null]
+  category text [not null]
+  message text [not null]
+  status text [not null, default: 'new']
+  note text
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    status [name: 'contact_inquiry_status_idx']
+    created_at [name: 'contact_inquiry_created_at_idx']
+  }
+}
+
+table dismissed_duplicate {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  transaction_id_1 uuid [not null]
+  transaction_id_2 uuid [not null]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'dismissed_dup_userId_idx']
+    (transaction_id_1, transaction_id_2) [name: 'dismissed_dup_pair_idx']
+  }
+}
+
+table passkey {
+  id text [pk, not null]
+  name text
+  public_key text [not null]
+  user_id text [not null]
+  credential_id text [not null]
+  counter integer [not null]
+  device_type text [not null]
+  backed_up boolean [not null]
+  transports text
+  created_at "timestamp (0) with time zone"
+  aaguid text
+
+  indexes {
+    user_id [name: 'passkey_userId_idx']
+    credential_id [name: 'passkey_credentialID_idx']
+  }
+}
+
+table session {
+  id text [pk, not null]
+  expires_at "timestamp (0) with time zone" [not null]
+  token text [not null, unique]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null]
+  ip_address text
+  user_agent text
+  user_id text [not null]
+
+  indexes {
+    user_id [name: 'session_userId_idx']
+  }
+}
+
+table store {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  name text [not null]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'store_userId_idx']
+  }
+}
+
+table subscription {
+  id text [pk, not null]
+  user_id text [not null]
+  name text [not null]
+  amount integer [not null]
+  currency text [not null, default: 'JPY']
+  billing_cycle text [not null]
+  next_payment_date "timestamp (0) with time zone" [not null]
+  category text [not null]
+  status text [not null, default: 'active']
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'subscription_userId_idx']
+  }
+}
+
+table tag {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  name text [not null]
+  color text [not null, default: '#6366f1']
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'tag_userId_idx']
+  }
+}
+
+table transaction {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  amount integer [not null]
+  description text [not null]
+  store_name text
+  date date [not null, default: `now()`]
+  is_expense boolean [not null, default: true]
+  category text [not null]
+  category_id uuid
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'transactions_userId_idx']
+    (user_id, date) [name: 'transactions_userId_date_idx']
+    (user_id, store_name) [name: 'transactions_userId_storeName_idx']
+  }
+}
+
+table transaction_tag {
+  transaction_id uuid [not null]
+  tag_id uuid [not null]
+
+  indexes {
+    transaction_id [name: 'transaction_tag_txn_idx']
+    tag_id [name: 'transaction_tag_tag_idx']
+  }
+}
+
+table transaction_template {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  name text [not null]
+  amount integer [not null]
+  description text [default: '']
+  store_name text
+  category text [not null]
+  is_expense boolean [not null, default: true]
+  usage_count integer [not null, default: 0]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    user_id [name: 'template_userId_idx']
+  }
+}
+
+table user {
+  id text [pk, not null]
+  name text [not null]
+  email text [not null, unique]
+  email_verified boolean [not null, default: false]
+  image text
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+}
+
+table verification {
+  id text [pk, not null]
+  identifier text [not null]
+  value text [not null]
+  expires_at "timestamp (0) with time zone" [not null]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+  updated_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    identifier [name: 'verification_identifier_idx']
+  }
+}
+
+ref: account.user_id > user.id
+
+ref: budget.user_id - user.id
+
+ref: budget.category_id - category.id
+
+ref: dismissed_duplicate.user_id > user.id
+
+ref: passkey.user_id > user.id
+
+ref: session.user_id > user.id
+
+ref: store.user_id > user.id
+
+ref: subscription.user_id > user.id
+
+ref: tag.user_id > user.id
+
+ref: transaction.category_id > category.id
+
+ref: transaction_tag.transaction_id - transaction.id
+
+ref: transaction_tag.tag_id > tag.id
+
+ref: transaction_template.user_id > user.id
