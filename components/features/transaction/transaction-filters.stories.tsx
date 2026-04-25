@@ -79,7 +79,9 @@ export const TypeSearchQuery: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
-    const searchInput = canvas.getByPlaceholderText("内容・店舗名で検索...");
+    const searchInput = canvas.getByPlaceholderText(
+      "内容・店舗名・カテゴリで検索...",
+    );
     await userEvent.type(searchInput, "lunch");
 
     // Debounced at 300ms — wait for the callback to fire
