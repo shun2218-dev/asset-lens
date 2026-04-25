@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.32.0] - 2026-04-26
+
+### Added
+
+- **Spending Forecast Widget** — Project end-of-month spending based on daily rate with color-coded status (on_track / warning / over_budget). Compares against budget or 3-month historical average. (#136)
+- **Annual Report Page** — `/report` page with year navigation, annual summary cards (income, expense, balance), monthly breakdown table, category ranking, savings rate, and year-over-year comparison. (#32)
+- **Recurring Pattern Detection** — Automatically detect transactions that repeat monthly (same store, category, amount ±10%, 3+ months) and display as dashboard widget suggesting subscription registration. (#30)
+- **Transaction Tags** — `tag` and `transaction_tag` tables with CRUD server actions for custom tagging (e.g., "vacation", "business trip"). Many-to-many relation with transactions. Migration `0017_breezy_gauntlet.sql`. (#37)
+- **DB Schema Validation Tests** — 267+ tests comparing `schema.ts` against migration snapshots to catch drift. Validates table/column existence, notNull, primaryKey, and index counts for all tables. (#160)
+
+### Infrastructure
+
+- Test count: 434 → 743 (+309 tests)
+- New migration: `0017_breezy_gauntlet.sql` (tag + transaction_tag tables)
+
 ## [2.31.0] - 2026-04-26
 
 ### Added

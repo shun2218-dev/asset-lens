@@ -2,10 +2,13 @@
 
 import type { CategoryTrendItem } from "@/app/actions/analysis/get-category-trends";
 import type { DailyExpense } from "@/app/actions/analysis/get-daily-expenses";
+import type { ForecastResult } from "@/app/actions/analysis/get-spending-forecast";
 import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-progress";
 import { CategoryTrends } from "@/components/features/dashboard/widgets/category-trends";
 import { ExpenseHeatmap } from "@/components/features/dashboard/widgets/expense-heatmap";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
+import { RecurringPatterns } from "@/components/features/dashboard/widgets/recurring-patterns";
+import { SpendingForecast } from "@/components/features/dashboard/widgets/spending-forecast";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import type {
   SelectBudget,
@@ -31,6 +34,7 @@ type DashboardWidgetsProps = {
   currentMonth: string;
   categoryTrends: CategoryTrendItem[];
   dailyExpenses: DailyExpense[];
+  forecast: ForecastResult | null;
 };
 
 export function DashboardWidgets({
@@ -42,15 +46,22 @@ export function DashboardWidgets({
   currentMonth,
   categoryTrends,
   dailyExpenses,
+  forecast,
 }: DashboardWidgetsProps) {
   return (
     <>
-      {/* Budget progress */}
-      <BudgetProgress
-        budgets={budgets}
-        totalExpense={totalExpense}
-        categoryExpenses={categoryExpenses}
-      />
+      {/* Budget + Forecast row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <BudgetProgress
+          budgets={budgets}
+          totalExpense={totalExpense}
+          categoryExpenses={categoryExpenses}
+        />
+        {forecast && <SpendingForecast forecast={forecast} />}
+      </div>
+
+      {/* Recurring patterns */}
+      <RecurringPatterns />
 
       {/* Heatmap + Trends row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
