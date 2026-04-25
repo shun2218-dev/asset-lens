@@ -1,11 +1,18 @@
 "use client";
 
-import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
+import { parse } from "date-fns";
+import {
+  BarChart3,
+  CalendarClock,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import { MonthSelector } from "@/components/features/dashboard/month-selector";
 import { BudgetProgress } from "@/components/features/dashboard/widgets/budget-progress";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,7 +53,14 @@ type DashboardOverview = {
   summary: SummaryStats;
   previousSummary: SummaryStats;
   currentMonth: string;
+  isFallback?: boolean;
+  requestedMonth?: string;
 };
+
+function formatMonthLabel(month: string): string {
+  const date = parse(month, "yyyy-MM", new Date());
+  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+}
 
 type DashboardCharts = {
   monthlyStats: MonthlyStats[];
@@ -99,10 +113,14 @@ export function DashboardView({
   charts,
   widgets,
 }: DashboardViewProps) {
-  const { summary, previousSummary, currentMonth } = overview;
+  const { summary, previousSummary, currentMonth, isFallback, requestedMonth } =
+    overview;
   const { monthlyStats, categoryStats, categories } = charts;
   const { recentTransactions, storeRanking, budgets, categoryExpenses } =
     widgets;
+
+  const hasNoDataEver =
+    !isFallback && summary.totalIncome === 0 && summary.totalExpense === 0;
 
   const barData = monthlyStats.map((stat) => ({
     name: stat.month,
@@ -136,7 +154,22 @@ export function DashboardView({
         <MonthSelector currentMonth={currentMonth} />
       </div>
 
-      {summary.totalIncome === 0 && summary.totalExpense === 0 ? (
+      {isFallback && requestedMonth && (
+        <Alert
+          variant="default"
+          className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950"
+        >
+          <CalendarClock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertTitle className="text-blue-800 dark:text-blue-300">
+            {formatMonthLabel(requestedMonth)}のデータはまだありません
+          </AlertTitle>
+          <AlertDescription className="text-blue-700 dark:text-blue-400">
+            {formatMonthLabel(currentMonth)}のデータを表示しています。
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {hasNoDataEver ? (
         <EmptyState
           icon={BarChart3}
           title="まずは最初の取引を記録しましょう"
