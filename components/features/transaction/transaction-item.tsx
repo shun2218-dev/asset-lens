@@ -6,6 +6,7 @@ import type {
   SelectStore,
   SelectTransaction,
 } from "@/db/schema";
+import { HighlightMatch } from "@/lib/search-highlight";
 import { TransactionItemMenu } from "./transaction-item-menu";
 import type { OptimisticDeleteFn } from "./transaction-list";
 
@@ -16,6 +17,7 @@ export interface TransactionItemProps {
   onOptimisticDelete?: OptimisticDeleteFn;
   isSelected?: boolean;
   onToggleSelect?: (id: string) => void;
+  searchQuery?: string;
 }
 
 export function TransactionItem({
@@ -25,6 +27,7 @@ export function TransactionItem({
   onOptimisticDelete,
   isSelected = false,
   onToggleSelect,
+  searchQuery,
 }: TransactionItemProps) {
   return (
     <TableRow key={data.id} className={isSelected ? "bg-muted/50" : undefined}>
@@ -36,19 +39,28 @@ export function TransactionItem({
         />
       </TableCell>
       <TableCell>{format(data.date, "MM/dd")}</TableCell>
-      <TableCell>{data.description}</TableCell>
+      <TableCell>
+        <HighlightMatch text={data.description} query={searchQuery} />
+      </TableCell>
       <TableCell className="text-muted-foreground">
-        {data.storeName || "—"}
+        {data.storeName ? (
+          <HighlightMatch text={data.storeName} query={searchQuery} />
+        ) : (
+          "—"
+        )}
       </TableCell>
       <TableCell>
-        {
-          categories.find(
+        {(() => {
+          const catName = categories.find(
             (c) =>
               c.id === data.categoryId ||
               c.slug === data.category ||
               c.id === data.category,
-          )?.name
-        }
+          )?.name;
+          return catName ? (
+            <HighlightMatch text={catName} query={searchQuery} />
+          ) : null;
+        })()}
       </TableCell>
       <TableCell
         className={`text-right ${data.isExpense ? "text-red-600" : "text-green-700"}`}

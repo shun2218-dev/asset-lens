@@ -258,6 +258,7 @@ export function TransactionList({
               onOptimisticDelete={optimisticDelete}
               isSelected={selectedIds.has(t.id)}
               onToggleSelect={toggleSelection}
+              searchQuery={filters.searchQuery}
             />
           ))}
           {transactions.length === 0 && (
