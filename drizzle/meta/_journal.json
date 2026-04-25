@@ -120,6 +120,13 @@
       "when": 1777124924487,
       "tag": "0016_lyrical_shard",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1777132472074,
+      "tag": "0017_breezy_gauntlet",
+      "breakpoints": true
     }
   ]
 }
