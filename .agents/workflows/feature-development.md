@@ -94,6 +94,14 @@ Branch naming: `feature/`, `fix/`, `refactor/`, `docs/`, `chore/`
 > - Run new tests immediately after writing them to confirm they pass
 > - **NEVER skip tests** — untested code will not be merged
 
+> **🔍 MANDATORY: Test Impact Analysis (before every commit)**
+> When creating or editing a component/action, you MUST check for existing tests that may break:
+> 1. **Search for related tests**: `grep -r "ComponentName" --include="*.test.*" --include="*.stories.*" --include="*.spec.*"`
+> 2. **Unit tests** — Verify Props/args changes are reflected in test mocks and assertions
+> 3. **Storybook stories** — Verify new/changed Props are added to story `args`; check `play` functions for hardcoded text (placeholder, labels) that may have changed
+> 4. **E2E tests** — Verify selectors (`data-testid`, `aria-label`, `placeholder`) still match the updated UI
+> 5. **Run full test suite** to catch any regressions before committing
+
 ## 5. Quality Checklist (MANDATORY)
 Before creating a PR, ensure:
 - [ ] Unit tests for all new/modified server actions and utilities

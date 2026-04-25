@@ -2,7 +2,15 @@
 
 import { Loader2, Receipt, SearchX } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { BulkActionBar } from "@/components/features/transaction/bulk-action-bar";
 import { PaginationControl } from "@/components/features/transaction/pagination-control";
@@ -40,14 +48,24 @@ interface TransactionListProps {
 
 export type OptimisticDeleteFn = (id: string) => { restore: () => void };
 
-export function TransactionList({
-  initialData,
-  initialMetadata,
-  currentMonth,
-  categories,
-  stores,
-  showFilters = false,
-}: TransactionListProps) {
+export interface TransactionListHandle {
+  setDateFilter: (from?: Date, to?: Date) => void;
+}
+
+export const TransactionList = forwardRef<
+  TransactionListHandle,
+  TransactionListProps
+>(function TransactionList(
+  {
+    initialData,
+    initialMetadata,
+    currentMonth,
+    categories,
+    stores,
+    showFilters = false,
+  },
+  ref,
+) {
   // 状態管理
   const [transactions, setTransactions] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
@@ -140,6 +158,19 @@ export function TransactionList({
       });
     },
     [currentMonth],
+  );
+
+  // Expose setDateFilter to parent via ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      setDateFilter: (from?: Date, to?: Date) => {
+        const newFilters = { ...filters, dateFrom: from, dateTo: to };
+        setFilters(newFilters);
+        fetchData(1, newFilters, sort);
+      },
+    }),
+    [filters, sort, fetchData],
   );
 
   // ページ変更時の処理
@@ -291,4 +322,4 @@ export function TransactionList({
       />
     </div>
   );
-}
+});
