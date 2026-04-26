@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getBudgets } from "@/app/actions/budget/get";
+import { getSavingsGoals } from "@/app/actions/savings-goal/get";
 import { getStores } from "@/app/actions/store/get";
 import { getTemplates } from "@/app/actions/template";
 
@@ -15,15 +16,27 @@ import { SettingsView } from "@/components/features/settings/settings-view";
 import { requireAuth } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
-  const [session, subscriptions, budgets, categories, stores, templates] =
-    await Promise.all([
-      requireAuth(),
-      getSubscription(),
-      getBudgets(),
-      getCategories(),
-      getStores(),
-      getTemplates(),
-    ]);
+  const [
+    session,
+    subscriptions,
+    budgets,
+    categories,
+    stores,
+    templates,
+    savingsGoalsResult,
+  ] = await Promise.all([
+    requireAuth(),
+    getSubscription(),
+    getBudgets(),
+    getCategories(),
+    getStores(),
+    getTemplates(),
+    getSavingsGoals(),
+  ]);
+
+  const savingsGoals = savingsGoalsResult.success
+    ? savingsGoalsResult.data
+    : [];
 
   return (
     <SettingsView
@@ -33,6 +46,7 @@ export default async function SettingsPage() {
       categories={categories}
       stores={stores}
       templates={templates}
+      savingsGoals={savingsGoals}
     />
   );
 }

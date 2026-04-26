@@ -4,7 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Prevent horizontal scroll that causes fixed bottom-nav shift on mobile */
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
@@ -269,12 +270,20 @@ html[data-splash-done] [data-splash] {
 }
 
 @keyframes vt-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes vt-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* View Transition API — circular reveal for theme switch */
@@ -328,6 +337,22 @@ html.theme-transitioning::view-transition-new(root) {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Confetti animation for goal celebration */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti-fall {
+  animation: confetti-fall 2.5s ease-in-out forwards;
 }
 
 /* Respect user's motion preferences */

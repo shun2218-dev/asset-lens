@@ -265,6 +265,7 @@ export const userRelations = relations(user, ({ many }) => ({
   transactionTemplates: many(transactionTemplate),
   dismissedDuplicates: many(dismissedDuplicate),
   tags: many(tag),
+  savingsGoals: many(savingsGoal),
 }));
 
 export const storeRelations = relations(store, ({ one }) => ({
@@ -511,5 +512,40 @@ export const transactionTagRelations = relations(transactionTag, ({ one }) => ({
   tag: one(tag, {
     fields: [transactionTag.tagId],
     references: [tag.id],
+  }),
+}));
+
+export const savingsGoal = pgTable(
+  "savings_goal",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    targetAmount: integer("target_amount").notNull(),
+    currentAmount: integer("current_amount").default(0).notNull(),
+    deadline: date("deadline", { mode: "date" }),
+    icon: text("icon").default("piggy-bank").notNull(),
+    color: text("color").default("#6366f1").notNull(),
+    status: text("status").default("active").notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("savings_goal_userId_idx").on(table.userId)],
+);
+
+export type SelectSavingsGoal = InferSelectModel<typeof savingsGoal>;
+export type InsertSavingsGoal = InferInsertModel<typeof savingsGoal>;
+
+export const savingsGoalRelations = relations(savingsGoal, ({ one }) => ({
+  user: one(user, {
+    fields: [savingsGoal.userId],
+    references: [user.id],
   }),
 }));
