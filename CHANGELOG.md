@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.36.0] - 2026-04-26
+
+### Added
+- **Inbound email webhook**: Receive user replies via Resend inbound email (`/api/webhooks/inbound-email`). Replies are routed using `reply+{inquiryId}@asset-lens.com` addressing.
+- **Bidirectional reply tracking**: `inquiry_reply` table now has `direction` column (`outbound`/`inbound`) and `sender_email` to track both admin and user messages.
+- **Chat-style UI**: Inquiry detail page shows conversation timeline with admin messages right-aligned (blue) and user messages left-aligned (gray).
+
+### Changed
+- **Reply routing**: Admin replies now use `reply+{inquiryId}@asset-lens.com` as `replyTo` instead of admin's personal email, enabling automatic inbound routing.
+
+### Database
+- Migration `0022_inbound_email.sql`: Add `direction` column, rename `admin_email` to `sender_email`.
+
+### Tests
+- 817 total tests passing (8 new: 6 extractInquiryId + 2 reply action updates)
+
 ## [2.35.0] - 2026-04-26
 
 ### Added
