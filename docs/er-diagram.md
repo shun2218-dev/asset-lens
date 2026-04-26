@@ -75,6 +75,14 @@ erDiagram
         uuid transaction_id_2
         timestamp created_at
     }
+    inquiry_reply {
+        uuid id PK
+        uuid inquiry_id
+        text admin_email
+        text subject
+        text body
+        timestamp created_at
+    }
     passkey {
         text id PK
         text name

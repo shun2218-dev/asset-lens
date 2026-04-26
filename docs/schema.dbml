@@ -78,6 +78,19 @@ table dismissed_duplicate {
   }
 }
 
+table inquiry_reply {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  inquiry_id uuid [not null]
+  admin_email text [not null]
+  subject text [not null]
+  body text [not null]
+  created_at "timestamp (0) with time zone" [not null, default: `now()`]
+
+  indexes {
+    inquiry_id [name: 'inquiry_reply_inquiry_id_idx']
+  }
+}
+
 table passkey {
   id text [pk, not null]
   name text
