@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.35.0] - 2026-04-26
+
+### Added
+- **Admin Basic Auth**: Two-layer security for `/admin/*` routes — Basic Authentication at middleware level on top of existing session-based admin guard. Configured via `ADMIN_BASIC_USER` / `ADMIN_BASIC_PASS` environment variables.
+- **Inquiry reply**: Admin can reply to contact inquiries directly from the detail page. Replies are sent via Resend API with branded HTML template and stored in `inquiry_reply` table for history tracking.
+- **Reply history**: Timeline display of all past replies on the inquiry detail page, showing sender, subject, body, and timestamp.
+- **Auto status update**: Inquiry status automatically changes from `new` to `in_progress` when the first reply is sent.
+- **Database**: New `inquiry_reply` table (migration `0021_tiny_timeslip.sql`)
+- **Tests**: 15 new tests (9 proxy Basic Auth + 6 reply action)
+
+### Changed
+- **Expense heatmap**: Centered calendar grid within card on both PC and mobile views.
+
 ## [2.34.1] - 2026-04-26
 
 ### Fixed

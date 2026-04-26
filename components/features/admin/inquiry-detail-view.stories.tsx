@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import type { SelectContactInquiry } from "@/db/schema";
+import type { SelectContactInquiry, SelectInquiryReply } from "@/db/schema";
 import { InquiryDetailView } from "./inquiry-detail-view";
 
 const meta: Meta<typeof InquiryDetailView> = {
@@ -27,8 +27,19 @@ const mockInquiry: SelectContactInquiry = {
   updatedAt: new Date("2026-04-01T10:00:00"),
 };
 
+const mockReplies: SelectInquiryReply[] = [
+  {
+    id: "r1",
+    inquiryId: mockInquiry.id,
+    adminEmail: "admin@asset-lens.com",
+    subject: "Re: ご質問について",
+    body: "お問い合わせいただきありがとうございます。\n\nパスキーの追加ボタンは「設定 > セキュリティ」タブ内にございます。\n\nもし見つからない場合はお気軽にお問い合わせください。",
+    createdAt: new Date("2026-04-01T14:00:00"),
+  },
+];
+
 export const NewInquiry: Story = {
-  args: { inquiry: mockInquiry },
+  args: { inquiry: mockInquiry, replies: [] },
 };
 
 export const InProgressWithNote: Story = {
@@ -38,6 +49,18 @@ export const InProgressWithNote: Story = {
       status: "in_progress",
       note: "パスキー機能はv2.29.0で実装予定。リリース後にフォローアップ予定。",
     },
+    replies: [],
+  },
+};
+
+export const WithReplyHistory: Story = {
+  args: {
+    inquiry: {
+      ...mockInquiry,
+      status: "in_progress",
+      note: "初回返信済み",
+    },
+    replies: mockReplies,
   },
 };
 
@@ -48,6 +71,7 @@ export const Resolved: Story = {
       status: "resolved",
       note: "v2.29.0リリースに合わせて通知メール送信済み",
     },
+    replies: mockReplies,
   },
 };
 
@@ -61,5 +85,6 @@ export const BugReport: Story = {
       status: "in_progress",
       note: "UTF-8 BOM対応のPR作成中",
     },
+    replies: [],
   },
 };

@@ -154,12 +154,66 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
+// ─── Basic Auth for /admin/* ──────────────────────────────────────
+
+/**
+ * Verify Basic Auth credentials for admin routes.
+ * Returns a 401 response if credentials are missing or invalid,
+ * or null if authentication succeeds (or is not configured).
+ */
+export function checkAdminBasicAuth(request: NextRequest): NextResponse | null {
+  const user = process.env.ADMIN_BASIC_USER;
+  const pass = process.env.ADMIN_BASIC_PASS;
+
+  // If credentials are not configured, skip Basic Auth
+  if (!user || !pass) return null;
+
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Basic ")) {
+    return new NextResponse("Authentication required", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="Admin Area"' },
+    });
+  }
+
+  const base64 = authHeader.slice(6); // strip "Basic "
+  let decoded: string;
+  try {
+    decoded = atob(base64);
+  } catch {
+    return new NextResponse("Invalid credentials", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="Admin Area"' },
+    });
+  }
+
+  const [inputUser, ...passParts] = decoded.split(":");
+  const inputPass = passParts.join(":"); // password may contain ":"
+
+  if (inputUser !== user || inputPass !== pass) {
+    return new NextResponse("Invalid credentials", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="Admin Area"' },
+    });
+  }
+
+  return null; // auth passed
+}
+
+// ─── Main proxy ──────────────────────────────────────────────────
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 🎣 Honeypot: Rickroll malicious scanners before any other logic
   if (isHoneypotPath(pathname)) {
     return NextResponse.redirect(RICKROLL_URL, { status: 302 });
+  }
+
+  // 🔐 Basic Auth gate for admin routes (second layer on top of session auth)
+  if (pathname.startsWith("/admin")) {
+    const authResponse = checkAdminBasicAuth(request);
+    if (authResponse) return authResponse;
   }
 
   const correlationId =

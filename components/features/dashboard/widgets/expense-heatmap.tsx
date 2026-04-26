@@ -86,107 +86,112 @@ export function ExpenseHeatmap({
         <CardTitle className="text-base">🗓 支出ヒートマップ</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Weekday headers */}
-        <div
-          className="grid gap-[3px] mb-1"
-          style={{ gridTemplateColumns: `repeat(7, ${cellSize}px)` }}
-        >
-          {WEEKDAYS.map((day) => (
-            <div
-              key={day}
-              className="text-[10px] text-center text-muted-foreground font-medium"
-              style={{ width: cellSize }}
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+        <div className="flex flex-col items-center">
+          {/* Weekday headers */}
+          <div
+            className="grid gap-[3px] mb-1"
+            style={{ gridTemplateColumns: `repeat(7, ${cellSize}px)` }}
+          >
+            {WEEKDAYS.map((day) => (
+              <div
+                key={day}
+                className="text-[10px] text-center text-muted-foreground font-medium"
+                style={{ width: cellSize }}
+              >
+                {day}
+              </div>
+            ))}
+          </div>
 
-        {/* Calendar grid */}
-        <div className="relative">
-          {cells.map((row, ri) => (
-            <div
-              key={`row-${ri}-${row.map((c) => c.day).join(",")}`}
-              className="grid gap-[3px] mb-[3px]"
-              style={{ gridTemplateColumns: `repeat(7, ${cellSize}px)` }}
-            >
-              {row.map((cell) => {
-                if (cell.day === null) {
-                  return (
-                    <div
-                      key={`empty-${ri}-${cell.dateStr || Math.random()}`}
-                      style={{
-                        width: cellSize,
-                        height: cellSize,
-                      }}
-                    />
-                  );
-                }
+          {/* Calendar grid */}
+          <div className="relative">
+            {cells.map((row) => {
+              const rowKey = row.map((c) => c.day ?? "x").join("-");
+              return (
+                <div
+                  key={`row-${rowKey}`}
+                  className="grid gap-[3px] mb-[3px]"
+                  style={{ gridTemplateColumns: `repeat(7, ${cellSize}px)` }}
+                >
+                  {row.map((cell, colIdx) => {
+                    if (cell.day === null) {
+                      return (
+                        <div
+                          key={`empty-${rowKey}-${WEEKDAYS[colIdx]}`}
+                          style={{
+                            width: cellSize,
+                            height: cellSize,
+                          }}
+                        />
+                      );
+                    }
 
-                const intensity = getIntensity(cell.amount);
+                    const intensity = getIntensity(cell.amount);
 
-                return (
-                  // biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover, not interactive
-                  <div
-                    key={cell.dateStr}
-                    className={`rounded-sm cursor-default flex items-center justify-center text-[10px] transition-transform hover:scale-110 ${intensityColors[intensity]}`}
-                    style={{
-                      width: cellSize,
-                      height: cellSize,
-                    }}
-                    onMouseEnter={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setHoveredDay({
-                        date: cell.dateStr,
-                        amount: cell.amount,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                      });
-                    }}
-                    onMouseLeave={() => setHoveredDay(null)}
-                  >
-                    <span
-                      className={`${intensity >= 3 ? "text-white" : "text-foreground/70"}`}
-                    >
-                      {cell.day}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                    return (
+                      // biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover, not interactive
+                      <div
+                        key={cell.dateStr}
+                        className={`rounded-sm cursor-default flex items-center justify-center text-[10px] transition-transform hover:scale-110 ${intensityColors[intensity]}`}
+                        style={{
+                          width: cellSize,
+                          height: cellSize,
+                        }}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setHoveredDay({
+                            date: cell.dateStr,
+                            amount: cell.amount,
+                            x: rect.left + rect.width / 2,
+                            y: rect.top,
+                          });
+                        }}
+                        onMouseLeave={() => setHoveredDay(null)}
+                      >
+                        <span
+                          className={`${intensity >= 3 ? "text-white" : "text-foreground/70"}`}
+                        >
+                          {cell.day}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
 
-          {/* Tooltip */}
-          {hoveredDay && (
-            <div
-              className="fixed z-50 bg-popover text-popover-foreground border rounded-md px-2.5 py-1.5 text-xs shadow-md pointer-events-none"
-              style={{
-                left: hoveredDay.x,
-                top: hoveredDay.y - 40,
-                transform: "translateX(-50%)",
-              }}
-            >
-              <span className="font-medium">
-                {hoveredDay.date.split("-").slice(1).join("/")}
-              </span>
-              {" — "}
-              <span className="tabular-nums">
-                ¥{hoveredDay.amount.toLocaleString()}
-              </span>
-            </div>
-          )}
-        </div>
+            {/* Tooltip */}
+            {hoveredDay && (
+              <div
+                className="fixed z-50 bg-popover text-popover-foreground border rounded-md px-2.5 py-1.5 text-xs shadow-md pointer-events-none"
+                style={{
+                  left: hoveredDay.x,
+                  top: hoveredDay.y - 40,
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <span className="font-medium">
+                  {hoveredDay.date.split("-").slice(1).join("/")}
+                </span>
+                {" — "}
+                <span className="tabular-nums">
+                  ¥{hoveredDay.amount.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
 
-        {/* Legend */}
-        <div className="flex items-center gap-2 mt-3 justify-end">
-          <span className="text-[10px] text-muted-foreground">少</span>
-          {intensityColors.map((color) => (
-            <div
-              key={`legend-${color}`}
-              className={`w-3 h-3 rounded-sm ${color}`}
-            />
-          ))}
-          <span className="text-[10px] text-muted-foreground">多</span>
+          {/* Legend */}
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-[10px] text-muted-foreground">少</span>
+            {intensityColors.map((color) => (
+              <div
+                key={`legend-${color}`}
+                className={`w-3 h-3 rounded-sm ${color}`}
+              />
+            ))}
+            <span className="text-[10px] text-muted-foreground">多</span>
+          </div>
         </div>
       </CardContent>
     </Card>
