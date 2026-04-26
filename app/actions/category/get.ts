@@ -15,30 +15,33 @@ export async function getCategories() {
 
   if (!session) return [];
 
-  return getCategoriesCached(session.user.id)();
+  try {
+    return await getCategoriesCached(session.user.id)();
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
+    return [];
+  }
 }
 
 /** Cached category query — revalidated via categoryTag */
 function getCategoriesCached(userId: string) {
   return unstable_cache(
     async () => {
-      try {
-        const categories = await db
-          .select()
-          .from(category)
-          .where(or(isNull(category.userId), eq(category.userId, userId)))
-          .orderBy(asc(category.sortOrder), asc(category.createdAt));
+      // Do NOT catch errors here — unstable_cache caches return values,
+      // including error-case empty arrays. Let errors propagate so the
+      // cache entry is not poisoned with an empty result.
+      const categories = await db
+        .select()
+        .from(category)
+        .where(or(isNull(category.userId), eq(category.userId, userId)))
+        .orderBy(asc(category.sortOrder), asc(category.createdAt));
 
-        return categories;
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        return [];
-      }
+      return categories;
     },
-    [`categories-${userId}`],
+    [`categories-v2-${userId}`],
     {
       tags: [categoryTag(userId)],
-      revalidate: 3600, // 1 hour fallback
+      revalidate: 300, // 5 min fallback
     },
   );
 }
