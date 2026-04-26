@@ -78,7 +78,8 @@ erDiagram
     inquiry_reply {
         uuid id PK
         uuid inquiry_id
-        text admin_email
+        text direction
+        text sender_email
         text subject
         text body
         timestamp created_at

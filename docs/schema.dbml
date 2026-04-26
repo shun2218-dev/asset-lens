@@ -81,7 +81,8 @@ table dismissed_duplicate {
 table inquiry_reply {
   id uuid [pk, not null, default: `gen_random_uuid()`]
   inquiry_id uuid [not null]
-  admin_email text [not null]
+  direction text [not null, default: 'outbound']
+  sender_email text [not null]
   subject text [not null]
   body text [not null]
   created_at "timestamp (0) with time zone" [not null, default: `now()`]
