@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.34.1] - 2026-04-26
+
+### Fixed
+- **Dashboard category display**: Fixed categories showing as "不明" (unknown) due to `unstable_cache` caching empty arrays on DB errors during deployment. Moved error handling outside cache function to prevent cache poisoning. Bumped cache key to invalidate stale entries.
+
 ## [2.34.0] - 2026-04-26
 
 ### Added
