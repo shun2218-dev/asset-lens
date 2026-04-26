@@ -576,8 +576,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "admin_email": {
-          "name": "admin_email",
+        "direction": {
+          "name": "direction",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'outbound'"
+        },
+        "sender_email": {
+          "name": "sender_email",
           "type": "text",
           "primaryKey": false,
           "notNull": true
