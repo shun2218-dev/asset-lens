@@ -88,10 +88,26 @@ describe("Cron: process-subscriptions", () => {
       nextPaymentDate: new Date("2024-01-01"),
     };
 
-    // Mock db.select to return one sub
-    const whereMock = vi.fn().mockResolvedValue([mockSub]);
-    const fromMock = vi.fn().mockReturnValue({ where: whereMock });
-    (db.select as any).mockReturnValue({ from: fromMock });
+    // First db.select call returns subscriptions, second returns categories
+    let selectCallCount = 0;
+    const mockCategories = [
+      { id: "cat-ent", slug: "entertainment", name: "娯楽" },
+      { id: "cat-other", slug: "other", name: "その他" },
+    ];
+
+    (db.select as any).mockImplementation(() => {
+      selectCallCount++;
+      if (selectCallCount === 1) {
+        // subscription query
+        const whereMock = vi.fn().mockResolvedValue([mockSub]);
+        const fromMock = vi.fn().mockReturnValue({ where: whereMock });
+        return { from: fromMock };
+      } else {
+        // category query
+        const fromMock = vi.fn().mockResolvedValue(mockCategories);
+        return { from: fromMock };
+      }
+    });
 
     // Mock db.transaction
     // The implementation uses db.transaction(async (tx) => { ... })

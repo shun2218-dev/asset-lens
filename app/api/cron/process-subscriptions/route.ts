@@ -2,7 +2,7 @@ import { addMonths, addYears } from "date-fns";
 import { and, eq, lte } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { subscription, transaction } from "@/db/schema";
+import { category, subscription, transaction } from "@/db/schema";
 
 export async function GET(req: Request) {
   // 1. セキュリティチェック (Vercel Cronからのアクセスか確認)
@@ -13,8 +13,6 @@ export async function GET(req: Request) {
 
   try {
     // 2. 「次回支払日」が「現在時刻」を過ぎているアクティブなサブスクを取得
-    // ※ 日本時間の0時に実行する場合、UTCだと前日の15時なので、
-    //    多少のズレを考慮して「現在時刻以下(lte)」で検索するのが安全です。
     const dueSubscriptions = await db
       .select()
       .from(subscription)
@@ -29,17 +27,31 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: "No subscriptions due today." });
     }
 
+    // Fetch all categories for slug lookup
+    const allCategories = await db.select().from(category);
+    const slugToIdMap = new Map(allCategories.map((c) => [c.slug, c.id]));
+
     // 3. 該当するサブスクを処理
     const results = await Promise.all(
       dueSubscriptions.map(async (sub) => {
         return db.transaction(async (tx) => {
+          // Resolve category slug to categoryId
+          const categoryId =
+            slugToIdMap.get(sub.category) ||
+            slugToIdMap.get("other") ||
+            allCategories[0]?.id;
+
+          if (!categoryId) {
+            throw new Error(`No category found for subscription: ${sub.name}`);
+          }
+
           // A. 家計簿(Transaction)にコピーを作成
           await tx.insert(transaction).values({
             userId: sub.userId,
             amount: sub.amount,
             description: "サブスク",
-            storeName: sub.name, // "Netflix" など
-            category: sub.category,
+            storeName: sub.name,
+            categoryId,
             date: new Date(),
             isExpense: true,
           });

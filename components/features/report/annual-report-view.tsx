@@ -130,9 +130,9 @@ function CategoryRanking({
           const percentage =
             totalExpense > 0 ? Math.round((cat.total / totalExpense) * 100) : 0;
           return (
-            <div key={cat.category} className="space-y-1">
+            <div key={cat.categoryId} className="space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">{cat.category}</span>
+                <span className="font-medium">{cat.categoryId}</span>
                 <span className="text-muted-foreground tabular-nums">
                   ¥{cat.total.toLocaleString()} ({percentage}%)
                 </span>

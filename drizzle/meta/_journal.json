@@ -134,6 +134,13 @@
       "when": 1777134514522,
       "tag": "0018_military_shinko_yamashiro",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1777165559521,
+      "tag": "0019_next_inhumans",
+      "breakpoints": true
     }
   ]
 }

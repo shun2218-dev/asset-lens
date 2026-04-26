@@ -40,8 +40,7 @@ interface TransactionItemMenuProps {
     amount: number;
     description: string;
     storeName?: string | null;
-    category: string;
-    categoryId?: string | null;
+    categoryId: string;
     date: Date;
     isExpense: boolean;
   };
@@ -145,14 +144,7 @@ export function TransactionItemMenu({
               amount: transaction.amount,
               description: transaction.description,
               storeName: transaction.storeName ?? "",
-              category:
-                transaction.categoryId ??
-                categories.find(
-                  (c) =>
-                    c.slug === transaction.category ||
-                    c.id === transaction.category,
-                )?.id ??
-                "",
+              category: transaction.categoryId,
               date: transaction.date,
               isExpense: transaction.isExpense,
             }}

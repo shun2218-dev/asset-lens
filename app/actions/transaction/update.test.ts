@@ -74,7 +74,6 @@ describe("updateTransaction", () => {
       expect.objectContaining({
         amount: 2000,
         description: "Updated Transaction",
-        category: "transport",
         categoryId: "cat-uuid-456",
         date: mockData.date,
       }),

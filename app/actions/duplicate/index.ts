@@ -35,7 +35,7 @@ export type DuplicateCandidate = {
     amount: number;
     description: string | null;
     storeName: string | null;
-    category: string;
+    categoryId: string;
     date: Date;
   };
   transaction2: {
@@ -43,7 +43,7 @@ export type DuplicateCandidate = {
     amount: number;
     description: string | null;
     storeName: string | null;
-    category: string;
+    categoryId: string;
     date: Date;
   };
 };
@@ -61,7 +61,7 @@ export const getDuplicates = createSafeAction<void, DuplicateCandidate[]>(
         amount: transaction.amount,
         description: transaction.description,
         storeName: transaction.storeName,
-        category: transaction.category,
+        categoryId: transaction.categoryId,
         date: transaction.date,
       })
       .from(transaction)

@@ -47,7 +47,6 @@ describe("getSummary", () => {
       amount: 1000,
       date: new Date("2024-01-01"),
       isExpense: true,
-      category: "food",
       categoryId: "cat-1",
     },
     {
@@ -55,7 +54,6 @@ describe("getSummary", () => {
       amount: 5000,
       date: new Date("2024-01-15"),
       isExpense: false, // Income
-      category: "salary",
       categoryId: "cat-2",
     },
     {
@@ -63,7 +61,6 @@ describe("getSummary", () => {
       amount: 2000,
       date: new Date("2024-02-01"), // Different month
       isExpense: true,
-      category: "transport",
       categoryId: "cat-3",
     },
   ];
@@ -85,7 +82,7 @@ describe("getSummary", () => {
     expect(result.data.summary.totalExpense).toBe(1000);
     expect(result.data.summary.balance).toBe(4000);
     expect(result.data.categoryStats).toHaveLength(1);
-    expect(result.data.categoryStats[0].category).toBe("cat-1");
+    expect(result.data.categoryStats[0].categoryId).toBe("cat-1");
     expect(result.data.monthlyStats).toHaveLength(2);
     expect(result.data.monthlyStats).toEqual(
       expect.arrayContaining([

@@ -2,11 +2,11 @@
 
 import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { transaction } from "@/db/schema";
+import { category, transaction } from "@/db/schema";
 import { createSafeAction } from "@/lib/actions/safe-action";
 
 interface SuggestionResult {
-  categories: Array<{ category: string; count: number }>;
+  categories: Array<{ categoryId: string; slug: string; count: number }>;
   storeName: string | null;
 }
 
@@ -21,28 +21,37 @@ export const suggestFromDescription = createSafeAction<
 
     const results = await db
       .select({
-        category: transaction.category,
+        categoryId: transaction.categoryId,
+        slug: category.slug,
         storeName: transaction.storeName,
         count: sql<number>`count(*)::int`,
       })
       .from(transaction)
+      .innerJoin(category, eq(transaction.categoryId, category.id))
       .where(
         and(
           eq(transaction.userId, userId),
           ilike(transaction.description, `%${description}%`),
         ),
       )
-      .groupBy(transaction.category, transaction.storeName)
+      .groupBy(transaction.categoryId, category.slug, transaction.storeName)
       .orderBy(desc(sql`count(*)`))
       .limit(10);
 
-    const categoryMap = new Map<string, number>();
+    const categoryMap = new Map<string, { slug: string; count: number }>();
     let topStoreName: string | null = null;
     let topStoreCount = 0;
 
     for (const row of results) {
-      const existing = categoryMap.get(row.category) ?? 0;
-      categoryMap.set(row.category, existing + row.count);
+      const existing = categoryMap.get(row.categoryId);
+      if (existing) {
+        existing.count += row.count;
+      } else {
+        categoryMap.set(row.categoryId, {
+          slug: row.slug,
+          count: row.count,
+        });
+      }
 
       if (row.storeName && row.count > topStoreCount) {
         topStoreName = row.storeName;
@@ -51,7 +60,7 @@ export const suggestFromDescription = createSafeAction<
     }
 
     const categories = Array.from(categoryMap.entries())
-      .map(([category, count]) => ({ category, count }))
+      .map(([categoryId, { slug, count }]) => ({ categoryId, slug, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 

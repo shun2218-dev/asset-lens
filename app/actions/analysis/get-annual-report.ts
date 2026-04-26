@@ -14,7 +14,7 @@ export type MonthlyBreakdown = {
 };
 
 export type CategoryAnnualStat = {
-  category: string;
+  categoryId: string;
   total: number;
   monthlyAmounts: { month: string; amount: number }[];
 };
@@ -104,7 +104,7 @@ export const getAnnualReport = createSafeAction<
 
     for (const t of yearTransactions) {
       if (!t.isExpense) continue;
-      const cat = t.category;
+      const cat = t.categoryId;
       if (!categoryMap.has(cat)) {
         categoryMap.set(cat, { total: 0, monthly: new Map() });
       }
@@ -120,8 +120,8 @@ export const getAnnualReport = createSafeAction<
     const categoryStats: CategoryAnnualStat[] = Array.from(
       categoryMap.entries(),
     )
-      .map(([category, data]) => ({
-        category,
+      .map(([categoryId, data]) => ({
+        categoryId,
         total: data.total,
         monthlyAmounts: Array.from(monthlyMap.keys()).map((month) => ({
           month,

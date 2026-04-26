@@ -48,8 +48,9 @@ export const transaction = pgTable(
     storeName: text("store_name"), // 店舗名・サービス名（nullable、後から一括更新可能）
     date: date("date", { mode: "date" }).defaultNow().notNull(),
     isExpense: boolean("is_expense").default(true).notNull(), // true=支出, false=収入
-    category: text("category").notNull(), // 初期は単純なテキスト、将来的に別テーブル化も検討
-    categoryId: uuid("category_id").references(() => category.id),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => category.id),
     createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -356,7 +357,9 @@ export const transactionTemplate = pgTable(
     amount: integer("amount").notNull(),
     description: text("description").default(""),
     storeName: text("store_name"),
-    category: text("category").notNull(),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => category.id),
     isExpense: boolean("is_expense").default(true).notNull(),
     usageCount: integer("usage_count").default(0).notNull(),
     createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
