@@ -12,6 +12,7 @@ erDiagram
     budget ||--|| category : "category_id"
     dismissed_duplicate }o--|| user : "user_id"
     passkey }o--|| user : "user_id"
+    savings_goal }o--|| user : "user_id"
     session }o--|| user : "user_id"
     store }o--|| user : "user_id"
     subscription }o--|| user : "user_id"
@@ -86,6 +87,19 @@ erDiagram
         text transports
         timestamp created_at
         text aaguid
+    }
+    savings_goal {
+        uuid id PK
+        text user_id FK
+        text name
+        integer target_amount
+        integer current_amount
+        date deadline
+        text icon
+        text color
+        text status
+        timestamp created_at
+        timestamp updated_at
     }
     session {
         text id PK
