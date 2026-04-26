@@ -40,10 +40,14 @@ async function verifyWebhookSignature(
 
   try {
     // Use Resend SDK's built-in verification
-    resend.webhooks.verify(payload, {
-      "svix-id": headers.svixId,
-      "svix-timestamp": headers.svixTimestamp,
-      "svix-signature": headers.svixSignature,
+    resend.webhooks.verify({
+      payload,
+      headers: {
+        id: headers.svixId,
+        timestamp: headers.svixTimestamp,
+        signature: headers.svixSignature,
+      },
+      webhookSecret: secret,
     });
     return true;
   } catch {
