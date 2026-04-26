@@ -240,6 +240,8 @@ describe("checkAdminBasicAuth", () => {
   });
 
   it("should skip auth when env vars are not set", () => {
+    delete process.env.ADMIN_BASIC_USER;
+    delete process.env.ADMIN_BASIC_PASS;
     const req = createRequest("/admin/inquiries");
     const result = checkAdminBasicAuth(req);
     expect(result).toBeNull();

@@ -111,10 +111,17 @@ describe("replyToInquiry", () => {
       expect.objectContaining({
         to: "user@example.com",
         subject: expect.stringContaining("AssetLens"),
+        replyTo: expect.stringContaining(`reply+${validInput.inquiryId}@`),
       }),
     );
-    // Should insert reply record
+    // Should insert reply record with direction
     expect(mockDb.insert).toHaveBeenCalled();
+    expect(mockDb.values).toHaveBeenCalledWith(
+      expect.objectContaining({
+        direction: "outbound",
+        senderEmail: "admin@example.com",
+      }),
+    );
   });
 
   it("should auto-update status from new to in_progress", async () => {

@@ -470,7 +470,10 @@ export const inquiryReply = pgTable(
     inquiryId: uuid("inquiry_id")
       .notNull()
       .references(() => contactInquiry.id, { onDelete: "cascade" }),
-    adminEmail: text("admin_email").notNull(),
+    direction: text("direction", { enum: ["outbound", "inbound"] })
+      .notNull()
+      .default("outbound"),
+    senderEmail: text("sender_email").notNull(),
     subject: text("subject").notNull(),
     body: text("body").notNull(),
     createdAt: timestamp("created_at", { precision: 0, withTimezone: true })

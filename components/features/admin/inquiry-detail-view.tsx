@@ -226,39 +226,51 @@ export function InquiryDetailView({
             </CardContent>
           </Card>
 
-          {/* Reply History */}
+          {/* Reply History — Chat Style */}
           {replies.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  返信履歴（{replies.length}件）
+                  やりとり（{replies.length}件）
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {replies.map((reply) => (
-                    <div
-                      key={reply.id}
-                      className="border rounded-lg p-4 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">{reply.subject}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {format(
-                            new Date(reply.createdAt),
-                            "yyyy/MM/dd HH:mm",
-                            { locale: ja },
-                          )}
-                        </p>
+                  {replies.map((reply) => {
+                    const isOutbound = reply.direction === "outbound";
+                    return (
+                      <div
+                        key={reply.id}
+                        className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}
+                      >
+                        <div
+                          className={`max-w-[80%] rounded-lg p-4 space-y-2 ${
+                            isOutbound
+                              ? "bg-primary/10 border-l-4 border-primary"
+                              : "bg-muted border-l-4 border-muted-foreground/30"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-4">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {isOutbound ? "🛡️ Admin" : "👤 ユーザー"}:{" "}
+                              {reply.senderEmail}
+                            </p>
+                            <p className="text-xs text-muted-foreground whitespace-nowrap">
+                              {format(
+                                new Date(reply.createdAt),
+                                "yyyy/MM/dd HH:mm",
+                                { locale: ja },
+                              )}
+                            </p>
+                          </div>
+                          <p className="text-sm font-medium">{reply.subject}</p>
+                          <div className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                            {reply.body}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
-                        {reply.body}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        送信者: {reply.adminEmail}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

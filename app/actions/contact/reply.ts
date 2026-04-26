@@ -39,13 +39,15 @@ export async function replyToInquiry(input: ReplyInput) {
   }
 
   const emailFrom = process.env.EMAIL_FROM || "onboarding@resend.dev";
+  const replyDomain = process.env.REPLY_DOMAIN || "asset-lens.com";
+  const replyToAddress = `reply+${inquiryId}@${replyDomain}`;
 
   try {
     // Send reply email via Resend
     await resend.emails.send({
       from: emailFrom,
       to: inquiry.email,
-      replyTo: session.user.email,
+      replyTo: replyToAddress,
       subject: `【AssetLens】${subject}`,
       html: getInquiryReplyTemplate({
         recipientName: inquiry.name,
@@ -58,7 +60,8 @@ export async function replyToInquiry(input: ReplyInput) {
     // Save reply record
     await db.insert(schema.inquiryReply).values({
       inquiryId,
-      adminEmail: session.user.email,
+      direction: "outbound",
+      senderEmail: session.user.email,
       subject,
       body,
     });
