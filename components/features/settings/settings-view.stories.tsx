@@ -60,6 +60,7 @@ export const Default: Story = {
     subscriptions: mockSubscriptions,
     stores: [],
     templates: [],
+    savingsGoals: [],
   },
 };
 
@@ -69,5 +70,6 @@ export const Empty: Story = {
     subscriptions: [],
     stores: [],
     templates: [],
+    savingsGoals: [],
   },
 };

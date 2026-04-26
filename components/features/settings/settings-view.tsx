@@ -13,6 +13,7 @@ import { PasswordSettings } from "@/components/features/auth/password-settings";
 import { BudgetSettings } from "@/components/features/budget/budget-settings";
 import { CategoryManager } from "@/components/features/category/category-manager";
 import { ReplayTourButton } from "@/components/features/onboarding/replay-tour-button";
+import { SavingsGoalManager } from "@/components/features/savings/savings-goal-manager";
 import { DeleteAccountButton } from "@/components/features/settings/delete-account-button";
 import { ExportButton } from "@/components/features/settings/export-button";
 import { ImportButton } from "@/components/features/settings/import-button";
@@ -32,6 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   SelectBudget,
   SelectCategory,
+  SelectSavingsGoal,
   SelectStore,
   SelectTransactionTemplate,
   subscription,
@@ -56,6 +58,7 @@ interface SettingsViewProps {
   categories: SelectCategory[];
   stores: SelectStore[];
   templates: SelectTransactionTemplate[];
+  savingsGoals: SelectSavingsGoal[];
 }
 
 export function SettingsView({
@@ -66,6 +69,7 @@ export function SettingsView({
   categories,
   stores,
   templates,
+  savingsGoals,
 }: SettingsViewProps) {
   return (
     <main className="container max-w-5xl px-4 py-10 pb-24 md:pb-10 space-y-8 mx-auto min-h-screen overflow-x-hidden">
@@ -80,10 +84,11 @@ export function SettingsView({
 
       <Tabs defaultValue="account" className="space-y-6">
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
-          <TabsList className="inline-flex w-max sm:grid sm:w-full sm:grid-cols-6">
+          <TabsList className="inline-flex w-max sm:grid sm:w-full sm:grid-cols-7">
             <TabsTrigger value="account">アカウント</TabsTrigger>
             <TabsTrigger value="category">カテゴリ</TabsTrigger>
             <TabsTrigger value="budget">予算</TabsTrigger>
+            <TabsTrigger value="savings">貯蓄目標</TabsTrigger>
             <TabsTrigger value="template">テンプレート</TabsTrigger>
             <TabsTrigger value="data">データ管理</TabsTrigger>
             <TabsTrigger value="subscription">サブスク</TabsTrigger>
@@ -154,6 +159,11 @@ export function SettingsView({
         {/* --- タブ: 予算管理 --- */}
         <TabsContent value="budget" className="space-y-6">
           <BudgetSettings budgets={budgets} categories={categories} />
+        </TabsContent>
+
+        {/* --- タブ: 貯蓄目標管理 --- */}
+        <TabsContent value="savings" className="space-y-6">
+          <SavingsGoalManager initialGoals={savingsGoals} />
         </TabsContent>
 
         {/* --- タブ: テンプレート管理 --- */}

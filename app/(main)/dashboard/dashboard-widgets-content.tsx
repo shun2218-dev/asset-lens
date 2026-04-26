@@ -5,6 +5,7 @@ import { getStoreRanking } from "@/app/actions/analysis/get-store-ranking";
 import type { DashboardSummaryResult } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getSummaryWithComparison } from "@/app/actions/analysis/get-summary-with-comparison";
 import { getBudgets } from "@/app/actions/budget/get";
+import { getSavingsGoals } from "@/app/actions/savings-goal/get";
 import { getTransaction } from "@/app/actions/transaction/get";
 import { DashboardWidgets } from "@/components/features/dashboard/dashboard-widgets";
 
@@ -32,6 +33,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
     trendsResult,
     dailyResult,
     forecastResult,
+    savingsGoalsResult,
   ] = await Promise.all([
     getSummaryWithComparison(currentMonth),
     getTransaction({ page: 1, month: currentMonth }),
@@ -40,6 +42,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
     getCategoryTrends(currentMonth),
     getDailyExpenses(currentMonth),
     getSpendingForecast(currentMonth),
+    getSavingsGoals(),
   ]);
 
   const data = summaryResult.success
@@ -52,6 +55,9 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
   const categoryTrends = trendsResult.success ? trendsResult.data : [];
   const dailyExpenses = dailyResult.success ? dailyResult.data : [];
   const forecast = forecastResult.success ? forecastResult.data : null;
+  const savingsGoals = savingsGoalsResult.success
+    ? savingsGoalsResult.data
+    : [];
 
   return (
     <DashboardWidgets
@@ -64,6 +70,7 @@ export async function DashboardWidgetsContent({ currentMonth }: Props) {
       categoryTrends={categoryTrends}
       dailyExpenses={dailyExpenses}
       forecast={forecast}
+      savingsGoals={savingsGoals}
     />
   );
 }
