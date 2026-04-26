@@ -132,7 +132,6 @@ erDiagram
         text store_name
         date date
         boolean is_expense
-        text category
         uuid category_id FK
         timestamp created_at
         timestamp updated_at
@@ -148,7 +147,7 @@ erDiagram
         integer amount
         text description
         text store_name
-        text category
+        uuid category_id
         boolean is_expense
         integer usage_count
         timestamp created_at
@@ -175,4 +174,4 @@ erDiagram
 
 ---
 
-*Last updated: 2026-04-25*
+*Last updated: 2026-04-26*
