@@ -31,10 +31,20 @@ const mockReplies: SelectInquiryReply[] = [
   {
     id: "r1",
     inquiryId: mockInquiry.id,
-    adminEmail: "admin@asset-lens.com",
+    direction: "outbound",
+    senderEmail: "admin@asset-lens.com",
     subject: "Re: ご質問について",
     body: "お問い合わせいただきありがとうございます。\n\nパスキーの追加ボタンは「設定 > セキュリティ」タブ内にございます。\n\nもし見つからない場合はお気軽にお問い合わせください。",
     createdAt: new Date("2026-04-01T14:00:00"),
+  },
+  {
+    id: "r2",
+    inquiryId: mockInquiry.id,
+    direction: "inbound",
+    senderEmail: "tanaka@example.com",
+    subject: "Re: ご質問について",
+    body: "ご回答ありがとうございます。\n設定 > セキュリティタブを確認したところ、パスキーの追加ボタンを見つけることができました。\n無事解決しました。",
+    createdAt: new Date("2026-04-02T10:30:00"),
   },
 ];
 
