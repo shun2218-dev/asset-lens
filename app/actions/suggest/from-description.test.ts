@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 const mockDb = {
   select: vi.fn(),
   from: vi.fn(),
+  innerJoin: vi.fn(),
   where: vi.fn(),
   groupBy: vi.fn(),
   orderBy: vi.fn(),
@@ -17,34 +18,42 @@ vi.mock("@/db", () => ({
         from: () => {
           mockDb.from();
           return {
-            where: () => {
-              mockDb.where();
+            innerJoin: () => {
+              mockDb.innerJoin();
               return {
-                groupBy: () => {
-                  mockDb.groupBy();
+                where: () => {
+                  mockDb.where();
                   return {
-                    orderBy: () => {
-                      mockDb.orderBy();
+                    groupBy: () => {
+                      mockDb.groupBy();
                       return {
-                        limit: () => {
-                          mockDb.limit();
-                          return Promise.resolve([
-                            {
-                              category: "food",
-                              storeName: "Lawson",
-                              count: 5,
+                        orderBy: () => {
+                          mockDb.orderBy();
+                          return {
+                            limit: () => {
+                              mockDb.limit();
+                              return Promise.resolve([
+                                {
+                                  categoryId: "cat-1",
+                                  slug: "food",
+                                  storeName: "Lawson",
+                                  count: 5,
+                                },
+                                {
+                                  categoryId: "cat-1",
+                                  slug: "food",
+                                  storeName: "FamilyMart",
+                                  count: 3,
+                                },
+                                {
+                                  categoryId: "cat-2",
+                                  slug: "daily",
+                                  storeName: "Lawson",
+                                  count: 2,
+                                },
+                              ]);
                             },
-                            {
-                              category: "food",
-                              storeName: "FamilyMart",
-                              count: 3,
-                            },
-                            {
-                              category: "daily",
-                              storeName: "Lawson",
-                              count: 2,
-                            },
-                          ]);
+                          };
                         },
                       };
                     },
@@ -101,11 +110,13 @@ describe("suggestFromDescription", () => {
     if (result.success) {
       expect(result.data.categories).toHaveLength(2);
       expect(result.data.categories[0]).toEqual({
-        category: "food",
+        categoryId: "cat-1",
+        slug: "food",
         count: 8,
       });
       expect(result.data.categories[1]).toEqual({
-        category: "daily",
+        categoryId: "cat-2",
+        slug: "daily",
         count: 2,
       });
       expect(result.data.storeName).toBe("Lawson");

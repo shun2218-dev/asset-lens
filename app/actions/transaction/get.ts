@@ -20,8 +20,8 @@ import type { TransactionMetadata, TransactionQueryInput } from "@/types";
 
 const PAGE_SIZE = 10; // 1ページあたりの表示件数
 
-type TransactionWithCategory = Omit<SelectTransaction, "category"> & {
-  category: string;
+type TransactionWithCategory = SelectTransaction & {
+  categorySlug: string;
 };
 
 type TransactionQueryResult = {
@@ -100,10 +100,7 @@ export const getTransaction = createSafeAction<
           orderByClause = [direction(transaction.date), desc(transaction.id)];
           break;
         case "category":
-          orderByClause = [
-            direction(transaction.category),
-            desc(transaction.id),
-          ];
+          orderByClause = [direction(category.slug), desc(transaction.id)];
           break;
         case "amount":
           orderByClause = [direction(transaction.amount), desc(transaction.id)];
@@ -130,7 +127,7 @@ export const getTransaction = createSafeAction<
 
     const data = rows.map(({ t, c }) => ({
       ...t,
-      category: c?.slug ?? t.category, // Relation priority, fallback to legacy
+      categorySlug: c?.slug ?? "unknown",
     }));
 
     // 総件数の取得

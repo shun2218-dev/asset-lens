@@ -48,7 +48,6 @@ describe("getTransaction", () => {
         amount: 1000,
         date: new Date("2024-01-01"),
         description: "Test 1",
-        category: "food",
         categoryId: "cat-1",
         isExpense: true,
       },
@@ -85,7 +84,7 @@ describe("getTransaction", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.data).toHaveLength(1);
-      expect(result.data.data[0].category).toBe("food-slug");
+      expect(result.data.data[0].categorySlug).toBe("food-slug");
       expect(result.data.metadata.totalCount).toBe(25);
       expect(result.data.metadata.totalPages).toBe(3);
       expect(result.data.metadata.hasNextPage).toBe(true);

@@ -15,7 +15,7 @@ export type SummaryStats = {
 };
 
 export type CategoryStats = {
-  category: string;
+  categoryId: string;
   amount: number;
 };
 

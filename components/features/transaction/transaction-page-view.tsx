@@ -55,7 +55,7 @@ export function TransactionPageView({
     amount: number;
     description: string;
     storeName?: string;
-    category: string;
+    categoryId: string;
     isExpense: boolean;
   } | null>(null);
 
@@ -69,7 +69,7 @@ export function TransactionPageView({
         amount: template.amount,
         description: template.description ?? "",
         storeName: template.storeName ?? undefined,
-        category: template.category,
+        categoryId: template.categoryId,
         isExpense: template.isExpense,
       });
     },
@@ -141,7 +141,7 @@ export function TransactionPageView({
                             amount: templateData.amount,
                             description: templateData.description,
                             storeName: templateData.storeName,
-                            category: templateData.category,
+                            category: templateData.categoryId,
                             date: new Date(),
                             isExpense: templateData.isExpense,
                           }

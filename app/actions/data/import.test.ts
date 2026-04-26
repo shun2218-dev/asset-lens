@@ -92,12 +92,10 @@ describe("importData", () => {
     expect(insertValuesMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
-          category: "food",
           categoryId: "cat-1",
           amount: 1000,
         }),
         expect.objectContaining({
-          category: "transport",
           categoryId: "cat-2",
           amount: 500,
         }),
@@ -124,6 +122,7 @@ describe("importData", () => {
         amount: 1000,
         description: "ランチ",
         category: "food",
+        categoryId: "cat-1",
       },
     ];
 

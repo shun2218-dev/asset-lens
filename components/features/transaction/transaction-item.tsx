@@ -52,10 +52,7 @@ export function TransactionItem({
       <TableCell>
         {(() => {
           const catName = categories.find(
-            (c) =>
-              c.id === data.categoryId ||
-              c.slug === data.category ||
-              c.id === data.category,
+            (c) => c.id === data.categoryId,
           )?.name;
           return catName ? (
             <HighlightMatch text={catName} query={searchQuery} />

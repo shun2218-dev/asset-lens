@@ -4,7 +4,8 @@ import { useCallback, useRef, useState } from "react";
 import { suggestFromDescription } from "@/app/actions/suggest/from-description";
 
 interface CategorySuggestion {
-  category: string;
+  categoryId: string;
+  slug: string;
   count: number;
 }
 

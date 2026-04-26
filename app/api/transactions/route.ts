@@ -31,7 +31,7 @@ export async function GET(_req: Request) {
 
     const data = rows.map(({ t, c }) => ({
       ...t,
-      category: c?.slug ?? t.category, // Relation priority
+      categorySlug: c?.slug ?? "unknown",
     }));
 
     return NextResponse.json(data);
@@ -86,7 +86,6 @@ export async function POST(req: Request) {
         amount,
         description,
         isExpense,
-        category: categoryData.slug, // Legacy
         categoryId,
         date: new Date(date),
       })
@@ -151,7 +150,6 @@ export async function PUT(req: Request) {
         amount,
         description,
         isExpense,
-        category: categoryData.slug, // Legacy
         categoryId,
         date: new Date(date), // 日付の変換
       })

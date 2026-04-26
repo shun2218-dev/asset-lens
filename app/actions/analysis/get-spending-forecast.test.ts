@@ -113,9 +113,9 @@ describe("getSpendingForecast", () => {
 
   it("should return error if unauthorized", async () => {
     const { auth } = await import("@/lib/auth");
-    (auth.api.getSession as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      null,
-    );
+    (
+      auth.api.getSession as unknown as ReturnType<typeof vi.fn>
+    ).mockResolvedValueOnce(null);
 
     const result = await getSpendingForecast("2026-04");
     expect(result.success).toBe(false);

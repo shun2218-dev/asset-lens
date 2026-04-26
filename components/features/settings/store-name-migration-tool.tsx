@@ -39,7 +39,7 @@ type TransactionRow = {
   storeName: string | null;
   date: Date;
   amount: number;
-  category: string;
+  categoryId: string;
 };
 
 type EditableRow = TransactionRow & {

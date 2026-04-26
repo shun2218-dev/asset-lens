@@ -38,7 +38,7 @@ interface TemplateFormData {
   amount: number;
   description: string;
   storeName: string;
-  category: string;
+  categoryId: string;
   isExpense: boolean;
 }
 
@@ -47,7 +47,7 @@ const emptyForm: TemplateFormData = {
   amount: 0,
   description: "",
   storeName: "",
-  category: "food",
+  categoryId: "",
   isExpense: true,
 };
 
@@ -70,7 +70,7 @@ export function TemplateManager({
         amount: template.amount,
         description: template.description ?? "",
         storeName: template.storeName ?? "",
-        category: template.category,
+        categoryId: template.categoryId,
         isExpense: template.isExpense,
       });
     } else {
@@ -189,7 +189,7 @@ export function TemplateManager({
                   setFormData((p) => ({
                     ...p,
                     isExpense: v === "expense",
-                    category: v === "expense" ? "food" : "salary",
+                    categoryId: "",
                   }))
                 }
               >
@@ -226,9 +226,9 @@ export function TemplateManager({
                 <div>
                   <Label>カテゴリ</Label>
                   <Select
-                    value={formData.category}
+                    value={formData.categoryId}
                     onValueChange={(v) =>
-                      setFormData((p) => ({ ...p, category: v }))
+                      setFormData((p) => ({ ...p, categoryId: v }))
                     }
                   >
                     <SelectTrigger>
@@ -236,7 +236,7 @@ export function TemplateManager({
                     </SelectTrigger>
                     <SelectContent>
                       {filteredCategories.map((c) => (
-                        <SelectItem key={c.id} value={c.slug}>
+                        <SelectItem key={c.id} value={c.id}>
                           {c.name}
                         </SelectItem>
                       ))}
@@ -304,8 +304,8 @@ export function TemplateManager({
                 </div>
                 <div className="text-sm text-muted-foreground">
                   ¥{template.amount.toLocaleString()} ·{" "}
-                  {categories.find((c) => c.slug === template.category)?.name ??
-                    template.category}
+                  {categories.find((c) => c.id === template.categoryId)?.name ??
+                    "Unknown"}
                   {template.usageCount > 0 && (
                     <span className="ml-2">({template.usageCount}回使用)</span>
                   )}

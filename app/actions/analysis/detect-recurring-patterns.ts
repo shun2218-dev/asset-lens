@@ -9,7 +9,7 @@ import { createSafeAction } from "@/lib/actions/safe-action";
 export type RecurringPattern = {
   description: string;
   storeName: string | null;
-  category: string;
+  categoryId: string;
   averageAmount: number;
   occurrences: number;
   months: string[];
@@ -52,19 +52,19 @@ export const detectRecurringPatterns = createSafeAction<
       {
         description: string;
         storeName: string | null;
-        category: string;
+        categoryId: string;
         amounts: number[];
         months: Set<string>;
       }
     >();
 
     for (const t of recentTransactions) {
-      const key = `${(t.storeName || t.description).toLowerCase()}|${t.category}`;
+      const key = `${(t.storeName || t.description).toLowerCase()}|${t.categoryId}`;
       if (!groups.has(key)) {
         groups.set(key, {
           description: t.description,
           storeName: t.storeName,
-          category: t.category,
+          categoryId: t.categoryId,
           amounts: [],
           months: new Set(),
         });
@@ -95,7 +95,7 @@ export const detectRecurringPatterns = createSafeAction<
       patterns.push({
         description: group.description,
         storeName: group.storeName,
-        category: group.category,
+        categoryId: group.categoryId,
         averageAmount: Math.round(avg),
         occurrences: group.months.size,
         months: Array.from(group.months).sort(),

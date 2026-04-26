@@ -68,7 +68,6 @@ describe("createTransaction", () => {
 
     expect(valuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        category: "food",
         categoryId: "cat-uuid-123",
       }),
     );

@@ -57,7 +57,7 @@ export function RecurringPatterns() {
         </p>
         {patterns.slice(0, 5).map((p) => (
           <div
-            key={`${p.storeName || p.description}-${p.category}`}
+            key={`${p.storeName || p.description}-${p.categoryId}`}
             className="flex items-center justify-between p-2 rounded-lg bg-muted/50"
           >
             <div className="space-y-0.5">
@@ -65,7 +65,7 @@ export function RecurringPatterns() {
                 {p.storeName || p.description}
               </p>
               <p className="text-xs text-muted-foreground">
-                {p.category} · {p.occurrences}ヶ月連続
+                {p.categoryId} · {p.occurrences}ヶ月連続
               </p>
             </div>
             <p className="text-sm font-semibold tabular-nums">
