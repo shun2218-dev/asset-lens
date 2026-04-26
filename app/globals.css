@@ -4,7 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Prevent horizontal scroll that causes fixed bottom-nav shift on mobile */
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
@@ -269,12 +270,20 @@ html[data-splash-done] [data-splash] {
 }
 
 @keyframes vt-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes vt-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* View Transition API — circular reveal for theme switch */
