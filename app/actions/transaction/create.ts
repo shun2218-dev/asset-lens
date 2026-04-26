@@ -34,8 +34,7 @@ export const createTransaction = createSafeAction<TransactionFormValues, void>(
       amount: parsed.data.amount,
       description: parsed.data.description,
       storeName: parsed.data.storeName || null,
-      category: categoryData.slug, // Legacy column: use slug
-      categoryId: parsed.data.category, // New column: use UUID
+      categoryId: parsed.data.category,
       date: parsed.data.date,
       isExpense: parsed.data.isExpense,
     });

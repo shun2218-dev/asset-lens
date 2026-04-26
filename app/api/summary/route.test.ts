@@ -111,7 +111,7 @@ describe("API: summary", () => {
 
     // Verify category stats
     expect(body.categoryStats).toHaveLength(1);
-    expect(body.categoryStats[0].category).toBe("food"); // Route aggregation logic uses category field
+    expect(body.categoryStats[0].categoryId).toBe("cat-1");
   });
 
   it("should return 401 if unauthorized", async () => {

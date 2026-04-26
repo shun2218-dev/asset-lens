@@ -86,7 +86,7 @@ describe("template actions", () => {
     const result = await createTemplate({
       name: "Rent",
       amount: 80000,
-      category: "housing",
+      categoryId: "cat-housing-id",
       isExpense: true,
     });
     expect(result.success).toBe(true);
@@ -107,7 +107,7 @@ describe("template actions", () => {
       id: "template-id-1",
       name: "Updated Rent",
       amount: 85000,
-      category: "housing",
+      categoryId: "cat-housing-id",
       isExpense: true,
     });
     expect(result.success).toBe(true);

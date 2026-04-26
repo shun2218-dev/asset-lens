@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.33.0] - 2026-04-26
+
+### Changed
+- **Category normalization**: Removed legacy `category` text column from `transaction` and `transaction_template` tables. All references now use `categoryId` UUID foreign key with NOT NULL constraint. Migration `0019_next_inhumans.sql`. (#278)
+- Updated all server actions, API routes, components, hooks, and types to use `categoryId` exclusively
+- `CategoryStats` type changed from `category: string` to `categoryId: string`
+- Suggestion engine now returns `categoryId` + `slug` via category table JOIN
+- Cron subscription processing resolves category slug → ID via DB lookup
+
+### Fixed
+- Schema audit findings: added ON DELETE CASCADE to category FK, NOT NULL enforcement, and index optimizations (#277)
+- Pre-existing auth mock type cast errors (TS2352) in analysis test files
+
+### Added
+- Automated ER diagram generation via GitHub Actions with Mermaid and DBML output (#276)
+- `scripts/generate-dbml.ts` for schema-to-DBML conversion
+- `docs/er-diagram.md` and `docs/schema.dbml` auto-updated on schema changes
+
+### Infrastructure
+- New migration: `0019_next_inhumans.sql` (category normalization)
+- Test count: 740 (all passing)
+- TypeScript: 0 compilation errors
+
 ## [2.32.0] - 2026-04-26
 
 ### Added

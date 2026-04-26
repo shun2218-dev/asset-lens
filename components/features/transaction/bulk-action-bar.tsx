@@ -66,7 +66,6 @@ export function BulkActionBar({
       const result = await bulkUpdateCategory({
         ids: selectedIds,
         categoryId: cat.id,
-        categorySlug: cat.slug,
       });
       if (result.success) {
         toast.success(

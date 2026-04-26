@@ -63,7 +63,6 @@ const mockRecentTransactions = [
     amount: 1200,
     description: "ランチ",
     storeName: "コンビニA",
-    category: "food",
     categoryId: "1",
     date: new Date(),
     userId: "user1",
@@ -76,7 +75,6 @@ const mockRecentTransactions = [
     amount: 500000,
     description: "給与",
     storeName: null,
-    category: "salary",
     categoryId: "2",
     date: new Date(),
     userId: "user1",
@@ -89,7 +87,6 @@ const mockRecentTransactions = [
     amount: 800,
     description: "コーヒー",
     storeName: "スタバ",
-    category: "food",
     categoryId: "1",
     date: new Date(),
     userId: "user1",
@@ -120,11 +117,7 @@ export const Default: Story = {
         { month: "2023-12", income: 480000, expense: 250000 },
         { month: "2024-01", income: 500000, expense: 82000 },
       ],
-      categoryStats: [
-        { category: "food", amount: 45000 },
-        { category: "transport", amount: 12000 },
-        { category: "entertainment", amount: 25000 },
-      ],
+      categoryStats: [],
       categories: mockCategories,
     },
     widgets: {
@@ -208,10 +201,7 @@ export const FallbackBanner: Story = {
         { month: "2024-02", income: 450000, expense: 88000 },
         { month: "2024-03", income: 480000, expense: 95000 },
       ],
-      categoryStats: [
-        { category: "food", amount: 45000 },
-        { category: "transport", amount: 12000 },
-      ],
+      categoryStats: [],
       categories: mockCategories,
     },
     widgets: {

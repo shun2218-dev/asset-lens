@@ -31,7 +31,7 @@ export const exportData = createSafeQuery(
         const amount = t.amount;
 
         // Resolve category label
-        const catKey = c?.slug || t.category;
+        const catKey = c?.slug || "unknown";
         const categoryLabel = EXPENSE_CATEGORY_LABELS[catKey] || catKey;
         const type = t.isExpense ? "支出" : "収入";
 

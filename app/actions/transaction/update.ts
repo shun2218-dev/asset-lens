@@ -34,8 +34,7 @@ export const updateTransaction = createSafeAction<UpdateTransactionInput, void>(
         amount: data.amount,
         description: data.description,
         storeName: data.storeName ?? null,
-        category: categoryData.slug, // Legacy column: use slug
-        categoryId: data.category, // New column: use UUID
+        categoryId: data.category,
         date: data.date,
         isExpense: data.isExpense,
       })

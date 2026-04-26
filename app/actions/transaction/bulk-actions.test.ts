@@ -94,7 +94,6 @@ describe("bulkUpdateCategory", () => {
         "550e8400-e29b-41d4-a716-446655440002",
       ],
       categoryId: "550e8400-e29b-41d4-a716-446655440099",
-      categorySlug: "food",
     });
 
     expect(result.success).toBe(true);
@@ -108,7 +107,6 @@ describe("bulkUpdateCategory", () => {
     const result = await bulkUpdateCategory({
       ids: [],
       categoryId: "550e8400-e29b-41d4-a716-446655440099",
-      categorySlug: "food",
     });
     expect(result.success).toBe(false);
   });
@@ -117,7 +115,6 @@ describe("bulkUpdateCategory", () => {
     const result = await bulkUpdateCategory({
       ids: ["550e8400-e29b-41d4-a716-446655440001"],
       categoryId: "",
-      categorySlug: "food",
     });
     expect(result.success).toBe(false);
   });

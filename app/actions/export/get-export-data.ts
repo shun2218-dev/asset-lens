@@ -50,7 +50,7 @@ export const getExportData = createSafeAction<string, ExportData>(
     const transactions: ExportTransaction[] = rows.map(({ t, c }) => ({
       date: format(t.date, "yyyy/MM/dd"),
       type: t.isExpense ? "支出" : "収入",
-      category: c?.name ?? t.category,
+      category: c?.name ?? "Unknown",
       description: t.description,
       storeName: t.storeName ?? "",
       amount: t.amount,
@@ -63,7 +63,7 @@ export const getExportData = createSafeAction<string, ExportData>(
     for (const row of rows) {
       if (row.t.isExpense) {
         totalExpense += row.t.amount;
-        const catName = row.c?.name ?? row.t.category;
+        const catName = row.c?.name ?? "Unknown";
         categoryMap.set(
           catName,
           (categoryMap.get(catName) || 0) + row.t.amount,

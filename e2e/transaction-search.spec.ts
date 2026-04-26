@@ -11,13 +11,25 @@ async function seedTransactions(
   userId: string,
   items: { amount: number; description: string; storeName?: string }[],
 ) {
+  // Look up the "food" category ID
+  const [foodCategory] = await db
+    .select()
+    .from(schema.category)
+    .where(eq(schema.category.slug, "food"))
+    .limit(1);
+
+  const categoryId = foodCategory?.id;
+  if (!categoryId) {
+    throw new Error("food category not found in DB for e2e seeding");
+  }
+
   for (const item of items) {
     await db.insert(schema.transaction).values({
       userId,
       amount: item.amount,
       description: item.description,
       storeName: item.storeName ?? null,
-      category: "food",
+      categoryId,
       isExpense: true,
       date: new Date(),
     });

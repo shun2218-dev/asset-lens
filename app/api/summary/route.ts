@@ -55,12 +55,12 @@ export async function GET(req: Request) {
     monthlyTransactions
       .filter((t) => t.isExpense)
       .forEach((t) => {
-        const current = categoryMap.get(t.category) || 0;
-        categoryMap.set(t.category, current + t.amount);
+        const current = categoryMap.get(t.categoryId) || 0;
+        categoryMap.set(t.categoryId, current + t.amount);
       });
 
     const categoryStats = Array.from(categoryMap.entries())
-      .map(([category, amount]) => ({ category, amount }))
+      .map(([categoryId, amount]) => ({ categoryId, amount }))
       .sort((a, b) => b.amount - a.amount);
 
     // 6. 月別推移 (棒グラフ用)

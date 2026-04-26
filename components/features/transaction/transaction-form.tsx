@@ -153,7 +153,7 @@ export function TransactionForm({
                 onValueChange={(v) => {
                   const newIsExpense = v === "expense";
                   field.onChange(newIsExpense);
-                  form.setValue("category", newIsExpense ? "food" : "salary", {
+                  form.setValue("category", "", {
                     shouldValidate: true,
                   });
                 }}
@@ -311,8 +311,8 @@ export function TransactionForm({
                   suggestions={suggestedCategories}
                   categories={categories}
                   currentValue={form.getValues("category")}
-                  onSelect={(slug) => {
-                    form.setValue("category", slug, {
+                  onSelect={(categoryId) => {
+                    form.setValue("category", categoryId, {
                       shouldValidate: true,
                       shouldDirty: true,
                     });

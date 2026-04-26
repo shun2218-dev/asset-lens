@@ -21,35 +21,35 @@ const mockTransactions = [
     amount: 300000,
     date: new Date("2025-01-15"),
     isExpense: false,
-    category: "salary",
+    categoryId: "cat-salary-id",
   },
   {
     id: "2",
     amount: 50000,
     date: new Date("2025-01-20"),
     isExpense: true,
-    category: "rent",
+    categoryId: "cat-rent-id",
   },
   {
     id: "3",
     amount: 10000,
     date: new Date("2025-02-10"),
     isExpense: true,
-    category: "food",
+    categoryId: "cat-food-id",
   },
   {
     id: "4",
     amount: 300000,
     date: new Date("2025-02-15"),
     isExpense: false,
-    category: "salary",
+    categoryId: "cat-salary-id",
   },
   {
     id: "5",
     amount: 20000,
     date: new Date("2025-03-05"),
     isExpense: true,
-    category: "food",
+    categoryId: "cat-food-id",
   },
 ];
 
@@ -82,14 +82,14 @@ describe("getAnnualReport", () => {
     expect(result.data.savingsRate).toBeGreaterThan(0);
     expect(result.data.monthlyBreakdown).toHaveLength(12);
     expect(result.data.categoryStats.length).toBeGreaterThan(0);
-    expect(result.data.categoryStats[0].category).toBe("rent");
+    expect(result.data.categoryStats[0].categoryId).toBe("cat-rent-id");
   });
 
   it("should return error if unauthorized", async () => {
     const { auth } = await import("@/lib/auth");
-    (auth.api.getSession as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      null,
-    );
+    (
+      auth.api.getSession as unknown as ReturnType<typeof vi.fn>
+    ).mockResolvedValueOnce(null);
 
     const result = await getAnnualReport(2025);
     expect(result.success).toBe(false);

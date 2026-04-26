@@ -48,7 +48,7 @@ interface CreateTemplateInput {
   amount: number;
   description?: string;
   storeName?: string;
-  category: string;
+  categoryId: string;
   isExpense: boolean;
 }
 
@@ -76,7 +76,7 @@ export const createTemplate = createSafeAction<
         amount: input.amount,
         description: input.description ?? "",
         storeName: input.storeName ?? null,
-        category: input.category,
+        categoryId: input.categoryId,
         isExpense: input.isExpense,
       })
       .returning({ id: transactionTemplate.id });
@@ -93,7 +93,7 @@ interface UpdateTemplateInput {
   amount: number;
   description?: string;
   storeName?: string;
-  category: string;
+  categoryId: string;
   isExpense: boolean;
 }
 
@@ -106,7 +106,7 @@ export const updateTemplate = createSafeAction<UpdateTemplateInput, void>(
         amount: input.amount,
         description: input.description ?? "",
         storeName: input.storeName ?? null,
-        category: input.category,
+        categoryId: input.categoryId,
         isExpense: input.isExpense,
       })
       .where(

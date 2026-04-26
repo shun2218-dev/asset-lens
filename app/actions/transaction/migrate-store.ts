@@ -18,7 +18,7 @@ export const getTransactionsWithoutStore = createSafeQuery(
         storeName: transaction.storeName,
         date: transaction.date,
         amount: transaction.amount,
-        category: transaction.category,
+        categoryId: transaction.categoryId,
       })
       .from(transaction)
       .where(

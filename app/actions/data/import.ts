@@ -58,7 +58,7 @@ export const importData = createSafeAction<FormData, ImportResult>(
     const existingSignatures = new Set(
       existingTransactions.map(
         (t) =>
-          `${format(t.date, "yyyy-MM-dd")}_${t.amount}_${t.description}_${t.category}`,
+          `${format(t.date, "yyyy-MM-dd")}_${t.amount}_${t.description}_${t.categoryId}`,
       ),
     );
 
@@ -83,8 +83,14 @@ export const importData = createSafeAction<FormData, ImportResult>(
       const amount = parseInt(amountStr.replace(/,/g, ""), 10);
 
       // Duplicate check
-      const signature = `${dateStr}_${amount}_${description}_${slug}`;
+      const signature = `${dateStr}_${amount}_${description}_${categoryId || slug}`;
       if (existingSignatures.has(signature)) {
+        skippedCount++;
+        continue;
+      }
+
+      if (!categoryId) {
+        // If no category found, skip the row
         skippedCount++;
         continue;
       }
@@ -94,8 +100,7 @@ export const importData = createSafeAction<FormData, ImportResult>(
         date: new Date(dateStr),
         description: description || "Unknown",
         amount: amount,
-        category: slug,
-        categoryId: categoryId || null,
+        categoryId,
         isExpense: isExpense,
       });
     }

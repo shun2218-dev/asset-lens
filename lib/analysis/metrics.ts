@@ -29,14 +29,14 @@ export function calculateCategoryBreakdown(data: Transaction[]) {
   data
     .filter((t) => t.isExpense)
     .forEach((t) => {
-      // categoryIdがあればそれを使う、なければcategory (slug/legacy) を使う
-      const key = t.categoryId || t.category;
+      // categoryIdを使ってカテゴリ集計
+      const key = t.categoryId;
       const current = stats.get(key) || 0;
       stats.set(key, current + t.amount);
     });
 
   return Array.from(stats.entries())
-    .map(([category, amount]) => ({ category, amount }))
+    .map(([categoryId, amount]) => ({ categoryId, amount }))
     .sort((a, b) => b.amount - a.amount);
 }
 

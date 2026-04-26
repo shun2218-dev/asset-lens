@@ -33,7 +33,6 @@ export const bulkDeleteTransactions = createSafeAction<
 const bulkUpdateCategorySchema = z.object({
   ids: z.array(z.string().uuid()).min(1, "少なくとも1件選択してください"),
   categoryId: z.string().uuid("カテゴリを選択してください"),
-  categorySlug: z.string().min(1),
 });
 
 export const bulkUpdateCategory = createSafeAction<
@@ -41,12 +40,11 @@ export const bulkUpdateCategory = createSafeAction<
   { updatedCount: number }
 >(
   async (input, userId) => {
-    const { ids, categoryId, categorySlug } =
-      bulkUpdateCategorySchema.parse(input);
+    const { ids, categoryId } = bulkUpdateCategorySchema.parse(input);
 
     const result = await db
       .update(transaction)
-      .set({ categoryId, category: categorySlug })
+      .set({ categoryId })
       .where(and(eq(transaction.userId, userId), inArray(transaction.id, ids)));
 
     revalidatePath("/dashboard");

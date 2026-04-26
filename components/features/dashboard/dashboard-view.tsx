@@ -130,10 +130,7 @@ export function DashboardView({
 
   const rawPieData = categoryStats.map((stat) => {
     const categoryName =
-      categories.find((c) => c.id === stat.category || c.slug === stat.category)
-        ?.name ??
-      stat.category ??
-      "不明";
+      categories.find((c) => c.id === stat.categoryId)?.name ?? "不明";
     return { name: categoryName, value: stat.amount };
   });
 
