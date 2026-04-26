@@ -8,11 +8,13 @@ import { CategoryTrends } from "@/components/features/dashboard/widgets/category
 import { ExpenseHeatmap } from "@/components/features/dashboard/widgets/expense-heatmap";
 import { RecentTransactions } from "@/components/features/dashboard/widgets/recent-transactions";
 import { RecurringPatterns } from "@/components/features/dashboard/widgets/recurring-patterns";
+import { SavingsGoalsWidget } from "@/components/features/dashboard/widgets/savings-goals";
 import { SpendingForecast } from "@/components/features/dashboard/widgets/spending-forecast";
 import { StoreRanking } from "@/components/features/dashboard/widgets/store-ranking";
 import type {
   SelectBudget,
   SelectCategory,
+  SelectSavingsGoal,
   SelectTransaction,
 } from "@/db/schema";
 
@@ -35,6 +37,7 @@ type DashboardWidgetsProps = {
   categoryTrends: CategoryTrendItem[];
   dailyExpenses: DailyExpense[];
   forecast: ForecastResult | null;
+  savingsGoals: SelectSavingsGoal[];
 };
 
 export function DashboardWidgets({
@@ -47,6 +50,7 @@ export function DashboardWidgets({
   categoryTrends,
   dailyExpenses,
   forecast,
+  savingsGoals,
 }: DashboardWidgetsProps) {
   return (
     <>
@@ -80,6 +84,9 @@ export function DashboardWidgets({
           currentMonth={currentMonth}
         />
       </div>
+
+      {/* Savings goals */}
+      <SavingsGoalsWidget goals={savingsGoals} />
     </>
   );
 }

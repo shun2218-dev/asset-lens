@@ -19,3 +19,6 @@ export const transactionTag = (userId: string, month?: string) =>
 /** Per-user cache tag for summaries (month-scoped) */
 export const summaryTag = (userId: string, month: string) =>
   `summary-${userId}-${month}`;
+
+/** Per-user cache tag for savings goals */
+export const savingsGoalTag = (userId: string) => `savings-goals-${userId}`;
