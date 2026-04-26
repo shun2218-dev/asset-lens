@@ -2,10 +2,18 @@
 
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { ArrowLeft, Mail, Save, User } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  MessageSquareReply,
+  Save,
+  Send,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { replyToInquiry } from "@/app/actions/contact/reply";
 import { updateInquiryStatus } from "@/app/actions/contact/update-status";
 import {
   CATEGORY_LABELS,
@@ -14,6 +22,7 @@ import {
 } from "@/components/features/admin/inquiry-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,18 +32,31 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import type { SelectContactInquiry } from "@/db/schema";
+import type { SelectContactInquiry, SelectInquiryReply } from "@/db/schema";
 
 interface InquiryDetailViewProps {
   inquiry: SelectContactInquiry;
+  replies: SelectInquiryReply[];
 }
 
-export function InquiryDetailView({ inquiry }: InquiryDetailViewProps) {
+export function InquiryDetailView({
+  inquiry,
+  replies,
+}: InquiryDetailViewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState(inquiry.status);
   const [note, setNote] = useState(inquiry.note ?? "");
   const [saved, setSaved] = useState(false);
+
+  // Reply form state
+  const [replySubject, setReplySubject] = useState(
+    `Re: ${CATEGORY_LABELS[inquiry.category] ?? inquiry.category}のお問い合わせについて`,
+  );
+  const [replyBody, setReplyBody] = useState("");
+  const [replySent, setReplySent] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
+  const [isReplying, startReplyTransition] = useTransition();
 
   function handleSave() {
     startTransition(async () => {
@@ -47,6 +69,25 @@ export function InquiryDetailView({ inquiry }: InquiryDetailViewProps) {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
         router.refresh();
+      }
+    });
+  }
+
+  function handleReply() {
+    setReplyError(null);
+    startReplyTransition(async () => {
+      const result = await replyToInquiry({
+        inquiryId: inquiry.id,
+        subject: replySubject,
+        body: replyBody,
+      });
+      if (result.success) {
+        setReplySent(true);
+        setReplyBody("");
+        setTimeout(() => setReplySent(false), 3000);
+        router.refresh();
+      } else {
+        setReplyError(result.error);
       }
     });
   }
@@ -119,6 +160,109 @@ export function InquiryDetailView({ inquiry }: InquiryDetailViewProps) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Reply Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <MessageSquareReply className="h-4 w-4" />
+                返信
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label
+                  htmlFor="reply-subject"
+                  className="text-sm font-medium mb-1.5 block"
+                >
+                  件名
+                </label>
+                <Input
+                  id="reply-subject"
+                  value={replySubject}
+                  onChange={(e) => setReplySubject(e.target.value)}
+                  maxLength={200}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="reply-body"
+                  className="text-sm font-medium mb-1.5 block"
+                >
+                  本文
+                </label>
+                <Textarea
+                  id="reply-body"
+                  value={replyBody}
+                  onChange={(e) => setReplyBody(e.target.value)}
+                  placeholder="返信内容を入力..."
+                  rows={6}
+                  maxLength={5000}
+                />
+                <p className="text-xs text-muted-foreground mt-1 text-right">
+                  {replyBody.length} / 5,000
+                </p>
+              </div>
+
+              {replyError && (
+                <p className="text-sm text-destructive">{replyError}</p>
+              )}
+
+              <Button
+                onClick={handleReply}
+                disabled={
+                  isReplying || !replyBody.trim() || !replySubject.trim()
+                }
+                className="w-full"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                {replySent
+                  ? "送信しました ✓"
+                  : isReplying
+                    ? "送信中..."
+                    : "返信を送信"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Reply History */}
+          {replies.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  返信履歴（{replies.length}件）
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {replies.map((reply) => (
+                    <div
+                      key={reply.id}
+                      className="border rounded-lg p-4 space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">{reply.subject}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(
+                            new Date(reply.createdAt),
+                            "yyyy/MM/dd HH:mm",
+                            { locale: ja },
+                          )}
+                        </p>
+                      </div>
+                      <div className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                        {reply.body}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        送信者: {reply.adminEmail}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar: Status & Note */}

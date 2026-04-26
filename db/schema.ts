@@ -461,6 +461,28 @@ export const contactInquiry = pgTable(
 export type SelectContactInquiry = InferSelectModel<typeof contactInquiry>;
 export type InsertContactInquiry = InferInsertModel<typeof contactInquiry>;
 
+// ─── Inquiry Reply ───────────────────────────────────────────────
+
+export const inquiryReply = pgTable(
+  "inquiry_reply",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    inquiryId: uuid("inquiry_id")
+      .notNull()
+      .references(() => contactInquiry.id, { onDelete: "cascade" }),
+    adminEmail: text("admin_email").notNull(),
+    subject: text("subject").notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { precision: 0, withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("inquiry_reply_inquiry_id_idx").on(table.inquiryId)],
+);
+
+export type SelectInquiryReply = InferSelectModel<typeof inquiryReply>;
+export type InsertInquiryReply = InferInsertModel<typeof inquiryReply>;
+
 export const tag = pgTable(
   "tag",
   {
