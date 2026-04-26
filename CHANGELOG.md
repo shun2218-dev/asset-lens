@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.34.0] - 2026-04-26
+
+### Added
+- **Savings goal tracker**: Users can create savings goals with target amounts, deadlines, custom icons, and accent colors (#38)
+- **Dashboard widget**: Top 3 active savings goals displayed with animated progress rings
+- **Goal celebration**: Confetti animation when a savings goal is reached
+- **Settings tab**: New "貯蓄目標" tab for full CRUD management (create, edit, delete, deposit)
+- **Deposit system**: Manual deposit to goals with auto-completion detection
+- **Database**: New `savings_goal` table (migration `0020_steep_firedrake.sql`)
+- **Cache**: Per-user savings goal cache tag for efficient revalidation
+- **Tests**: 13 unit tests for savings goal CRUD and deposit actions
+
 ## [2.33.0] - 2026-04-26
 
 ### Changed
