@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.36.1] - 2026-04-29
+
+### Fixed
+- **Category trends**: Include system-wide categories (`userId IS NULL`) in the category map so names display correctly instead of "不明".
+
 ## [2.36.0] - 2026-04-26
 
 ### Added
