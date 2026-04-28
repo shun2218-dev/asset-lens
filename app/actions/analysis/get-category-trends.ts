@@ -1,7 +1,7 @@
 "use server";
 
 import { format, subMonths } from "date-fns";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, isNull, or } from "drizzle-orm";
 import { db } from "@/db";
 import { category, transaction } from "@/db/schema";
 import { createSafeAction } from "@/lib/actions/safe-action";
@@ -42,7 +42,10 @@ export const getCategoryTrends = createSafeAction<
         .from(transaction)
         .where(eq(transaction.userId, userId))
         .orderBy(desc(transaction.date)),
-      db.select().from(category).where(eq(category.userId, userId)),
+      db
+        .select()
+        .from(category)
+        .where(or(isNull(category.userId), eq(category.userId, userId))),
     ]);
 
     const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
