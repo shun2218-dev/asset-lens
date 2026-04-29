@@ -155,9 +155,57 @@ body {
   display: none;
 }
 
-/* Pre-hydration splash hide: set by inline script before React loads */
-html[data-splash-done] [data-splash] {
-  display: none !important;
+/* Splash screen — pure HTML, no React dependency */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    hsl(220 25% 10%) 0%,
+    hsl(240 20% 18%) 50%,
+    hsl(260 25% 14%) 100%
+  );
+  pointer-events: none;
+  /* Exclude from ViewTransition snapshots to prevent flicker */
+  view-transition-name: none;
+}
+
+#splash.splash-exit {
+  animation: splash-slide-up 500ms ease-in forwards;
+}
+
+#splash .splash-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, hsl(250 60% 55%) 0%, hsl(220 70% 50%) 100%);
+  box-shadow: 0 0 60px hsl(240 60% 50% / 0.35);
+  animation: splash-pulse 1.4s ease-in-out infinite;
+}
+
+#splash .splash-title {
+  margin-top: 28px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: white;
+  animation: splash-text-in 600ms ease-out 200ms both;
+}
+
+#splash .splash-tagline {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: hsl(220 15% 65%);
+  animation: splash-text-in 600ms ease-out 400ms both;
 }
 
 /* Micro-animation keyframes */
