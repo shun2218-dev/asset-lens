@@ -3,9 +3,9 @@
 import {
   ArrowLeftRight,
   LayoutDashboard,
+  Network,
   Plus,
   Settings,
-  User,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,8 +26,8 @@ import { useSession } from "@/lib/auth/client";
 const navItems = [
   { href: "/dashboard", label: "ホーム", icon: LayoutDashboard },
   { href: "/transaction", label: "取引", icon: ArrowLeftRight },
+  { href: "/insights", label: "分析", icon: Network },
   { href: "/settings", label: "設定", icon: Settings },
-  { href: "/profile", label: "マイページ", icon: User },
 ] as const;
 
 export function BottomNav() {

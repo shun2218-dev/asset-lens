@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   ArrowLeftRight,
   LayoutDashboard,
+  Network,
   Plus,
   Settings,
-  User,
 } from "lucide-react";
 
 /**
@@ -15,8 +15,8 @@ function BottomNavPreview({ activeIndex = 0 }: { activeIndex?: number }) {
   const items = [
     { label: "ホーム", icon: LayoutDashboard },
     { label: "取引", icon: ArrowLeftRight },
+    { label: "分析", icon: Network },
     { label: "設定", icon: Settings },
-    { label: "マイページ", icon: User },
   ];
 
   return (
@@ -69,7 +69,7 @@ const meta: Meta<typeof BottomNavPreview> = {
     docs: {
       description: {
         component:
-          "Mobile bottom navigation bar with Dashboard, Transaction, Subscription, and Settings links. Shows active state based on current route.",
+          "Mobile bottom navigation bar with Dashboard, Transaction, Insights, and Settings links. Shows active state based on current route.",
       },
     },
     viewport: { defaultViewport: "mobile1" },
@@ -100,10 +100,10 @@ export const TransactionActive: Story = {
   args: { activeIndex: 1 },
 };
 
-export const SettingsActive: Story = {
+export const InsightsActive: Story = {
   args: { activeIndex: 2 },
 };
 
-export const ProfileActive: Story = {
+export const SettingsActive: Story = {
   args: { activeIndex: 3 },
 };
