@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { SankeyHoverTarget } from "./sankey-svg";
 
@@ -22,17 +21,7 @@ export function SankeyTooltip({
   nodeValues,
   nodeLabels,
 }: SankeyTooltipProps) {
-  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
-
-  useEffect(() => {
-    if (!target) {
-      setPos(null);
-      return;
-    }
-    setPos({ x: target.x, y: target.y });
-  }, [target]);
-
-  if (!target || !pos) return null;
+  if (!target) return null;
 
   const pctOfTotal = (value: number) =>
     total > 0 ? `${Math.round((value / total) * 100)}%` : "—";
@@ -43,7 +32,7 @@ export function SankeyTooltip({
       className={cn(
         "pointer-events-none fixed z-50 max-w-xs rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md",
       )}
-      style={{ left: pos.x + OFFSET, top: pos.y + OFFSET }}
+      style={{ left: target.x + OFFSET, top: target.y + OFFSET }}
     >
       {target.kind === "link" ? (
         <LinkBody

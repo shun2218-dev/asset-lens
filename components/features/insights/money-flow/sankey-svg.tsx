@@ -78,7 +78,7 @@ export function SankeySvg({
                 stroke={link.sourceColor}
                 strokeOpacity={0.4}
                 strokeWidth={link.width}
-                className="transition-[stroke-opacity] motion-reduce:transition-none hover:stroke-opacity-80"
+                className="transition-opacity motion-reduce:transition-none hover:opacity-80"
                 onMouseMove={(e) =>
                   onHover?.({
                     kind: "link",

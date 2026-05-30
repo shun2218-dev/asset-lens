@@ -231,14 +231,7 @@ function buildQuest(args: BuildQuestArgs): Quest {
       : 0,
   );
   const periodOver = args.now.getTime() > args.periodEndDate.getTime();
-  const status: QuestStatus =
-    progressPct > 100
-      ? "failed"
-      : periodOver
-        ? "completed"
-        : progressPct >= 70
-          ? "warning"
-          : "on_track";
+  const status = resolveStatus(progressPct, periodOver);
 
   return {
     id: hashQuestId(
@@ -258,6 +251,16 @@ function buildQuest(args: BuildQuestArgs): Quest {
     periodStart: args.periodStart,
     periodEnd: args.periodEnd,
   };
+}
+
+function resolveStatus(
+  progressPct: number,
+  periodOver: boolean,
+): QuestStatus {
+  if (progressPct > 100) return "failed";
+  if (periodOver) return "completed";
+  if (progressPct >= 70) return "warning";
+  return "on_track";
 }
 
 /**
