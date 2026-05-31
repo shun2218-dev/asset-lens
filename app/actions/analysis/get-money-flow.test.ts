@@ -28,32 +28,31 @@ type DbMockResponse = unknown[];
 
 /**
  * The action issues db.select() three times in sequence:
- *   1. transaction × category
- *   2. budget (overall)
- *   3. transactionTag × tag
+ *   1. transaction × category .from().innerJoin().where()
+ *   2. budget .from().where().limit()
+ *   3. transactionTag × tag .from().innerJoin().where()
  *
- * For (1) and (2) the chain is .from().innerJoin?().where().limit?(). For (3)
- * it is .from().innerJoin().where(). All three terminate in an awaited array.
+ * To support all three call-shapes from a single chainable factory, the
+ * value returned by .where() is a Promise that ALSO has a .limit method
+ * (so chains 1 and 3 can await it directly while chain 2 calls .limit
+ * before awaiting). All three resolve to responses[callIndex].
  */
 function setupDbSequence(responses: DbMockResponse[]) {
-  let call = 0;
+  let callIdx = 0;
   (db.select as ReturnType<typeof vi.fn>).mockImplementation(() => {
-    const idx = call++;
+    const idx = callIdx++;
     const result = responses[idx] ?? [];
-    const terminal = {
-      then: (resolve: (v: DbMockResponse) => unknown) => resolve(result),
-    } as unknown as Promise<DbMockResponse>;
-    const limitMock = vi.fn().mockResolvedValue(result);
-    const whereMock = vi.fn(() => ({
-      limit: limitMock,
-      then: terminal.then.bind(terminal),
-    }));
-    const innerJoinMock = vi.fn(() => ({ where: whereMock }));
-    const fromMock = vi.fn(() => ({
-      innerJoin: innerJoinMock,
-      where: whereMock,
-    }));
-    return { from: fromMock };
+    const promise = Promise.resolve(result);
+    const limitFn = vi.fn(() => promise);
+    const whereResult = Object.assign(promise, { limit: limitFn });
+    const whereFn = vi.fn(() => whereResult);
+    const innerJoinFn = vi.fn(() => ({ where: whereFn }));
+    return {
+      from: vi.fn(() => ({
+        innerJoin: innerJoinFn,
+        where: whereFn,
+      })),
+    };
   });
 }
 
@@ -72,7 +71,6 @@ describe("getMoneyFlow", () => {
     setupDbSequence([
       [], // tx rows
       [], // budget rows
-      // tag query is skipped when txRows is empty
     ]);
 
     const result = await getMoneyFlow("2026-04");
@@ -136,7 +134,6 @@ describe("getMoneyFlow", () => {
     const sevenLeaf = storeLeaves.find((n) => n.label === "セブンイレブン");
     expect(sevenLeaf).toBeDefined();
 
-    // Find the cat -> セブンイレブン link
     const link = result.data.storeView.links.find(
       (l) => l.target === sevenLeaf?.id,
     );
@@ -166,7 +163,6 @@ describe("getMoneyFlow", () => {
 
     expect(result.data.rootKind).toBe("expense");
     expect(result.data.rootAmount).toBe(1200);
-    // null storeName collapses into a "未分類" leaf.
     const leaf = result.data.storeView.nodes.find(
       (n) => n.level === 2 && n.label === "未分類",
     );
@@ -200,11 +196,10 @@ describe("getMoneyFlow", () => {
 
     const tagLeaves = result.data.tagView.nodes.filter((n) => n.level === 2);
     expect(tagLeaves).toHaveLength(3);
-    const tagLinks = result.data.tagView.links.filter((l) =>
-      l.source === "cat-shop",
+    const tagLinks = result.data.tagView.links.filter(
+      (l) => l.source === "cat-shop",
     );
     expect(tagLinks).toHaveLength(3);
-    // 3000 / 3 = 1000 each.
     for (const link of tagLinks) {
       expect(link.value).toBe(1000);
     }
@@ -224,7 +219,7 @@ describe("getMoneyFlow", () => {
         },
       ],
       [],
-      [], // no tag rows
+      [],
     ]);
 
     const result = await getMoneyFlow("2026-04");
