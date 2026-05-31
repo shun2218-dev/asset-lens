@@ -75,6 +75,16 @@ export function SiteHeader() {
                 取引一覧
               </Link>
               <Link
+                href="/insights"
+                className={
+                  pathname.startsWith("/insights")
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }
+              >
+                インサイト
+              </Link>
+              <Link
                 href="/settings"
                 className={
                   pathname.startsWith("/settings")

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Insights page (`/insights`)**: New analytical surface combining a money-flow Sankey diagram and dynamic quests. The Sankey traces yen from the monthly budget (or expense total) through categories to either stores or tags via a toggleable view, with hover tooltips showing exact amounts plus percent-of-source and percent-of-total. Dynamic quests are derived from the previous month's top three stores (weekly, 30 % cut threshold) and top three categories (monthly, 15 % cut threshold) and track live progress against the current period.
+- **In-house Sankey layout** (`lib/sankey/layout.ts`): minimal three-column algorithm with parent-grouped leaf ordering, vendored to avoid pulling `d3-sankey` and keep the client bundle small.
+
+### Changed
+- **Bottom navigation**: replaced the マイページ entry with 分析 (`/insights`). Profile remains reachable from the avatar dropdown in the header, so no destination is lost.
+- **Site header**: new インサイト link between 取引一覧 and 設定.
+
 ## [2.36.1] - 2026-04-29
 
 ### Fixed
