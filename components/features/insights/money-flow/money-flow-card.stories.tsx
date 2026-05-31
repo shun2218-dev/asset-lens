@@ -79,7 +79,23 @@ const meta: Meta<typeof MoneyFlowCard> = {
   title: "Features/Insights/MoneyFlow/MoneyFlowCard",
   component: MoneyFlowCard,
   tags: ["autodocs"],
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    a11y: {
+      config: {
+        rules: [
+          {
+            // Radix Tabs generates aria-controls for TabsContent, but this
+            // component intentionally renders the chart outside Tabs and uses
+            // TabsList only as a styled segmented control, so the aria-controls
+            // target does not exist.
+            id: "aria-valid-attr-value",
+            enabled: false,
+          },
+        ],
+      },
+    },
+  },
 };
 export default meta;
 type Story = StoryObj<typeof MoneyFlowCard>;

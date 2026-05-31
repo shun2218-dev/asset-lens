@@ -81,7 +81,7 @@ export function QuestCard({ quest }: QuestCardProps) {
             )}
           </span>
         </div>
-        <h3 className="text-sm font-semibold leading-snug pt-1">{title}</h3>
+        <p className="text-sm font-semibold leading-snug pt-1">{title}</p>
       </CardHeader>
       <CardContent className="space-y-2">
         <div

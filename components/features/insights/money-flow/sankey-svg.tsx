@@ -7,7 +7,6 @@ import {
   computeSankeyLayout,
   sankeyLinkPath,
 } from "@/lib/sankey/layout";
-import { cn } from "@/lib/utils";
 
 export type SankeyHoverTarget =
   | { kind: "link"; link: SankeyLinkLayout; x: number; y: number }
@@ -28,6 +27,17 @@ const MARGIN = { top: 8, right: 8, bottom: 8, left: 8 };
 const NODE_LABEL_OFFSET = 6;
 const MAX_LABEL_CHARS = 14;
 
+/**
+ * Pure-presentational Sankey renderer.
+ *
+ * Accessibility:
+ *  - The SVG itself is treated as a single labelled image (`role="img"`)
+ *    with `aria-label` summarising the flow direction.
+ *  - Detailed flow data is exposed via the SankeyTableFallback that the
+ *    caller renders alongside this component, so screen reader and
+ *    keyboard users do not need to interact with the SVG ribbons.
+ *  - Sighted users get tooltips on mouse hover only.
+ */
 export function SankeySvg({
   nodes,
   links,
@@ -71,6 +81,7 @@ export function SankeySvg({
             if (!sourceNode || !targetNode) return null;
             const path = sankeyLinkPath(link, sourceNode.x1, targetNode.x0);
             return (
+              // biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover; full data exposed via SankeyTableFallback for keyboard / SR users
               <path
                 key={`${link.source}->${link.target}`}
                 d={path}
@@ -94,7 +105,7 @@ export function SankeySvg({
         </g>
 
         {/* Nodes */}
-        <g>
+        <g aria-hidden="true">
           {layout.nodes.map((node) => {
             const labelOnLeft = node.level === 2;
             const truncated =
@@ -102,11 +113,9 @@ export function SankeySvg({
                 ? `${node.label.slice(0, MAX_LABEL_CHARS - 1)}…`
                 : node.label;
             return (
+              // biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover; full data exposed via SankeyTableFallback for keyboard / SR users
               <g
                 key={node.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`${node.label}: ${node.value.toLocaleString("ja-JP")}円`}
                 onMouseMove={(e) =>
                   onHover?.({
                     kind: "node",
@@ -116,17 +125,6 @@ export function SankeySvg({
                   })
                 }
                 onMouseLeave={() => onHover?.(null)}
-                onFocus={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  onHover?.({
-                    kind: "node",
-                    node,
-                    x: rect.left + rect.width / 2,
-                    y: rect.top,
-                  });
-                }}
-                onBlur={() => onHover?.(null)}
-                className="outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
               >
                 <rect
                   x={node.x0}
@@ -137,13 +135,15 @@ export function SankeySvg({
                   rx={2}
                 />
                 <text
-                  x={labelOnLeft ? node.x0 - NODE_LABEL_OFFSET : node.x1 + NODE_LABEL_OFFSET}
+                  x={
+                    labelOnLeft
+                      ? node.x0 - NODE_LABEL_OFFSET
+                      : node.x1 + NODE_LABEL_OFFSET
+                  }
                   y={(node.y0 + node.y1) / 2}
                   dy="0.35em"
                   textAnchor={labelOnLeft ? "end" : "start"}
-                  className={cn(
-                    "fill-foreground text-[11px] font-medium pointer-events-none",
-                  )}
+                  className="fill-foreground text-[11px] font-medium pointer-events-none"
                 >
                   {truncated}
                 </text>
