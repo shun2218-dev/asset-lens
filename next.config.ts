@@ -76,6 +76,21 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: securityHeaders,
       },
+      {
+        // RFC 8288 Link headers for agent discovery on homepage
+        source: "/",
+        headers: [
+          {
+            key: "Link",
+            value: [
+              '</sitemap.xml>; rel="describedby"; type="application/xml"',
+              '</robots.txt>; rel="robots"',
+              '</terms>; rel="terms-of-service"',
+              '</privacy>; rel="privacy-policy"',
+            ].join(", "),
+          },
+        ],
+      },
     ];
   },
 };
