@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.36.2] - 2026-06-04
+
+### Added
+- **AIO: Link headers**: RFC 8288 Link response headers on homepage for agent discovery (sitemap, api-catalog, robots, terms, privacy, health).
+- **AIO: Markdown negotiation**: `Accept: text/markdown` content negotiation returns markdown version of public pages.
+- **AIO: Content Signals**: `robots.txt` declares AI content usage preferences (`ai-train=no, search=yes, ai-input=no`).
+- **AIO: API Catalog**: `/.well-known/api-catalog` returns `application/linkset+json` per RFC 9727.
+- **AIO: Health endpoint**: `/api/health` for service status monitoring.
+
 ## [2.36.0] - 2026-04-26
 
 ### Added
