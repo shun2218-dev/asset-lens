@@ -20,6 +20,8 @@ jobs:
   unit-tests:
     name: Unit & Storybook Tests
     runs-on: ubuntu-latest
+    env:
+      DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY_CI }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -28,9 +30,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npx vitest run
+      - run: npx dotenvx run -f .env.ci -- npx vitest run
       - name: Generate coverage report
-        run: npm run test:coverage
+        run: npx dotenvx run -f .env.ci -- npm run test:coverage
       - name: Upload coverage report
         uses: actions/upload-artifact@v7
         if: always()
