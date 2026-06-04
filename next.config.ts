@@ -84,9 +84,11 @@ const nextConfig: NextConfig = {
             key: "Link",
             value: [
               '</sitemap.xml>; rel="describedby"; type="application/xml"',
+              '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
               '</robots.txt>; rel="robots"',
               '</terms>; rel="terms-of-service"',
               '</privacy>; rel="privacy-policy"',
+              '</api/health>; rel="status"; type="application/json"',
             ].join(", "),
           },
         ],
