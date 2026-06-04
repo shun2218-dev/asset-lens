@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.36.4] - 2026-06-04
+
+### Fixed
+- **Lint**: Enable `css.parser.tailwindDirectives` in Biome config so `@apply` is recognized in CI.
+- **Format**: Auto-format `globals.css` per Biome CSS rules.
+
 ## [2.36.3] - 2026-06-04
 
 ### Fixed
