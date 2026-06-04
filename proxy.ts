@@ -1,4 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
+import {
+  getMarkdownForPath,
+  markdownResponse,
+} from "@/lib/markdown-negotiation";
 
 // ─── Honeypot: Rickroll malicious scanners ───────────────────────
 
@@ -220,6 +224,13 @@ export function proxy(request: NextRequest) {
     request.headers.get("x-correlation-id") ?? crypto.randomUUID();
 
   if (isPublicPath(pathname)) {
+    // Content negotiation: return markdown for agents requesting it
+    const accept = request.headers.get("accept") ?? "";
+    if (accept.includes("text/markdown")) {
+      const md = getMarkdownForPath(pathname);
+      if (md) return markdownResponse(md);
+    }
+
     const response = NextResponse.next();
     response.headers.set("x-correlation-id", correlationId);
     return response;
