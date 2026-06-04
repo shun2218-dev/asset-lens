@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.36.3] - 2026-06-04
+
+### Fixed
+- **CI**: Use `.env.ci` via dotenvx for unit tests and coverage to prevent Resend API key missing error.
+- **Lint**: Remove array index from React key prop in shortcut help dialog (`noArrayIndexKey`).
+
 ## [2.36.0] - 2026-04-26
 
 ### Added
