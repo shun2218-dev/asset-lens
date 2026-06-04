@@ -89,7 +89,7 @@ export const Open: Story = {
                     <span className="text-sm">{shortcut.description}</span>
                     <div className="flex items-center gap-1">
                       {shortcut.keys.map((key, i) => (
-                        <span key={`${shortcut.description}-${key}-${i}`}>
+                        <span key={`${shortcut.description}-${key}`}>
                           {i > 0 && (
                             <span className="text-muted-foreground mx-0.5 text-xs">
                               then
